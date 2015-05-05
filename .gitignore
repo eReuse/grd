@@ -1,0 +1,9 @@
+*.egg-info
+*.log
+*.pot
+*.pyc
+*~
+*.save
+*.swp
+dist/
+build/
