@@ -24,6 +24,7 @@ INSTALLED_APPS = (
     'grd',
     
     # Third-party apps
+    'django_extensions',
     'rest_framework',
     
     # Django.contrib
