@@ -12,6 +12,8 @@ class Iteration1Test(unittest.TestCase):
     def setUp(self):
         from django.contrib.auth.models import User
         user = User.objects.create_user('ereuse', 'test@ereuse.org', 'ereuse')
+        from grd.models import Agent
+        agent = Agent.objects.create(name='XSR')  # XXX
         self.client = Client()
     
     def test_register_device(self):
@@ -46,7 +48,19 @@ class Iteration1Test(unittest.TestCase):
         devices = json.loads(response.content.decode())
         self.assertGreater(len(devices), 0)
         
+        # It verifies that the device has the proper id
+        response = self.client.get(devices[0]['url'], **hdrs)  # XXX follow 201 created
+        dev = json.loads(response.content.decode())
+        self.assertEqual(dev['id'], data['device_id'])
+        
+        # It checks that device log includes register event
+        response = self.client.get(dev['url'] + 'log/')
+        self.assertEqual(200, response.status_code, response.content)
+        logs = json.loads(response.content.decode())
+        self.assertGreater(len(logs), 0)
+        
         self.fail('Finish the test!')
+
 
 class ApiTest(unittest.TestCase):
     def setUp(self):
