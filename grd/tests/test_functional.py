@@ -1,3 +1,4 @@
+import json
 import unittest
 
 from django.test import Client
@@ -5,6 +6,40 @@ from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+
+class Iteration1Test(unittest.TestCase):
+    # https://www.wrike.com/open.htm?id=50126167
+    def setUp(self):
+        from django.contrib.auth.models import User
+        user = User.objects.create_user('ereuse', 'test@ereuse.org', 'ereuse')
+        self.client = Client()
+    
+    def test_register_device(self):
+        # XSR wants to use etraceability functionality of ereuse.
+        
+        # It gets authentication credentials
+        response = self.client.post('/api-token-auth/', data={'username': 'ereuse', 'password': 'ereuse'})
+        print(response.content)
+        self.assertEqual(200, response.status_code, "Unable to log in with provided credentials.")
+        
+        json_res = json.loads(response.content.decode())
+        hdrs = {
+            'HTTP_AUTHORIZATION': "Token %s" % json_res['token'],
+            #'accept': 'application/json',
+            #'content-type'] = 'application/json',
+        }
+        
+        # It access to the API register endpoint
+        response = self.client.get('/api/register/', **hdrs)
+        self.assertEqual(200, response.status_code, response.content)
+        
+        # It registers a new device
+        data = None
+        response = self.client.post('/api/register/', data=data, **hdrs)
+        self.assertEqual(201, response.status_code, response.content)
+        
+        # It checks that the device is listed
+        self.fail('Finish the test!')
 
 class ApiTest(unittest.TestCase):
     def setUp(self):
@@ -36,7 +71,7 @@ class NewVisitorTest(unittest.TestCase):
         # to check out its API
         self.browser.get('http://dgr:8888/api/')
         
-        # Shel notices the page title and header mention to-do lists
+        # She notices the page title and header mention to-do lists
         self.assertIn('To-Do', self.browser.title)
         header_text = self.browser.find_element_by_tag_name('h1').text
         self.assertIn('To-Do', header_text)
