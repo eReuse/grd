@@ -7,7 +7,7 @@ from grd import views
 
 
 router = routers.SimpleRouter()
-router.register(r'devices', views.DeviceList)
+router.register(r'devices', views.DeviceView)
 
 urlpatterns = [
     # Examples:
@@ -16,5 +16,7 @@ urlpatterns = [
     url(r'^admin/', include(admin.site.urls)),
     url(r'^api/', include(router.urls, namespace='api')),
     url(r'^api-auth/', include('rest_framework.urls', namespace='rest_framework')),
-    url(r'^api-token-auth/', obtain_auth_token)
+    url(r'^api-token-auth/', obtain_auth_token),
+    
+    url(r'^api/register/$', views.Register.as_view(), name='do-register'),
 ]

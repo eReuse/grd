@@ -19,7 +19,6 @@ class Iteration1Test(unittest.TestCase):
         
         # It gets authentication credentials
         response = self.client.post('/api-token-auth/', data={'username': 'ereuse', 'password': 'ereuse'})
-        print(response.content)
         self.assertEqual(200, response.status_code, "Unable to log in with provided credentials.")
         
         json_res = json.loads(response.content.decode())
@@ -31,14 +30,22 @@ class Iteration1Test(unittest.TestCase):
         
         # It access to the API register endpoint
         response = self.client.get('/api/register/', **hdrs)
-        self.assertEqual(200, response.status_code, response.content)
+        self.assertEqual(405, response.status_code, response.content)
         
         # It registers a new device
-        data = None
+        data = {
+            'device_id': '1234-1234',
+            'device_components': [], # XXX list of IDs
+            'agent': 'XSR', #XXX derivate from user who performs the action?
+        }
         response = self.client.post('/api/register/', data=data, **hdrs)
         self.assertEqual(201, response.status_code, response.content)
         
         # It checks that the device is listed
+        response = self.client.get('/api/devices/', **hdrs)
+        devices = json.loads(response.content.decode())
+        self.assertGreater(len(devices), 0)
+        
         self.fail('Finish the test!')
 
 class ApiTest(unittest.TestCase):
