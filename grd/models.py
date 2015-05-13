@@ -1,15 +1,19 @@
+import uuid
+
 from django.db import models
 
 
 class Device(models.Model):
-    # basic events (iteration 1)
+    # initial events (iteration 1)
     REGISTER = 'register'
+    RECYCLE = 'recycle'
+    
+    # base events (iteration 2)
     USE = 'use'
     TRANSFER = 'transfer'
     COLLECT = 'collect'
-    RECYCLE = 'recycle'
     
-    # extended events (iteration 2)
+    # extended events (iteration 3)
     DEREGISTER = 'deregister'
     LOCATE = 'locate'
     ADD = 'add'
@@ -20,14 +24,18 @@ class Device(models.Model):
     
     EVENTS = (
         (REGISTER, 'REGISTER'),
-        (USE, 'USE'),
-        (TRANSFER, 'TRANSFER'),
-        (COLLECT, 'COLLECT'),
+#        (USE, 'USE'),
+#        (TRANSFER, 'TRANSFER'),
+#        (COLLECT, 'COLLECT'),
         (RECYCLE, 'RECYCLE'),
     )
     
-    #id = models.UUIDField(primary_key=True, default=uuid.uuid4, editable=False)
-    #https://docs.python.org/3/library/uuid.html#uuid.uuid4
+    uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
+                            editable=False)
+    id = models.CharField('Device identifier provided by the agent.',
+                          max_length=32)
+    # http://journalseeker.researchbib.com/?action=issnChecker
+    
     #logs = models.ManyToManyField()#"self", throught
     #https://docs.djangoproject.com/en/1.8/ref/models/fields/#django.db.models.ManyToManyField.through
 
@@ -36,7 +44,7 @@ class EntryLog(models.Model):
     timestamp = models.DateTimeField(auto_now_add=True)
     event = models.CharField(max_length='16', choices=Device.EVENTS)
     data = models.TextField() # Use PostgreSQL HStore field?
-    #https://docs.djangoproject.com/en/1.8/ref/contrib/postgres/fields/#hstorefield
+    # https://docs.djangoproject.com/en/1.8/ref/contrib/postgres/fields/#hstorefield
     agent = models.ForeignKey('Agent', related_name='logs')
     device = models.ForeignKey('Device', related_name='logs')
 
