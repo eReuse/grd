@@ -1,0 +1,104 @@
+# Example YAML to get you started quickly.
+# Be aware that YAML has indentation based scoping.
+# Code completion support is available so start typing for available options.
+# http://editor.swagger.io/
+swagger: '2.0'
+
+# This is your document metadata
+info:
+  version: "0.0.1"
+  title: ereuse-grd
+
+paths:
+  /devices/:
+    get:
+      # Describe this verb here. Note: you can use markdown
+      description: |
+        Gets `Device` objects.
+      # Expected responses for this operation:
+      responses:
+        200:
+          description: Successful response
+          schema:
+            title: ArrayOfDevices
+            type: array
+            items:
+              title: Device
+              type: object
+              properties:
+                url:
+                  type: string
+  
+  /devices/{id}:
+    get:
+      description: |
+        Gets `Device` object details.
+      produces:
+      - application/json
+      # This is array of GET operation parameters:
+      parameters:
+        -
+          name: id
+          in: path
+          description: ID of device to use
+          required: true
+          type: string
+      responses:
+        200:
+          description: Device response
+          schema:
+            title: Device
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/DeviceModel'
+
+  /devices/{id}/log/:
+    get:
+      description: |
+        Gets `Device`'s logs.
+      parameters:
+      - 
+        name: id
+        in: path
+        description: ID of device to use
+        required: true
+        type: string
+      responses:
+        200:
+          description: Successful response
+          schema:
+            title: ArrayOfLogs
+            type: array
+            items:
+              title: Log
+              type: object
+              additionalProperties:
+                $ref: '#/definitions/LogModel'
+
+definitions:
+  DeviceModel:
+    type: object
+    required:
+    - uuid
+    - id
+    - hid
+    - type
+    properties:
+      uuid:
+        type: string
+      id:
+        type: string
+      hid:
+        type: string
+      type:
+        type: string #ENUMERATION
+  
+  LogModel:
+    type: object
+    properties:
+      timestamp:
+        type: string
+      event:
+        type: string
+      by_user:
+        type: string
