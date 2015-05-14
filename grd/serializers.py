@@ -6,7 +6,8 @@ from .models import Device, EntryLog, Agent
 class DeviceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Device
-        fields = ('uuid', 'id', 'url')
+        fields = ('uuid', 'url', 'id', 'hid')
+        read_only_fields = ('uuid', 'url')
 
 
 class EntryLogSerializer(serializers.HyperlinkedModelSerializer):
@@ -16,7 +17,8 @@ class EntryLogSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class RegisterSerializer(serializers.Serializer):
-    device_id = serializers.CharField()
+    device = DeviceSerializer()
+    #agent = AgentSerializer()
     agent = serializers.CharField()
     event_time = serializers.DateTimeField()
     by_user = serializers.CharField()

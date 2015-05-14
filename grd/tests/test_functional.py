@@ -8,7 +8,9 @@ from selenium.webdriver.common.keys import Keys
 
 
 class Iteration1Test(unittest.TestCase):
-    # https://www.wrike.com/open.htm?id=50126167
+    """https://www.wrike.com/open.htm?id=50126167"""
+    # XXX use DRF client to decouple from Django project?
+    # http://www.django-rest-framework.org/api-guide/testing/#apiclient
     def setUp(self):
         from django.contrib.auth.models import User
         user = User.objects.create_user('ereuse', 'test@ereuse.org', 'ereuse')
@@ -35,16 +37,17 @@ class Iteration1Test(unittest.TestCase):
         self.assertEqual(405, response.status_code, response.content)
         
         # It registers a new device
-        from datetime import timedelta
-        from django.utils import timezone
         data = {
-            'device_id': '1234-1234',
-            'device_components': [], # XXX list of IDs
+            'device': {
+                'id': '//xsr.cat/device/1234',
+                'hid': 'XPS13-1111-2222',
+                'components': [], # XXX list of IDs
+             },
             'agent': 'XSR', #XXX derivate from user who performs the action?
-            'event_time': timezone.now() - timedelta(days=7),
+            'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
         }
-        response = self.client.post('/api/register/', data=data, **hdrs)
+        response = self.client.post('/api/register/', data=json.dumps(data), content_type='application/json', **hdrs)
         self.assertEqual(201, response.status_code, response.content)
         
         # It checks that the device is listed
@@ -55,7 +58,8 @@ class Iteration1Test(unittest.TestCase):
         # It verifies that the device has the proper id
         response = self.client.get(devices[0]['url'], **hdrs)  # XXX follow 201 created
         dev = json.loads(response.content.decode())
-        self.assertEqual(dev['id'], data['device_id'])
+        self.assertEqual(dev['id'], data['device']['id'])
+        self.assertEqual(dev['hid'], data['device']['hid'])
         
         # It checks that device log includes register event
         response = self.client.get(dev['url'] + 'log/')

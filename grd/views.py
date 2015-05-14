@@ -32,12 +32,12 @@ class Register(APIView):
         if not request.data:
             return Response({'invalid_request': 'empty POST request'}, status=status.HTTP_400_BAD_REQUEST)
         
-        serializer = RegisterSerializer(data=request.data)
+        serializer = RegisterSerializer(data=request.data, context={'request': request})
         serializer.is_valid()
         data = serializer.validated_data
         
         # create devices and logs
-        dev = Device.objects.create(id=data['device_id'])
+        dev = Device.objects.create(**data['device'])
         agent = Agent.objects.get(name=data['agent'])
         dev.logs.create(event=Device.REGISTER, agent=agent,
                         event_time=data['event_time'],
