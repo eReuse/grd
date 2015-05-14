@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.views import APIView
 
 from .models import Agent, Device, EntryLog
-from .serializers import DeviceSerializer, EntryLogSerializer
+from .serializers import DeviceSerializer, EntryLogSerializer, RegisterSerializer
 
 
 class DeviceView(viewsets.ModelViewSet):
@@ -32,12 +32,15 @@ class Register(APIView):
         if not request.data:
             return Response({'invalid_request': 'empty POST request'}, status=status.HTTP_400_BAD_REQUEST)
         
-        # XXX create serializer to validate data
-        dev = Device.objects.create(id=request.data['device_id'])
+        serializer = RegisterSerializer(data=request.data)
+        serializer.is_valid()
+        data = serializer.validated_data
         
-        agent = Agent.objects.get(name=request.data['agent'])
+        # create devices and logs
+        dev = Device.objects.create(id=data['device_id'])
+        agent = Agent.objects.get(name=data['agent'])
         dev.logs.create(event=Device.REGISTER, agent=agent,
-                        event_time=request.data['event_time'],
-                        by_user=request.data['by_user'])
+                        event_time=data['event_time'],
+                        by_user=data['by_user'])
         
         return Response(status=status.HTTP_201_CREATED)
