@@ -35,10 +35,14 @@ class Iteration1Test(unittest.TestCase):
         self.assertEqual(405, response.status_code, response.content)
         
         # It registers a new device
+        from datetime import timedelta
+        from django.utils import timezone
         data = {
             'device_id': '1234-1234',
             'device_components': [], # XXX list of IDs
             'agent': 'XSR', #XXX derivate from user who performs the action?
+            'event_time': timezone.now() - timedelta(days=7),
+            'by_user': 'foo',
         }
         response = self.client.post('/api/register/', data=data, **hdrs)
         self.assertEqual(201, response.status_code, response.content)

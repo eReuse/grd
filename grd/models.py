@@ -30,11 +30,24 @@ class Device(models.Model):
         (RECYCLE, 'RECYCLE'),
     )
     
+    # Device types
+    COMPUTER = 'computer'
+    MOBILE = 'mobile'
+    MONITOR = 'monitor'
+    PERIPHERAL = 'peripheral'
+    TYPES = (
+        (COMPUTER, 'computer'),
+        (MOBILE, 'mobile'),
+        (MONITOR, 'monitor'),
+        (PERIPHERAL, 'peripheral'),
+    )
+    
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
                             editable=False)
-    id = models.CharField('Device identifier provided by the agent.',
-                          max_length=32)
-    # http://journalseeker.researchbib.com/?action=issnChecker
+    id = models.CharField('Identifier provided by the agent.', max_length=128)
+    hid = models.CharField('Hardware identifier.', max_length=32)
+    type = models.CharField(max_length='16', choices=TYPES)
+    # XXX is_id_secured & ituuid
     
     #logs = models.ManyToManyField()#"self", throught
     #https://docs.djangoproject.com/en/1.8/ref/models/fields/#django.db.models.ManyToManyField.through
@@ -45,12 +58,17 @@ class EntryLog(models.Model):
     event = models.CharField(max_length='16', choices=Device.EVENTS)
     data = models.TextField() # Use PostgreSQL HStore field?
     # https://docs.djangoproject.com/en/1.8/ref/contrib/postgres/fields/#hstorefield
-    agent = models.ForeignKey('Agent', related_name='logs')
+    
+    event_time = models.DateTimeField('Time when the event has happened.')
+    by_user = models.CharField('User who performs the event.', max_length='32')
+    
+    agent = models.ForeignKey('Agent', related_name='+')
     device = models.ForeignKey('Device', related_name='logs')
+    components = models.ManyToManyField('Device', related_name='parent_logs')
 
 
 class Agent(models.Model):
-    name = models.CharField(max_length='128')
+    name = models.CharField(max_length='128', unique=True)
     description = models.TextField()
 
 

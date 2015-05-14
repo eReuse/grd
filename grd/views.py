@@ -34,7 +34,10 @@ class Register(APIView):
         
         # XXX create serializer to validate data
         dev = Device.objects.create(id=request.data['device_id'])
+        
         agent = Agent.objects.get(name=request.data['agent'])
-        dev.logs.create(event=Device.REGISTER, agent=agent)
+        dev.logs.create(event=Device.REGISTER, agent=agent,
+                        event_time=request.data['event_time'],
+                        by_user=request.data['by_user'])
         
         return Response(status=status.HTTP_201_CREATED)
