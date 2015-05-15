@@ -41,6 +41,7 @@ class Iteration1Test(unittest.TestCase):
             'device': {
                 'id': '//xsr.cat/device/1234',
                 'hid': 'XPS13-1111-2222',
+                'type': 'computer',
                 'components': [], # XXX list of IDs
              },
             'agent': 'XSR', #XXX derivate from user who performs the action?
