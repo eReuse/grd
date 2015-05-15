@@ -6,7 +6,7 @@ from rest_framework.authtoken.views import obtain_auth_token
 from grd import views
 
 
-router = routers.SimpleRouter()
+router = routers.DefaultRouter()
 router.register(r'devices', views.DeviceView)
 
 urlpatterns = [
