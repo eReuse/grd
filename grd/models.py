@@ -46,7 +46,7 @@ class Device(models.Model):
                             editable=False)
     id = models.CharField('Identifier provided by the agent.', max_length=128)
     hid = models.CharField('Hardware identifier.', max_length=32)
-    type = models.CharField(max_length='16', choices=TYPES)
+    type = models.CharField(max_length=16, choices=TYPES)
     # XXX is_id_secured & ituuid
     
     #logs = models.ManyToManyField()#"self", throught

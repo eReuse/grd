@@ -25,7 +25,7 @@ class Migration(migrations.Migration):
                 ('uuid', models.UUIDField(serialize=False, editable=False, default=uuid.uuid4, primary_key=True)),
                 ('id', models.CharField(verbose_name='Identifier provided by the agent.', max_length=128)),
                 ('hid', models.CharField(verbose_name='Hardware identifier.', max_length=32)),
-                ('type', models.CharField(choices=[('computer', 'computer'), ('mobile', 'mobile'), ('monitor', 'monitor'), ('peripheral', 'peripheral')], max_length='16')),
+                ('type', models.CharField(choices=[('computer', 'computer'), ('mobile', 'mobile'), ('monitor', 'monitor'), ('peripheral', 'peripheral')], max_length=16)),
             ],
         ),
         migrations.CreateModel(
