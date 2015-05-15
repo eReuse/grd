@@ -50,6 +50,7 @@ class Iteration1Test(unittest.TestCase):
         }
         response = self.client.post('/api/register/', data=json.dumps(data), content_type='application/json', **hdrs)
         self.assertEqual(201, response.status_code, response.content)
+        new_device_url = response['Location']
         
         # It checks that the device is listed
         response = self.client.get('/api/devices/', **hdrs)
@@ -57,7 +58,7 @@ class Iteration1Test(unittest.TestCase):
         self.assertGreater(len(devices), 0)
         
         # It verifies that the device has the proper id
-        response = self.client.get(devices[0]['url'], **hdrs)  # XXX follow 201 created
+        response = self.client.get(new_device_url, **hdrs)
         dev = json.loads(response.content.decode())
         self.assertEqual(dev['id'], data['device']['id'])
         self.assertEqual(dev['hid'], data['device']['hid'])
@@ -67,8 +68,7 @@ class Iteration1Test(unittest.TestCase):
         self.assertEqual(200, response.status_code, response.content)
         logs = json.loads(response.content.decode())
         self.assertGreater(len(logs), 0)
-        
-        self.fail('Finish the test!')
+        self.assertIn('register', [log['event'] for log in logs])
 
 
 class ApiTest(unittest.TestCase):

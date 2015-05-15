@@ -2,6 +2,7 @@ from django.shortcuts import get_object_or_404, render
 from rest_framework import status, viewsets
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
+from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
 from .models import Agent, Device, EntryLog
@@ -15,7 +16,7 @@ class DeviceView(viewsets.ModelViewSet):
 
 
 class DeviceLog(viewsets.ReadOnlyModelViewSet):
-    model = EntryLog
+    queryset = EntryLog.objects.all()
     serializer_class = EntryLogSerializer
     
     def list(self, request, pk=None):
@@ -38,9 +39,10 @@ class Register(APIView):
         
         # create devices and logs
         dev = Device.objects.create(**data['device'])
-        agent = Agent.objects.get(name=data['agent'])
+        agent = Agent.objects.get(name=data['agent']) # XXX
         dev.logs.create(event=Device.REGISTER, agent=agent,
                         event_time=data['event_time'],
                         by_user=data['by_user'])
         
-        return Response(status=status.HTTP_201_CREATED)
+        headers = {'Location': reverse('device-detail', args=[dev.pk], request=request)}
+        return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
