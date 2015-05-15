@@ -1,40 +1,46 @@
 import json
 import unittest
 
-from django.test import Client
 from pyvirtualdisplay import Display
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
+### confine-utils ###
+import sys
+sys.path.append("/home/chiron/confine-utils")
+from confine.client import utils
+
 
 class Iteration1Test(unittest.TestCase):
     """https://www.wrike.com/open.htm?id=50126167"""
-    # XXX use DRF client to decouple from Django project?
-    # http://www.django-rest-framework.org/api-guide/testing/#apiclient
-    def setUp(self):
-        from django.contrib.auth.models import User
-        user = User.objects.create_user('ereuse', 'test@ereuse.org', 'ereuse')
-        from grd.models import Agent
-        agent = Agent.objects.create(name='XSR')  # XXX
-        self.client = Client()
     
+    def setUp(self):
+        # TODO: we need user, password and server URL
+        self.user = 'ereuse'
+        self.password = 'ereuse'
+        self.live_server_url = 'http://localhost:8888'
+    
+    def get_token(self, user, password):
+        auth_token_url = "%s%s" % (self.live_server_url, '/api-token-auth/')
+        data = {'username': user, 'password': password}
+        data_out, response = utils.post_json(auth_token_url, data)
+        self.assertEqual(200, response.status_code, "Unable to log in with provided credentials.")
+        return data_out['token']
+        
     def test_register_device(self):
         # XSR wants to use etraceability functionality of ereuse.
         
         # It gets authentication credentials
-        response = self.client.post('/api-token-auth/', data={'username': 'ereuse', 'password': 'ereuse'})
-        self.assertEqual(200, response.status_code, "Unable to log in with provided credentials.")
-        
-        json_res = json.loads(response.content.decode())
-        hdrs = {
-            'HTTP_AUTHORIZATION': "Token %s" % json_res['token'],
-            #'accept': 'application/json',
-            #'content-type'] = 'application/json',
-        }
+        self.superuser_token = self.get_token(self.user, self.password)
+        self.super_auth = 'Token %s' % self.superuser_token
         
         # It access to the API register endpoint
-        response = self.client.get('/api/register/', **hdrs)
-        self.assertEqual(405, response.status_code, response.content)
+#        response = self.client.get('/api/register/', **hdrs)
+        register_url = '%s%s' % (self.live_server_url, '/api/register/')
+        self.assertRaisesRegexp(
+            utils.RestApiError, '.*405.*', utils.get_json, register_url,
+            auth=self.super_auth
+        )
         
         # It registers a new device
         data = {
@@ -48,27 +54,27 @@ class Iteration1Test(unittest.TestCase):
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
         }
-        response = self.client.post('/api/register/', data=json.dumps(data), content_type='application/json', **hdrs)
+        
+        js, response = utils.post_json(register_url, data=data, auth=self.super_auth)
         self.assertEqual(201, response.status_code, response.content)
+        new_device_url = response.headers['Location']
         
         # It checks that the device is listed
-        response = self.client.get('/api/devices/', **hdrs)
-        devices = json.loads(response.content.decode())
+        devices_url = '%s%s' % (self.live_server_url, '/api/devices/')
+        devices, _ = utils.get_json(devices_url, auth=self.super_auth)
         self.assertGreater(len(devices), 0)
         
         # It verifies that the device has the proper id
-        response = self.client.get(devices[0]['url'], **hdrs)  # XXX follow 201 created
-        dev = json.loads(response.content.decode())
+        dev, _ = utils.get_json(new_device_url, auth=self.super_auth)
         self.assertEqual(dev['id'], data['device']['id'])
         self.assertEqual(dev['hid'], data['device']['hid'])
         
         # It checks that device log includes register event
-        response = self.client.get(dev['url'] + 'log/')
+        device_log_url = '%s%s' % (new_device_url, 'log/')
+        logs, response = utils.get_json(device_log_url, auth=self.super_auth)
         self.assertEqual(200, response.status_code, response.content)
-        logs = json.loads(response.content.decode())
         self.assertGreater(len(logs), 0)
-        
-        self.fail('Finish the test!')
+        self.assertIn('register', [log['event'] for log in logs])
 
 
 class ApiTest(unittest.TestCase):
