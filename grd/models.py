@@ -60,7 +60,7 @@ class EntryLog(models.Model):
     # https://docs.djangoproject.com/en/1.8/ref/contrib/postgres/fields/#hstorefield
     
     event_time = models.DateTimeField('Time when the event has happened.')
-    by_user = models.CharField('User who performs the event.', max_length='32')
+    by_user = models.CharField('User who performs the event.', max_length=32)
     
     agent = models.ForeignKey('Agent', related_name='+')
     device = models.ForeignKey('Device', related_name='logs')
@@ -68,7 +68,7 @@ class EntryLog(models.Model):
 
 
 class Agent(models.Model):
-    name = models.CharField(max_length='128', unique=True)
+    name = models.CharField(max_length=128, unique=True)
     description = models.TextField()
 
 

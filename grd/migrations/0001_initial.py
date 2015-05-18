@@ -15,7 +15,7 @@ class Migration(migrations.Migration):
             name='Agent',
             fields=[
                 ('id', models.AutoField(serialize=False, primary_key=True, auto_created=True, verbose_name='ID')),
-                ('name', models.CharField(max_length='128', unique=True)),
+                ('name', models.CharField(max_length=128, unique=True)),
                 ('description', models.TextField()),
             ],
         ),
@@ -36,7 +36,7 @@ class Migration(migrations.Migration):
                 ('event', models.CharField(choices=[('register', 'REGISTER'), ('recycle', 'RECYCLE')], max_length='16')),
                 ('data', models.TextField()),
                 ('event_time', models.DateTimeField(verbose_name='Time when the event has happened.')),
-                ('by_user', models.CharField(verbose_name='User who performs the event.', max_length='32')),
+                ('by_user', models.CharField(verbose_name='User who performs the event.', max_length=32)),
                 ('agent', models.ForeignKey(to='grd.Agent', related_name='+')),
                 ('components', models.ManyToManyField(to='grd.Device', related_name='parent_logs')),
                 ('device', models.ForeignKey(to='grd.Device', related_name='logs')),
