@@ -3,11 +3,19 @@ from rest_framework import serializers
 from .models import Device, EntryLog, Agent
 
 
-class DeviceSerializer(serializers.HyperlinkedModelSerializer):
+class SimpleDeviceSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Device
-        fields = ('uuid', 'url', 'id', 'hid', 'type')
-        read_only_fields = ('uuid', 'url')
+        fields = ('url',)
+
+
+class DeviceSerializer(serializers.HyperlinkedModelSerializer):
+    components = SimpleDeviceSerializer(many=True, read_only=True)
+    
+    class Meta:
+        model = Device
+        fields = ('uuid', 'url', 'id', 'hid', 'type', 'components')
+        read_only_fields = ('uuid', 'url', 'components')
 
 
 class EntryLogSerializer(serializers.HyperlinkedModelSerializer):
@@ -16,11 +24,14 @@ class EntryLogSerializer(serializers.HyperlinkedModelSerializer):
         fields = ('timestamp', 'event', 'device')#, 'agent') #XXX AgentSerializer & View
 
 
-class RegisterSerializer(serializers.Serializer):
+class RegisterSerializer(serializers.ModelSerializer):
     device = DeviceSerializer()
     #agent = AgentSerializer()
     agent = serializers.CharField()
-    event_time = serializers.DateTimeField()
-    by_user = serializers.CharField()
+    components = DeviceSerializer(many=True)
+    
+    class Meta:
+        model = EntryLog
+        fields = ('device', 'agent', 'event_time', 'by_user', 'components')
     
     # XXX validate data

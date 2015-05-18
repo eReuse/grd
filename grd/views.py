@@ -34,15 +34,19 @@ class Register(APIView):
             return Response({'invalid_request': 'empty POST request'}, status=status.HTTP_400_BAD_REQUEST)
         
         serializer = RegisterSerializer(data=request.data, context={'request': request})
-        serializer.is_valid()
+        if not serializer.is_valid():
+            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
         data = serializer.validated_data
         
         # create devices and logs
         dev = Device.objects.create(**data['device'])
         agent = Agent.objects.get(name=data['agent']) # XXX
-        dev.logs.create(event=Device.REGISTER, agent=agent,
+        log = dev.logs.create(event=Device.REGISTER, agent=agent,
                         event_time=data['event_time'],
                         by_user=data['by_user'])
+        
+        for component in data['components']:
+            log.components.create(**component)
         
         headers = {'Location': reverse('device-detail', args=[dev.pk], request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)

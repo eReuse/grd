@@ -51,9 +51,17 @@ class Device(models.Model):
     
     #logs = models.ManyToManyField()#"self", throught
     #https://docs.djangoproject.com/en/1.8/ref/models/fields/#django.db.models.ManyToManyField.through
+    
+    @property
+    def components(self):
+        last_log = self.logs.filter(event='register').latest()
+        return last_log.components.all()#.values_list('hid', flat=True)
 
 
 class EntryLog(models.Model):
+    class Meta:
+        get_latest_by = 'timestamp'
+    
     timestamp = models.DateTimeField(auto_now_add=True)
     event = models.CharField(max_length='16', choices=Device.EVENTS)
     data = models.TextField() # Use PostgreSQL HStore field?

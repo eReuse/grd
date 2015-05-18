@@ -42,11 +42,11 @@ class Iteration1Test(unittest.TestCase):
                 'id': '//xsr.cat/device/1234',
                 'hid': 'XPS13-1111-2222',
                 'type': 'computer',
-                'components': [], # XXX list of IDs
              },
             'agent': 'XSR', #XXX derivate from user who performs the action?
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
+            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
         }
         response = self.client.post('/api/register/', data=json.dumps(data), content_type='application/json', **hdrs)
         self.assertEqual(201, response.status_code, response.content)
@@ -62,6 +62,10 @@ class Iteration1Test(unittest.TestCase):
         dev = json.loads(response.content.decode())
         self.assertEqual(dev['id'], data['device']['id'])
         self.assertEqual(dev['hid'], data['device']['hid'])
+        
+        # It checks that device includes related components
+        # TODO make a more detailed validation.
+        self.assertEqual(len(dev['components']), len(data['components']))
         
         # It checks that device log includes register event
         response = self.client.get(dev['url'] + 'log/')
