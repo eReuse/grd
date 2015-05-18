@@ -1,22 +1,19 @@
 import json
 import unittest
 
-from django.test import Client
 from pyvirtualdisplay import Display
+from rest_framework.test import APILiveServerTestCase
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 
 
-class Iteration1Test(unittest.TestCase):
+class Iteration1Test(APILiveServerTestCase):
     """https://www.wrike.com/open.htm?id=50126167"""
-    # XXX use DRF client to decouple from Django project?
-    # http://www.django-rest-framework.org/api-guide/testing/#apiclient
     def setUp(self):
         from django.contrib.auth.models import User
         user = User.objects.create_user('ereuse', 'test@ereuse.org', 'ereuse')
         from grd.models import Agent
         agent = Agent.objects.create(name='XSR')  # XXX
-        self.client = Client()
     
     def test_register_device(self):
         # XSR wants to use etraceability functionality of ereuse.
@@ -75,9 +72,7 @@ class Iteration1Test(unittest.TestCase):
         self.assertIn('register', [log['event'] for log in logs])
 
 
-class ApiTest(unittest.TestCase):
-    def setUp(self):
-        self.client = Client()
+class ApiTest(APILiveServerTestCase):
     
     def test_retrieve_api_base(self):
         response = self.client.get('/api/')
