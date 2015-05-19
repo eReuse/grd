@@ -2,12 +2,13 @@ import time
 import unittest
 
 from django.contrib.auth import get_user_model
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from rest_framework.test import APILiveServerTestCase
 
 from grd.models import Agent
 
 
-class Iteration1Test(APILiveServerTestCase):
+class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
     """https://www.wrike.com/open.htm?id=50126167"""
     def setUp(self):
         self.username = 'ereuse@localhost'
@@ -142,7 +143,7 @@ class Iteration1Test(APILiveServerTestCase):
     #TODO def test_register_updating_components(self):
         # It checks that device includes updated components
 
-class ApiTest(APILiveServerTestCase):
+class ApiTest(StaticLiveServerTestCase, APILiveServerTestCase):
     
     def test_retrieve_api_base(self):
         response = self.client.get('/api/')
