@@ -1,22 +1,32 @@
 import json
 import unittest
 
+from django.contrib.auth import get_user_model
 from rest_framework.test import APILiveServerTestCase
+
+from grd.models import Agent
 
 
 class Iteration1Test(APILiveServerTestCase):
     """https://www.wrike.com/open.htm?id=50126167"""
     def setUp(self):
-        from django.contrib.auth.models import User
-        user = User.objects.create_user('ereuse', 'test@ereuse.org', 'ereuse')
-        from grd.models import Agent
-        agent = Agent.objects.create(name='XSR')  # XXX
+        self.username = 'ereuse@localhost'
+        self.password = 'ereuse'
+        
+        User = get_user_model()
+        user = User.objects.create_user(self.username, self.password)
+        
+        agent = Agent.objects.create(name='XSR')
+        agent.users.add(user)
     
     def test_register_device(self):
         # XSR wants to use etraceability functionality of ereuse.
         
         # It gets authentication credentials
-        response = self.client.post('/api-token-auth/', data={'username': 'ereuse', 'password': 'ereuse'})
+        response = self.client.post(
+            '/api-token-auth/',
+            data={'username': self.username, 'password': self.password}
+        )
         self.assertEqual(200, response.status_code, "Unable to log in with provided credentials.")
         
         json_res = json.loads(response.content.decode())

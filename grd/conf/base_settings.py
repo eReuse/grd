@@ -86,6 +86,10 @@ USE_TZ = True
 STATIC_URL = '/static/'
 
 
+# Custom User model
+AUTH_USER_MODEL = 'grd.User'
+
+
 #########################
 #    THRID PARTY APP    #
 #########################
