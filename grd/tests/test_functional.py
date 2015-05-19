@@ -1,4 +1,4 @@
-import json
+import time
 import unittest
 
 from django.contrib.auth import get_user_model
@@ -31,6 +31,18 @@ class Iteration1Test(APILiveServerTestCase):
         self.assertEqual(200, response.status_code, "Unable to log in with provided credentials.")
         
         return response.data['token']
+    
+    def count_listed_objects(self, url):
+        response = self.client.get(url)
+        return len(response.data)
+    
+    def get_latest_log(self, logs):
+        assert len(logs) > 0
+        last_log = logs[0]
+        for log in logs:
+            if log['timestamp'] > last_log['timestamp']:
+                last_log = log
+        return last_log
     
     def test_register_device(self):
         # XSR wants to use etraceability functionality of ereuse.
@@ -69,21 +81,66 @@ class Iteration1Test(APILiveServerTestCase):
         # TODO make a more detailed validation.
         self.assertEqual(len(dev['components']), len(data['components']))
         
-        # It checks that device log includes register event
+        # It checks that the device log includes register event
         response = self.client.get(dev['url'] + 'log/')
         self.assertEqual(200, response.status_code, response.content)
         logs = response.data
         self.assertGreater(len(logs), 0)
         
-        # find last log
-        last_log = logs[0]
-        for log in logs:
-            if log['timestamp'] > last_log['timestamp']:
-                last_log = log
-        
+        # It checks that the last log is register
+        last_log = self.get_latest_log(logs)
         self.assertEqual('register', last_log['event'])
         self.assertEqual(self.agent.name, last_log['agent'])
-
+    
+    def test_register_already_traced_device(self):
+        # XSR wants to take a snapshot of the current status of a device
+        # which is already being traced by the GRD.
+        self.assertEqual(0, self.count_listed_objects('/api/devices/'))
+        
+        # It had registered a device
+        data = {
+            'device': {
+                'id': '//xsr.cat/device/1234',
+                'hid': 'XPS13-1111-2222',
+                'type': 'computer',
+             },
+            'event_time': '2012-04-10T22:38:20.604391Z',
+            'by_user': 'foo',
+            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
+        }
+        response = self.client.post('/api/register/', data=data)
+        self.assertEqual(2, self.count_listed_objects('/api/devices/'))
+        
+        # It registers a alreday traced device
+        response = self.client.post('/api/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        self.assertEqual(2, self.count_listed_objects('/api/devices/'))
+        new_device_url = response['Location']
+        
+        # It verifies that the device has the proper id
+        response = self.client.get(new_device_url)
+        dev = response.data
+        self.assertEqual(dev['id'], data['device']['id'])
+        self.assertEqual(dev['hid'], data['device']['hid'])
+        
+        # It checks that device includes same components
+        # TODO make a more detailed validation.
+        # TODO retrieve device URL and compare id, hid, type
+        self.assertEqual(len(dev['components']), len(data['components']))
+         
+        # It checks that device log includes register event
+        response = self.client.get(new_device_url + 'log/')
+        self.assertEqual(200, response.status_code, response.content)
+        logs = response.data
+        self.assertEqual(len(logs), 2)
+        
+        # It checks that the last log is register
+        last_log = self.get_latest_log(logs)
+        self.assertEqual('register', last_log['event'])
+        self.assertEqual(self.agent.name, last_log['agent'])
+    
+    #TODO def test_register_updating_components(self):
+        # It checks that device includes updated components
 
 class ApiTest(APILiveServerTestCase):
     

@@ -47,7 +47,7 @@ class Device(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
                             editable=False)
     id = models.CharField('Identifier provided by the agent.', max_length=128)
-    hid = models.CharField('Hardware identifier.', max_length=32)
+    hid = models.CharField('Hardware identifier.', max_length=32)# XXX mark as unique=True?
     type = models.CharField(max_length=16, choices=TYPES)
     # XXX is_id_secured & ituuid
     

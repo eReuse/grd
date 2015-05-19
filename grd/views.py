@@ -39,14 +39,22 @@ class Register(APIView):
         data = serializer.validated_data
         
         # create devices and logs
-        dev = Device.objects.create(**data['device'])
+        try:
+            dev = Device.objects.get(id=data['device']['id'])
+        except Device.DoesNotExist:
+            dev = Device.objects.create(**data['device'])
         agent = request.user.agent
         log = dev.logs.create(event=Device.REGISTER, agent=agent,
                         event_time=data['event_time'],
                         by_user=data['by_user'])
         
         for component in data['components']:
-            log.components.create(**component)
+            try:
+                device = Device.objects.get(id=component['id'])
+            except Device.DoesNotExist:
+                log.components.create(**component)
+            else:
+                log.components.add(device)
         
         headers = {'Location': reverse('device-detail', args=[dev.pk], request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
