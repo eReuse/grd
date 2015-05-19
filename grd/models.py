@@ -63,7 +63,7 @@ class EntryLog(models.Model):
         get_latest_by = 'timestamp'
     
     timestamp = models.DateTimeField(auto_now_add=True)
-    event = models.CharField(max_length='16', choices=Device.EVENTS)
+    event = models.CharField(max_length=16, choices=Device.EVENTS)
     data = models.TextField() # Use PostgreSQL HStore field?
     # https://docs.djangoproject.com/en/1.8/ref/contrib/postgres/fields/#hstorefield
     
