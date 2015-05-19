@@ -18,26 +18,25 @@ class Iteration1Test(APILiveServerTestCase):
         
         self.agent = Agent.objects.create(name='XSR')
         self.agent.users.add(user)
+        
+        # authenticate the user
+        token = self.get_user_token(self.username, self.password)
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+    
+    def get_user_token(self, username, password):
+        response = self.client.post(
+            '/api-token-auth/',
+            data={'username': username, 'password': password},
+        )
+        self.assertEqual(200, response.status_code, "Unable to log in with provided credentials.")
+        
+        return response.data['token']
     
     def test_register_device(self):
         # XSR wants to use etraceability functionality of ereuse.
         
-        # It gets authentication credentials
-        response = self.client.post(
-            '/api-token-auth/',
-            data={'username': self.username, 'password': self.password}
-        )
-        self.assertEqual(200, response.status_code, "Unable to log in with provided credentials.")
-        
-        json_res = json.loads(response.content.decode())
-        hdrs = {
-            'HTTP_AUTHORIZATION': "Token %s" % json_res['token'],
-            #'accept': 'application/json',
-            #'content-type'] = 'application/json',
-        }
-        
         # It access to the API register endpoint
-        response = self.client.get('/api/register/', **hdrs)
+        response = self.client.get('/api/register/')
         self.assertEqual(405, response.status_code, response.content)
         
         # It registers a new device
@@ -51,18 +50,18 @@ class Iteration1Test(APILiveServerTestCase):
             'by_user': 'foo',
             'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
         }
-        response = self.client.post('/api/register/', data=json.dumps(data), content_type='application/json', **hdrs)
+        response = self.client.post('/api/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
         new_device_url = response['Location']
         
         # It checks that the device is listed
-        response = self.client.get('/api/devices/', **hdrs)
-        devices = json.loads(response.content.decode())
+        response = self.client.get('/api/devices/')
+        devices = response.data
         self.assertGreater(len(devices), 0)
         
         # It verifies that the device has the proper id
-        response = self.client.get(new_device_url, **hdrs)
-        dev = json.loads(response.content.decode())
+        response = self.client.get(new_device_url)
+        dev = response.data
         self.assertEqual(dev['id'], data['device']['id'])
         self.assertEqual(dev['hid'], data['device']['hid'])
         
@@ -73,7 +72,7 @@ class Iteration1Test(APILiveServerTestCase):
         # It checks that device log includes register event
         response = self.client.get(dev['url'] + 'log/')
         self.assertEqual(200, response.status_code, response.content)
-        logs = json.loads(response.content.decode())
+        logs = response.data
         self.assertGreater(len(logs), 0)
         
         # find last log
