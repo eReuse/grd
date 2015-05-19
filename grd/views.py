@@ -40,7 +40,7 @@ class Register(APIView):
         
         # create devices and logs
         dev = Device.objects.create(**data['device'])
-        agent = Agent.objects.get(name=data['agent']) # XXX
+        agent = request.user.agent
         log = dev.logs.create(event=Device.REGISTER, agent=agent,
                         event_time=data['event_time'],
                         by_user=data['by_user'])

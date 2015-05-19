@@ -19,19 +19,20 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class EntryLogSerializer(serializers.HyperlinkedModelSerializer):
+    #XXX AgentSerializer & View
+    agent = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    
     class Meta:
         model = EntryLog
-        fields = ('timestamp', 'event', 'device')#, 'agent') #XXX AgentSerializer & View
+        fields = ('timestamp', 'event', 'device', 'agent')
 
 
 class RegisterSerializer(serializers.ModelSerializer):
     device = DeviceSerializer()
-    #agent = AgentSerializer()
-    agent = serializers.CharField()
     components = DeviceSerializer(many=True)
     
     class Meta:
         model = EntryLog
-        fields = ('device', 'agent', 'event_time', 'by_user', 'components')
+        fields = ('device', 'event_time', 'by_user', 'components')
     
     # XXX validate data

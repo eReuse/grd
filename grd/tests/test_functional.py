@@ -16,8 +16,8 @@ class Iteration1Test(APILiveServerTestCase):
         User = get_user_model()
         user = User.objects.create_user(self.username, self.password)
         
-        agent = Agent.objects.create(name='XSR')
-        agent.users.add(user)
+        self.agent = Agent.objects.create(name='XSR')
+        self.agent.users.add(user)
     
     def test_register_device(self):
         # XSR wants to use etraceability functionality of ereuse.
@@ -47,7 +47,6 @@ class Iteration1Test(APILiveServerTestCase):
                 'hid': 'XPS13-1111-2222',
                 'type': 'computer',
              },
-            'agent': 'XSR', #XXX derivate from user who performs the action?
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
             'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
@@ -76,7 +75,15 @@ class Iteration1Test(APILiveServerTestCase):
         self.assertEqual(200, response.status_code, response.content)
         logs = json.loads(response.content.decode())
         self.assertGreater(len(logs), 0)
-        self.assertIn('register', [log['event'] for log in logs])
+        
+        # find last log
+        last_log = logs[0]
+        for log in logs:
+            if log['timestamp'] > last_log['timestamp']:
+                last_log = log
+        
+        self.assertEqual('register', last_log['event'])
+        self.assertEqual(self.agent.name, last_log['agent'])
 
 
 class ApiTest(APILiveServerTestCase):
