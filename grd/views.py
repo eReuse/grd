@@ -21,7 +21,7 @@ class DeviceLog(viewsets.ReadOnlyModelViewSet):
     
     def list(self, request, pk=None):
         device = get_object_or_404(Device, pk=pk)
-        queryset = device.logs.all()#self.model.objects.filter(device=obj)
+        queryset = EntryLog.objects.related_to_device(device)
         serializer = self.serializer_class(queryset, many=True, context={'request': request})
         return Response(serializer.data)
         

@@ -92,6 +92,11 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
         last_log = self.get_latest_log(logs)
         self.assertEqual('register', last_log['event'])
         self.assertEqual(self.agent.name, last_log['agent'])
+        
+        # It checks that the component has inherit the log
+        for component in dev['components']:
+            comp_logs = self.client.get(component['url'] + 'log/').data
+            self.assertGreater(len(comp_logs), 0)
     
     def test_register_already_traced_device(self):
         # XSR wants to take a snapshot of the current status of a device

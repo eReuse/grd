@@ -2,6 +2,7 @@ import uuid
 
 from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
+from django.db.models import Q
 from django.utils import timezone
 
 
@@ -57,7 +58,12 @@ class Device(models.Model):
     @property
     def components(self):
         last_log = self.logs.filter(event='register').latest()
-        return last_log.components.all()#.values_list('hid', flat=True)
+        return last_log.components.all()
+
+
+class EntryLogManager(models.Manager):
+    def related_to_device(self, device):
+       return self.filter(Q(device=device) | Q(components__in=[device]))
 
 
 class EntryLog(models.Model):
@@ -75,6 +81,8 @@ class EntryLog(models.Model):
     agent = models.ForeignKey('Agent', related_name='+')
     device = models.ForeignKey('Device', related_name='logs')
     components = models.ManyToManyField('Device', related_name='parent_logs')
+    
+    objects = EntryLogManager()
 
 
 class Agent(models.Model):
