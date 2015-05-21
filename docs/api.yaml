@@ -50,7 +50,7 @@ paths:
             title: Device
             type: object
             additionalProperties:
-              $ref: '#/definitions/DeviceModel'
+              $ref: '#/definitions/Device'
 
   /devices/{id}/log/:
     get:
@@ -73,10 +73,10 @@ paths:
               title: Log
               type: object
               additionalProperties:
-                $ref: '#/definitions/LogModel'
+                $ref: '#/definitions/Log'
 
 definitions:
-  DeviceModel:
+  Device:
     type: object
     required:
     - uuid
@@ -92,8 +92,26 @@ definitions:
         type: string
       type:
         type: string #ENUMERATION
+      sameAs:
+        type: array
+        items:
+          type: string
+          format: url
+      # Xavier proposal:
+      # FIXME(slamora:) it's necessary to store this information at GRD?
+      model:
+        type: string
+      manufacturer:
+        type: string
+      serialNumber: #FIXME(slamora): duplicates hid
+        type: string
+      isUidSecured:
+        type: boolean
+      url:
+        type: string
+        format: url
   
-  LogModel:
+  Log:
     type: object
     properties:
       timestamp:
