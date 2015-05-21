@@ -76,6 +76,14 @@ paths:
                 $ref: '#/definitions/Log'
 
 definitions:
+  Agent:
+    type: object
+    properties:
+      name:
+        type: string
+      description:
+        type: string
+  
   Device:
     type: object
     required:
@@ -84,14 +92,14 @@ definitions:
     - hid
     - type
     properties:
-      uuid:
+      uuid: # GRD identifier
         type: string
-      id:
+      id: # PRL identifier
         type: string
-      hid:
+      hid: # Hardware identifier
         type: string
       type:
-        type: string #ENUMERATION
+        type: string # ENUMERATION: computer, screen, peripheral
       sameAs:
         type: array
         items:
@@ -120,3 +128,10 @@ definitions:
         type: string
       by_user:
         type: string
+  
+  User:
+    type: object
+    properties:
+      email:
+        type: string
+      agent:
