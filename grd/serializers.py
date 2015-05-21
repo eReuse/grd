@@ -36,3 +36,9 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ('device', 'event_time', 'by_user', 'components')
     
     # XXX validate data
+
+
+class RecycleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = EntryLog
+        fields = ('event_time', 'by_user')

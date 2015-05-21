@@ -20,4 +20,5 @@ urlpatterns = [
     
     url(r'^api/register/$', views.Register.as_view(), name='do-register'),
     url(r'^api/devices/(?P<pk>[^/.]+)/log/$', views.DeviceLog.as_view({'get': 'list'}), name='device-log'),
+    url(r'^api/devices/(?P<pk>[^/.]+)/recycle/$', views.Recycle.as_view(), name='do-recycle'),
 ]
