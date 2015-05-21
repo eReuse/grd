@@ -63,7 +63,7 @@ class Device(models.Model):
 
 class EntryLogManager(models.Manager):
     def related_to_device(self, device):
-       return self.filter(Q(device=device) | Q(components__in=[device]))
+        return self.filter(Q(device=device) | Q(components__in=[device]))
 
 
 class EntryLog(models.Model):
@@ -72,7 +72,7 @@ class EntryLog(models.Model):
     
     timestamp = models.DateTimeField(auto_now_add=True)
     event = models.CharField(max_length=16, choices=Device.EVENTS)
-    data = models.TextField() # Use PostgreSQL HStore field?
+    data = models.TextField()  # Use PostgreSQL HStore field?
     # https://docs.djangoproject.com/en/1.8/ref/contrib/postgres/fields/#hstorefield
     
     event_time = models.DateTimeField('Time when the event has happened.')
