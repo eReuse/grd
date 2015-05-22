@@ -81,9 +81,8 @@ class Recycle(APIView):
                         event_time=data['event_time'],
                         by_user=data['by_user'])
         
-        # TODO(slamora): define logs inheritance.
-        # Should components be explicitly recycled?
-        for device in dev.components:
+        # Agent should explicity define which components are recycled
+        for device in data['components']:
             log.components.add(device)
         
         headers = {'Location': 'foo'}

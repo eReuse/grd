@@ -39,6 +39,13 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 
 class RecycleSerializer(serializers.ModelSerializer):
+    components = serializers.SlugRelatedField(
+                    many=True,
+                    queryset=Device.objects.all(),
+                    default=[],
+                    slug_field='hid',
+                )
+    
     class Meta:
         model = EntryLog
-        fields = ('event_time', 'by_user')
+        fields = ('event_time', 'by_user', 'components')
