@@ -29,7 +29,8 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
             '/api-token-auth/',
             data={'username': username, 'password': password},
         )
-        self.assertEqual(200, response.status_code, "Unable to log in with provided credentials.")
+        self.assertEqual(200, response.status_code,
+                         "Unable to log in with provided credentials.")
         
         return response.data['token']
     
@@ -58,7 +59,7 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
                 'id': '//xsr.cat/device/1234',
                 'hid': 'XPS13-1111-2222',
                 'type': 'computer',
-             },
+            },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
             'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
@@ -109,7 +110,7 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
                 'id': '//xsr.cat/device/1234',
                 'hid': 'XPS13-1111-2222',
                 'type': 'computer',
-             },
+            },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
             'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
@@ -145,7 +146,7 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
         self.assertEqual('register', last_log['event'])
         self.assertEqual(self.agent.name, last_log['agent'])
     
-    #TODO def test_register_updating_components(self):
+    # TODO def test_register_updating_components(self):
         # It checks that device includes updated components
     
     def test_recycle_device(self):
@@ -158,7 +159,7 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
                 'id': '//xsr.cat/device/1234',
                 'hid': 'XPS13-1111-2222',
                 'type': 'computer',
-             },
+            },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
             'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
@@ -173,7 +174,7 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
         }
         response = self.client.post(device_url + 'recycle/', data=recycle_data)
         self.assertEqual(201, response.status_code, response.content)
-        #XXX new_log_url = response['Location']
+        # XXX new_log_url = response['Location']
         
         # He checks that the device log includes recycle event
         response = self.client.get(device_url + 'log/')
@@ -206,7 +207,7 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
                 'id': '//xsr.cat/device/1234',
                 'hid': 'XPS13-1111-2222',
                 'type': 'computer',
-             },
+            },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
             'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
@@ -222,7 +223,7 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
         }
         response = self.client.post(device_url + 'recycle/', data=recycle_data)
         self.assertEqual(201, response.status_code, response.content)
-        #XXX new_log_url = response['Location']
+        # XXX new_log_url = response['Location']
         
         # He checks that the device log includes recycle event
         response = self.client.get(device_url + 'log/')

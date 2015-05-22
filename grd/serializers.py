@@ -19,7 +19,7 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class EntryLogSerializer(serializers.HyperlinkedModelSerializer):
-    #XXX AgentSerializer & View
+    # XXX AgentSerializer & View
     agent = serializers.SlugRelatedField(read_only=True, slug_field='name')
     
     class Meta:
@@ -40,11 +40,11 @@ class RegisterSerializer(serializers.ModelSerializer):
 
 class RecycleSerializer(serializers.ModelSerializer):
     components = serializers.SlugRelatedField(
-                    many=True,
-                    queryset=Device.objects.all(),
-                    default=[],
-                    slug_field='hid',
-                )
+        many=True,
+        default=[],
+        queryset=Device.objects.all(),
+        slug_field='hid',
+    )
     
     class Meta:
         model = EntryLog

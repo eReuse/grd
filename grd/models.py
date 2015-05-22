@@ -27,9 +27,9 @@ class Device(models.Model):
     
     EVENTS = (
         (REGISTER, 'REGISTER'),
-#        (USE, 'USE'),
-#        (TRANSFER, 'TRANSFER'),
-#        (COLLECT, 'COLLECT'),
+        # (USE, 'USE'),
+        # (TRANSFER, 'TRANSFER'),
+        # (COLLECT, 'COLLECT'),
         (RECYCLE, 'RECYCLE'),
     )
     
@@ -48,12 +48,10 @@ class Device(models.Model):
     uuid = models.UUIDField(primary_key=True, default=uuid.uuid4,
                             editable=False)
     id = models.CharField('Identifier provided by the agent.', max_length=128)
-    hid = models.CharField('Hardware identifier.', max_length=32)# XXX mark as unique=True?
+    # XXX mark hid as unique=True?
+    hid = models.CharField('Hardware identifier.', max_length=32)
     type = models.CharField(max_length=16, choices=TYPES)
     # XXX is_id_secured & ituuid
-    
-    #logs = models.ManyToManyField()#"self", throught
-    #https://docs.djangoproject.com/en/1.8/ref/models/fields/#django.db.models.ManyToManyField.through
     
     @property
     def components(self):
@@ -127,12 +125,14 @@ class User(AbstractBaseUser):
         max_length=255,
         unique=True,
     )
-    is_active = models.BooleanField(default=True,
-            help_text='Designates whether this user should be treated as '
-                      'active. Unselect this instead of deleting accounts.')
-    is_admin = models.BooleanField(default=False,
-            help_text='Designates that this user has all permissions without '
-                      'explicitly assigning them.')
+    is_active = models.BooleanField(
+        default=True,
+        help_text='Designates whether this user should be treated as '
+                  'active. Unselect this instead of deleting accounts.')
+    is_admin = models.BooleanField(
+        default=False,
+        help_text='Designates that this user has all permissions without '
+                  'explicitly assigning them.')
     date_joined = models.DateTimeField(default=timezone.now)
     agent = models.ForeignKey('Agent', null=True, related_name='users')
     
@@ -172,6 +172,7 @@ class User(AbstractBaseUser):
         # Simplest possible answer: Yes, always
         return True
 
-#class Event(models.Model):
-    #TODO(v0.2) CRUD events
-    # https://www.wrike.com/open.htm?id=47864028
+
+# class Event(models.Model):
+    # TODO(v0.2) CRUD events
+    #  https://www.wrike.com/open.htm?id=47864028

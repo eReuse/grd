@@ -14,7 +14,7 @@ from .serializers import (
 class DeviceView(viewsets.ModelViewSet):
     queryset = Device.objects.all()
     serializer_class = DeviceSerializer
-    #permission_classes = (IsAdminUser,)
+    # permission_classes = (IsAdminUser,)
 
 
 class DeviceLog(viewsets.ReadOnlyModelViewSet):
@@ -24,7 +24,8 @@ class DeviceLog(viewsets.ReadOnlyModelViewSet):
     def list(self, request, pk=None):
         device = get_object_or_404(Device, pk=pk)
         queryset = EntryLog.objects.related_to_device(device)
-        serializer = self.serializer_class(queryset, many=True, context={'request': request})
+        serializer = self.serializer_class(queryset, many=True,
+                                           context={'request': request})
         return Response(serializer.data)
         
 
@@ -33,11 +34,14 @@ class Register(APIView):
     
     def post(self, request, format=None):
         if not request.data:
-            return Response({'invalid_request': 'empty POST request'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'invalid_request': 'empty POST request'},
+                            status=status.HTTP_400_BAD_REQUEST)
         
-        serializer = RegisterSerializer(data=request.data, context={'request': request})
+        serializer = RegisterSerializer(data=request.data,
+                                        context={'request': request})
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
         data = serializer.validated_data
         
         # create devices and logs
@@ -47,8 +51,8 @@ class Register(APIView):
             dev = Device.objects.create(**data['device'])
         agent = request.user.agent
         log = dev.logs.create(event=Device.REGISTER, agent=agent,
-                        event_time=data['event_time'],
-                        by_user=data['by_user'])
+                              event_time=data['event_time'],
+                              by_user=data['by_user'])
         
         for component in data['components']:
             try:
@@ -58,7 +62,8 @@ class Register(APIView):
             else:
                 log.components.add(device)
         
-        headers = {'Location': reverse('device-detail', args=[dev.pk], request=request)}
+        headers = {'Location': reverse('device-detail', args=[dev.pk],
+                                       request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
 
 
@@ -67,19 +72,22 @@ class Recycle(APIView):
     
     def post(self, request, pk, format=None):
         if not request.data:
-            return Response({'invalid_request': 'empty POST request'}, status=status.HTTP_400_BAD_REQUEST)
+            return Response({'invalid_request': 'empty POST request'},
+                            status=status.HTTP_400_BAD_REQUEST)
         
         dev = get_object_or_404(Device, pk=pk)
-        serializer = RecycleSerializer(data=request.data, context={'request': request})
+        serializer = RecycleSerializer(data=request.data,
+                                       context={'request': request})
         if not serializer.is_valid():
-            return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
         data = serializer.validated_data
         
         # create log
         agent = request.user.agent
         log = dev.logs.create(event=Device.RECYCLE, agent=agent,
-                        event_time=data['event_time'],
-                        by_user=data['by_user'])
+                              event_time=data['event_time'],
+                              by_user=data['by_user'])
         
         # Agent should explicity define which components are recycled
         for device in data['components']:
@@ -87,5 +95,6 @@ class Recycle(APIView):
         
         headers = {'Location': 'foo'}
         # TODO(slamora): define log-detail view?
-        # headers = {'Location': reverse('log-detail', args=[log.pk], request=request)}
+        # headers = {'Location': reverse('log-detail', args=[log.pk],
+        #                                 request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
