@@ -146,6 +146,19 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
         self.assertEqual('register', last_log['event'])
         self.assertEqual(self.agent.name, last_log['agent'])
     
+    def test_register_no_data(self):
+        response = self.client.post('/api/register/', data=None)
+        self.assertEqual(400, response.status_code, response.content)
+    
+    def test_register_invalid_data(self):
+        data = {
+            'device': {
+                'type': 'computer',
+            }
+        }
+        response = self.client.post('/api/register/', data=data)
+        self.assertEqual(400, response.status_code, response.content)
+    
     # TODO def test_register_updating_components(self):
         # It checks that device includes updated components
     
@@ -245,6 +258,48 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
             
             last_log = self.get_latest_log(comp_logs)
             self.assertEqual('recycle', last_log['event'])
+    
+    def test_recycle_no_data(self):
+        # [PRE] He registers a new device
+        data = {
+            'device': {
+                'id': '//xsr.cat/device/1234',
+                'hid': 'XPS13-1111-2222',
+                'type': 'computer',
+            },
+            'event_time': '2012-04-10T22:38:20.604391Z',
+            'by_user': 'foo',
+            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
+        }
+        response = self.client.post('/api/register/', data=data)
+        device_url = response['Location']
+        
+        # He recycles the device
+        response = self.client.post(device_url + 'recycle/', data=None)
+        self.assertEqual(400, response.status_code, response.content)
+    
+    def test_recycle_invalid_data(self):
+        # [PRE] He registers a new device
+        data = {
+            'device': {
+                'id': '//xsr.cat/device/1234',
+                'hid': 'XPS13-1111-2222',
+                'type': 'computer',
+            },
+            'event_time': '2012-04-10T22:38:20.604391Z',
+            'by_user': 'foo',
+            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
+        }
+        response = self.client.post('/api/register/', data=data)
+        device_url = response['Location']
+        
+        # He recycles the device
+        recycle_data = {
+            'event_time': '2014-04-10T22:38:20.604391Z',
+            'components': ['DDR3'],
+        }
+        response = self.client.post(device_url + 'recycle/', data=recycle_data)
+        self.assertEqual(400, response.status_code, response.content)
 
 
 class ApiTest(StaticLiveServerTestCase, APILiveServerTestCase):
@@ -256,7 +311,3 @@ class ApiTest(StaticLiveServerTestCase, APILiveServerTestCase):
     def test_retrieve_device_list(self):
         response = self.client.get('/api/devices/')
         self.assertEqual(200, response.status_code)
-
-
-if __name__ == '__main__':
-    unittest.main(warnings='ignore')
