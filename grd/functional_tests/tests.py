@@ -8,8 +8,7 @@ from rest_framework.test import APILiveServerTestCase
 from grd.models import Agent, Device, EntryLog
 
 
-class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
-    """https://www.wrike.com/open.htm?id=50126167"""
+class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
     def setUp(self):
         self.username = 'ereuse@localhost'
         self.password = 'ereuse'
@@ -45,6 +44,10 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
             if log['timestamp'] > last_log['timestamp']:
                 last_log = log
         return last_log
+
+
+class RegisterTest(BaseTestCase):
+    """https://www.wrike.com/open.htm?id=47864362"""
     
     def test_register_device(self):
         # XSR wants to use etraceability functionality of ereuse.
@@ -161,12 +164,15 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
     
     # TODO def test_register_updating_components(self):
         # It checks that device includes updated components
+
+
+class RecycleTest(BaseTestCase):
+    """https://www.wrike.com/open.htm?id=48035113"""
     
-    def test_recycle_device(self):
-        # Bob wants to recycle a device that he has previously
-        # registered.
-        # Perform actions to reach pre-conditions (register device)
-        # [PRE] He registers a new device
+    def setUp(self):
+        super(RecycleTest, self).setUp()
+        
+        # Initialize registered devices before recycle tests
         data = {
             'device': {
                 'id': '//xsr.cat/device/1234',
@@ -178,19 +184,23 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
             'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
         }
         response = self.client.post('/api/register/', data=data)
-        device_url = response['Location']
+        self.device_url = response['Location']
+    
+    def test_recycle_device(self):
+        # Bob wants to recycle a device that he has previously
+        # registered.
         
         # He recycles the device
         recycle_data = {
             'event_time': '2014-04-10T22:38:20.604391Z',
             'by_user': 'some authorized recycler',
         }
-        response = self.client.post(device_url + 'recycle/', data=recycle_data)
+        response = self.client.post(self.device_url + 'recycle/', data=recycle_data)
         self.assertEqual(201, response.status_code, response.content)
         # XXX new_log_url = response['Location']
         
         # He checks that the device log includes recycle event
-        response = self.client.get(device_url + 'log/')
+        response = self.client.get(self.device_url + 'log/')
         self.assertEqual(200, response.status_code, response.content)
         logs = response.data
         self.assertEqual(len(logs), 2)
@@ -201,7 +211,7 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
         self.assertEqual(self.agent.name, last_log['agent'])
         
         # He checks that the device components do NOT have a recycle event
-        dev = self.client.get(device_url).data
+        dev = self.client.get(self.device_url).data
         for component in dev['components']:
             
             comp_logs = self.client.get(component['url'] + 'log/').data
@@ -213,33 +223,19 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
     def test_recycle_device_with_components(self):
         # Bob wants to recycle a device that he has previously
         # registered and its components.
-        # Perform actions to reach pre-conditions (register device)
-        # [PRE] He registers a new device
-        data = {
-            'device': {
-                'id': '//xsr.cat/device/1234',
-                'hid': 'XPS13-1111-2222',
-                'type': 'computer',
-            },
-            'event_time': '2012-04-10T22:38:20.604391Z',
-            'by_user': 'foo',
-            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
-        }
-        response = self.client.post('/api/register/', data=data)
-        device_url = response['Location']
         
-        # He recycles the device
+        # He recycles the device specifying its components
         recycle_data = {
             'event_time': '2014-04-10T22:38:20.604391Z',
             'by_user': 'some authorized recycler',
             'components': ['DDR3'],
         }
-        response = self.client.post(device_url + 'recycle/', data=recycle_data)
+        response = self.client.post(self.device_url + 'recycle/', data=recycle_data)
         self.assertEqual(201, response.status_code, response.content)
         # XXX new_log_url = response['Location']
         
         # He checks that the device log includes recycle event
-        response = self.client.get(device_url + 'log/')
+        response = self.client.get(self.device_url + 'log/')
         self.assertEqual(200, response.status_code, response.content)
         logs = response.data
         self.assertEqual(len(logs), 2)
@@ -250,7 +246,7 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
         self.assertEqual(self.agent.name, last_log['agent'])
         
         # He checks that the device components have too a recycle event
-        dev = self.client.get(device_url).data
+        dev = self.client.get(self.device_url).data
         for component in dev['components']:
             
             comp_logs = self.client.get(component['url'] + 'log/').data
@@ -260,45 +256,17 @@ class Iteration1Test(StaticLiveServerTestCase, APILiveServerTestCase):
             self.assertEqual('recycle', last_log['event'])
     
     def test_recycle_no_data(self):
-        # [PRE] He registers a new device
-        data = {
-            'device': {
-                'id': '//xsr.cat/device/1234',
-                'hid': 'XPS13-1111-2222',
-                'type': 'computer',
-            },
-            'event_time': '2012-04-10T22:38:20.604391Z',
-            'by_user': 'foo',
-            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
-        }
-        response = self.client.post('/api/register/', data=data)
-        device_url = response['Location']
-        
-        # He recycles the device
-        response = self.client.post(device_url + 'recycle/', data=None)
+        # He tries to recycle the device
+        response = self.client.post(self.device_url + 'recycle/', data=None)
         self.assertEqual(400, response.status_code, response.content)
     
     def test_recycle_invalid_data(self):
-        # [PRE] He registers a new device
-        data = {
-            'device': {
-                'id': '//xsr.cat/device/1234',
-                'hid': 'XPS13-1111-2222',
-                'type': 'computer',
-            },
-            'event_time': '2012-04-10T22:38:20.604391Z',
-            'by_user': 'foo',
-            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
-        }
-        response = self.client.post('/api/register/', data=data)
-        device_url = response['Location']
-        
-        # He recycles the device
+        # He tries to recycle the device
         recycle_data = {
             'event_time': '2014-04-10T22:38:20.604391Z',
             'components': ['DDR3'],
         }
-        response = self.client.post(device_url + 'recycle/', data=recycle_data)
+        response = self.client.post(self.device_url + 'recycle/', data=recycle_data)
         self.assertEqual(400, response.status_code, response.content)
 
 
