@@ -196,7 +196,8 @@ class RecycleTest(BaseTestCase):
             'event_time': '2014-04-10T22:38:20.604391Z',
             'by_user': 'some authorized recycler',
         }
-        response = self.client.post(self.device_url + 'recycle/', data=recycle_data)
+        response = self.client.post(self.device_url + 'recycle/',
+                                    data=recycle_data)
         self.assertEqual(201, response.status_code, response.content)
         # XXX new_log_url = response['Location']
         
@@ -231,7 +232,8 @@ class RecycleTest(BaseTestCase):
             'by_user': 'some authorized recycler',
             'components': ['DDR3'],
         }
-        response = self.client.post(self.device_url + 'recycle/', data=recycle_data)
+        response = self.client.post(self.device_url + 'recycle/',
+                                    data=recycle_data)
         self.assertEqual(201, response.status_code, response.content)
         # XXX new_log_url = response['Location']
         
@@ -267,7 +269,8 @@ class RecycleTest(BaseTestCase):
             'event_time': '2014-04-10T22:38:20.604391Z',
             'components': ['DDR3'],
         }
-        response = self.client.post(self.device_url + 'recycle/', data=recycle_data)
+        response = self.client.post(self.device_url + 'recycle/',
+                                    data=recycle_data)
         self.assertEqual(400, response.status_code, response.content)
 
 
