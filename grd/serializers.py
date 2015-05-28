@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Device, EntryLog, Agent
+from .models import Device, Event, Agent
 
 
 class SimpleDeviceSerializer(serializers.HyperlinkedModelSerializer):
@@ -18,12 +18,12 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ('uuid', 'url', 'components')
 
 
-class EntryLogSerializer(serializers.HyperlinkedModelSerializer):
+class EventSerializer(serializers.HyperlinkedModelSerializer):
     # XXX AgentSerializer & View
     agent = serializers.SlugRelatedField(read_only=True, slug_field='name')
     
     class Meta:
-        model = EntryLog
+        model = Event
         fields = ('timestamp', 'event', 'device', 'agent')
 
 
@@ -32,7 +32,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     components = DeviceSerializer(many=True)
     
     class Meta:
-        model = EntryLog
+        model = Event
         fields = ('device', 'event_time', 'by_user', 'components')
     
     # XXX validate data
@@ -47,5 +47,5 @@ class RecycleSerializer(serializers.ModelSerializer):
     )
     
     class Meta:
-        model = EntryLog
+        model = Event
         fields = ('event_time', 'by_user', 'components')

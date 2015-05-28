@@ -5,7 +5,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from rest_framework.test import APILiveServerTestCase
 
-from grd.models import Agent, Device, EntryLog
+from grd.models import Agent, Device, Event
 
 
 class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):

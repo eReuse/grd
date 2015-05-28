@@ -59,12 +59,12 @@ class Device(models.Model):
         return last_log.components.all()
 
 
-class EntryLogManager(models.Manager):
+class EventManager(models.Manager):
     def related_to_device(self, device):
         return self.filter(Q(device=device) | Q(components__in=[device]))
 
 
-class EntryLog(models.Model):
+class Event(models.Model):
     class Meta:
         get_latest_by = 'timestamp'
     
@@ -80,7 +80,7 @@ class EntryLog(models.Model):
     device = models.ForeignKey('Device', related_name='logs')
     components = models.ManyToManyField('Device', related_name='parent_logs')
     
-    objects = EntryLogManager()
+    objects = EventManager()
 
 
 class Agent(models.Model):
@@ -171,8 +171,3 @@ class User(AbstractBaseUser):
         "Does the user have permissions to view the app `app_label`?"
         # Simplest possible answer: Yes, always
         return True
-
-
-# class Event(models.Model):
-    # TODO(v0.2) CRUD events
-    #  https://www.wrike.com/open.htm?id=47864028

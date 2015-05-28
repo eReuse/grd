@@ -5,9 +5,9 @@ from rest_framework.response import Response
 from rest_framework.reverse import reverse
 from rest_framework.views import APIView
 
-from .models import Agent, Device, EntryLog
+from .models import Agent, Device, Event
 from .serializers import (
-    DeviceSerializer, EntryLogSerializer, RecycleSerializer, RegisterSerializer
+    DeviceSerializer, EventSerializer, RecycleSerializer, RegisterSerializer
 )
 
 
@@ -18,12 +18,12 @@ class DeviceView(viewsets.ModelViewSet):
 
 
 class DeviceLog(viewsets.ReadOnlyModelViewSet):
-    queryset = EntryLog.objects.all()
-    serializer_class = EntryLogSerializer
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer
     
     def list(self, request, pk=None):
         device = get_object_or_404(Device, pk=pk)
-        queryset = EntryLog.objects.related_to_device(device)
+        queryset = Event.objects.related_to_device(device)
         serializer = self.serializer_class(queryset, many=True,
                                            context={'request': request})
         return Response(serializer.data)
