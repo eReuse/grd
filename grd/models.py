@@ -1,9 +1,7 @@
 import uuid
 
-from django.contrib.auth.models import AbstractBaseUser, BaseUserManager
 from django.db import models
 from django.db.models import Q
-from django.utils import timezone
 
 
 class Device(models.Model):
@@ -86,88 +84,3 @@ class Event(models.Model):
 class Agent(models.Model):
     name = models.CharField(max_length=128, unique=True)
     description = models.TextField()
-
-
-class UserManager(BaseUserManager):
-    def create_user(self, email, password=None):
-        """
-        Creates and saves a User with the given email, date of
-        birth and password.
-        """
-        if not email:
-            raise ValueError('Users must have an email address')
-
-        user = self.model(email=self.normalize_email(email))
-        user.set_password(password)
-        user.save(using=self._db)
-        return user
-
-    def create_superuser(self, email, password):
-        """
-        Creates and saves a superuser with the given email, date of
-        birth and password.
-        """
-        user = self.create_user(email, password=password)
-        user.is_admin = True
-        user.save(using=self._db)
-        return user
-
-
-class User(AbstractBaseUser):
-    """
-    Describes a user who belongs to an Agent.
-    
-    The implementation is based on auth.models.AbstractBaseUser, more:
-    https://docs.djangoproject.com/en/dev/topics/auth/#customizing-the-user-model
-    """
-    email = models.EmailField(
-        verbose_name='email address',
-        max_length=255,
-        unique=True,
-    )
-    is_active = models.BooleanField(
-        default=True,
-        help_text='Designates whether this user should be treated as '
-                  'active. Unselect this instead of deleting accounts.')
-    is_admin = models.BooleanField(
-        default=False,
-        help_text='Designates that this user has all permissions without '
-                  'explicitly assigning them.')
-    date_joined = models.DateTimeField(default=timezone.now)
-    agent = models.ForeignKey('Agent', null=True, related_name='users')
-    
-    objects = UserManager()
-    
-    USERNAME_FIELD = 'email'
-    
-    def get_full_name(self):
-        # The user is identified by their email address
-        return self.email
-    
-    def get_short_name(self):
-        # The user is identified by their email address
-        return self.email
-    
-    def __str__(self):
-        return self.email
-    
-    def has_perm(self, perm, obj=None):
-        "Does the user have a specific permission?"
-        # Simplest possible answer: Yes, always
-        return True
-    
-    def has_perms(self, perm_list, obj=None):
-        """
-        Returns True if the user has each of the specified permissions. If
-        object is passed, it checks if the user has all required perms for this
-        object.
-        """
-        for perm in perm_list:
-            if not self.has_perm(perm, obj):
-                return False
-        return True
-    
-    def has_module_perms(self, app_label):
-        "Does the user have permissions to view the app `app_label`?"
-        # Simplest possible answer: Yes, always
-        return True

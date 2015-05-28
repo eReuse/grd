@@ -10,14 +10,16 @@ from grd.models import Agent, Device, Event
 
 class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
     def setUp(self):
-        self.username = 'ereuse@localhost'
+        self.username = 'ereuse'
         self.password = 'ereuse'
         
         User = get_user_model()
-        user = User.objects.create_user(self.username, self.password)
+        user = User.objects.create_user(self.username,
+                                        'test@localhost',
+                                        self.password)
         
         self.agent = Agent.objects.create(name='XSR')
-        self.agent.users.add(user)
+#        self.agent.users.add(user)
         
         # authenticate the user
         token = self.get_user_token(self.username, self.password)
