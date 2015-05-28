@@ -1,7 +1,9 @@
 import uuid
 
+from django.conf import settings
 from django.db import models
 from django.db.models import Q
+
 
 
 class Device(models.Model):
@@ -84,3 +86,4 @@ class Event(models.Model):
 class Agent(models.Model):
     name = models.CharField(max_length=128, unique=True)
     description = models.TextField()
+    user = models.OneToOneField(settings.AUTH_USER_MODEL)

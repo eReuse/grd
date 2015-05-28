@@ -18,8 +18,7 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
                                         'test@localhost',
                                         self.password)
         
-        self.agent = Agent.objects.create(name='XSR')
-#        self.agent.users.add(user)
+        self.agent = Agent.objects.create(name='XSR', user=user)
         
         # authenticate the user
         token = self.get_user_token(self.username, self.password)
