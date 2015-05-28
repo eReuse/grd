@@ -50,7 +50,7 @@ class Register(APIView):
         except Device.DoesNotExist:
             dev = Device.objects.create(**data['device'])
         agent = request.user.agent
-        log = dev.logs.create(event=Device.REGISTER, agent=agent,
+        log = dev.logs.create(event=Event.REGISTER, agent=agent,
                               event_time=data['event_time'],
                               by_user=data['by_user'])
         
@@ -85,7 +85,7 @@ class Recycle(APIView):
         
         # create log
         agent = request.user.agent
-        log = dev.logs.create(event=Device.RECYCLE, agent=agent,
+        log = dev.logs.create(event=Event.RECYCLE, agent=agent,
                               event_time=data['event_time'],
                               by_user=data['by_user'])
         

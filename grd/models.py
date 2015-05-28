@@ -7,32 +7,6 @@ from django.utils import timezone
 
 
 class Device(models.Model):
-    # initial events (iteration 1)
-    REGISTER = 'register'
-    RECYCLE = 'recycle'
-    
-    # base events (iteration 2)
-    USE = 'use'
-    TRANSFER = 'transfer'
-    COLLECT = 'collect'
-    
-    # extended events (iteration 3)
-    DEREGISTER = 'deregister'
-    LOCATE = 'locate'
-    ADD = 'add'
-    REMOVE = 'remove'
-    SNAPSHOT = 'snapshot'
-    MIGRATE = 'migrate'
-    INCIDENCE = 'incidence'
-    
-    EVENTS = (
-        (REGISTER, 'REGISTER'),
-        # (USE, 'USE'),
-        # (TRANSFER, 'TRANSFER'),
-        # (COLLECT, 'COLLECT'),
-        (RECYCLE, 'RECYCLE'),
-    )
-    
     # Device types
     COMPUTER = 'computer'
     MOBILE = 'mobile'
@@ -65,11 +39,37 @@ class EventManager(models.Manager):
 
 
 class Event(models.Model):
+    # initial events (iteration 1)
+    REGISTER = 'register'
+    RECYCLE = 'recycle'
+    
+    # base events (iteration 2)
+    USE = 'use'
+    TRANSFER = 'transfer'
+    COLLECT = 'collect'
+    
+    # extended events (iteration 3)
+    DEREGISTER = 'deregister'
+    LOCATE = 'locate'
+    ADD = 'add'
+    REMOVE = 'remove'
+    SNAPSHOT = 'snapshot'
+    MIGRATE = 'migrate'
+    INCIDENCE = 'incidence'
+    
+    TYPES = (
+        (REGISTER, 'REGISTER'),
+        # (USE, 'USE'),
+        # (TRANSFER, 'TRANSFER'),
+        # (COLLECT, 'COLLECT'),
+        (RECYCLE, 'RECYCLE'),
+    )
+    
     class Meta:
         get_latest_by = 'timestamp'
     
     timestamp = models.DateTimeField(auto_now_add=True)
-    event = models.CharField(max_length=16, choices=Device.EVENTS)
+    event = models.CharField(max_length=16, choices=TYPES)
     data = models.TextField()  # Use PostgreSQL HStore field?
     # https://docs.djangoproject.com/en/1.8/ref/contrib/postgres/fields/#hstorefield
     
