@@ -1,5 +1,5 @@
-from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
+from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
@@ -15,24 +15,17 @@ class DeviceView(viewsets.ModelViewSet):
     queryset = Device.objects.all()
     serializer_class = DeviceSerializer
     # permission_classes = (IsAdminUser,)
-
-
-class DeviceLog(viewsets.ReadOnlyModelViewSet):
-    queryset = Event.objects.all()
-    serializer_class = EventSerializer
     
-    def list(self, request, pk=None):
-        device = get_object_or_404(Device, pk=pk)
+    @detail_route(methods=['get'])
+    def log(self, request, pk=None):
+        device = self.get_object()
         queryset = Event.objects.related_to_device(device)
-        serializer = self.serializer_class(queryset, many=True,
-                                           context={'request': request})
+        serializer = EventSerializer(queryset, many=True,
+                                     context={'request': request})
         return Response(serializer.data)
-        
-
-class Register(APIView):
-    permission_classes = (IsAuthenticated,)
     
-    def post(self, request, format=None):
+    @list_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def register(self, request):
         if not request.data:
             return Response({'invalid_request': 'empty POST request'},
                             status=status.HTTP_400_BAD_REQUEST)
@@ -65,17 +58,14 @@ class Register(APIView):
         headers = {'Location': reverse('device-detail', args=[dev.pk],
                                        request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
-
-
-class Recycle(APIView):
-    permission_classes = (IsAuthenticated,)
     
-    def post(self, request, pk, format=None):
+    @detail_route(methods=['post'], permission_classes = [IsAuthenticated])
+    def recycle(self, request, pk=None):
         if not request.data:
             return Response({'invalid_request': 'empty POST request'},
                             status=status.HTTP_400_BAD_REQUEST)
         
-        dev = get_object_or_404(Device, pk=pk)
+        dev = self.get_object()
         serializer = RecycleSerializer(data=request.data,
                                        context={'request': request})
         if not serializer.is_valid():

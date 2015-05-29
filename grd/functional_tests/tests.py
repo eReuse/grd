@@ -54,7 +54,7 @@ class RegisterTest(BaseTestCase):
         # XSR wants to use etraceability functionality of ereuse.
         
         # It access to the API register endpoint
-        response = self.client.get('/api/register/')
+        response = self.client.get('/api/devices/register/')
         self.assertEqual(405, response.status_code, response.content)
         
         # It registers a new device
@@ -68,7 +68,7 @@ class RegisterTest(BaseTestCase):
             'by_user': 'foo',
             'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
         }
-        response = self.client.post('/api/register/', data=data)
+        response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
         new_device_url = response['Location']
         
@@ -119,11 +119,11 @@ class RegisterTest(BaseTestCase):
             'by_user': 'foo',
             'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
         }
-        response = self.client.post('/api/register/', data=data)
+        response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(2, self.count_listed_objects('/api/devices/'))
         
         # It registers a alreday traced device
-        response = self.client.post('/api/register/', data=data)
+        response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
         self.assertEqual(2, self.count_listed_objects('/api/devices/'))
         new_device_url = response['Location']
@@ -151,7 +151,7 @@ class RegisterTest(BaseTestCase):
         self.assertEqual(self.agent.name, last_log['agent'])
     
     def test_register_no_data(self):
-        response = self.client.post('/api/register/', data=None)
+        response = self.client.post('/api/devices/register/', data=None)
         self.assertEqual(400, response.status_code, response.content)
     
     def test_register_invalid_data(self):
@@ -160,7 +160,7 @@ class RegisterTest(BaseTestCase):
                 'type': 'computer',
             }
         }
-        response = self.client.post('/api/register/', data=data)
+        response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(400, response.status_code, response.content)
     
     # TODO def test_register_updating_components(self):
@@ -184,7 +184,8 @@ class RecycleTest(BaseTestCase):
             'by_user': 'foo',
             'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
         }
-        response = self.client.post('/api/register/', data=data)
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
         self.device_url = response['Location']
     
     def test_recycle_device(self):
