@@ -3,9 +3,8 @@ from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework.reverse import reverse
-from rest_framework.views import APIView
 
-from .models import Agent, Device, Event
+from .models import Device, Event
 from .serializers import (
     DeviceSerializer, EventSerializer, RecycleSerializer, RegisterSerializer
 )
@@ -59,7 +58,7 @@ class DeviceView(viewsets.ModelViewSet):
                                        request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
     
-    @detail_route(methods=['post'], permission_classes = [IsAuthenticated])
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def recycle(self, request, pk=None):
         if not request.data:
             return Response({'invalid_request': 'empty POST request'},

@@ -1,6 +1,6 @@
 from rest_framework import serializers
 
-from .models import Device, Event, Agent
+from .models import Device, Event
 
 
 class SimpleDeviceSerializer(serializers.HyperlinkedModelSerializer):
