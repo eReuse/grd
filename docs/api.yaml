@@ -10,6 +10,30 @@ info:
   title: ereuse-grd
 
 paths:
+  /api-auth-token/:
+    post:
+      description: Get authentication token.
+      parameters:
+      - name: username
+        in: formData
+        type: string
+        required: true
+      - name: password
+        in: formData
+        type: string
+        required: true
+      
+      responses:
+        200:
+          description: Successful authentication.
+          schema:
+            title: AuthToken
+            type: string
+        400:
+          description: Invalid credentials
+          schema:
+            $ref: '#/definitions/Error'
+  
   /devices/:
     get:
       # Describe this verb here. Note: you can use markdown
@@ -28,6 +52,28 @@ paths:
               properties:
                 url:
                   type: string
+  
+  /devices/register/:
+    post:
+      description: Register a `Device`.
+      produces:
+        - application/json
+      parameters:
+      - name: registerDevice
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/RegisterDevice'
+      
+      responses:
+        201:
+          description: Device registered
+          schema:
+            $ref: '#/definitions/Device'
+        400:
+          description: Validation error
+          schema:
+            $ref: '#/definitions/Error'
   
   /devices/{id}:
     get:
@@ -57,8 +103,7 @@ paths:
       description: |
         Gets `Device`'s logs.
       parameters:
-      - 
-        name: id
+      - name: id
         in: path
         description: ID of device to use
         required: true
@@ -73,7 +118,27 @@ paths:
               title: Log
               type: object
               additionalProperties:
-                $ref: '#/definitions/Log'
+                $ref: '#/definitions/Event'
+  
+  /devices/{id}/recycle/:
+    post:
+      description: |
+        Recycle a `Device`.
+      parameters:
+      - name: id
+        in: path
+        description: ID of device to use
+        required: true
+        type: string
+      responses:
+        201:
+          description: Device recycled.
+          schema:
+            $ref: '#/definitions/Event'
+        400:
+          description: Validation error
+          schema:
+            $ref: '#/definitions/Error'
 
 definitions:
   Agent:
@@ -82,6 +147,8 @@ definitions:
       name:
         type: string
       description:
+        type: string
+      email:
         type: string
   
   Device:
@@ -99,12 +166,8 @@ definitions:
       hid: # Hardware identifier
         type: string
       type:
-        type: string # ENUMERATION: computer, screen, peripheral
-      sameAs:
-        type: array
-        items:
-          type: string
-          format: url
+        type: string
+        enum: ["computer", "screen", "peripheral"]
       # Xavier proposal:
       # FIXME(slamora:) it's necessary to store this information at GRD?
       model:
@@ -119,7 +182,7 @@ definitions:
         type: string
         format: url
   
-  Log:
+  Event:
     type: object
     properties:
       timestamp:
@@ -129,9 +192,23 @@ definitions:
       by_user:
         type: string
   
-  User:
+  Error:
     type: object
     properties:
-      email:
+      message:
         type: string
-      agent:
+
+  RegisterDevice:
+    type: object
+    properties:
+      device:
+        type: object
+        $ref: '#/definitions/Device'
+      event_time:
+        type: string
+      by_user:
+        type: string
+      components:
+        type: array
+        items:
+          $ref: '#/definitions/Device'
