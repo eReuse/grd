@@ -28,7 +28,7 @@ class Device(models.Model):
     
     @property
     def components(self):
-        last_log = self.logs.filter(event='register').latest()
+        last_log = self.logs.filter(type='register').latest()
         return last_log.components.all()
 
 
@@ -68,7 +68,7 @@ class Event(models.Model):
         get_latest_by = 'timestamp'
     
     timestamp = models.DateTimeField(auto_now_add=True)
-    event = models.CharField(max_length=16, choices=TYPES)
+    type = models.CharField(max_length=16, choices=TYPES)
     data = models.TextField()  # Use PostgreSQL HStore field?
     # https://docs.djangoproject.com/en/1.8/ref/contrib/postgres/fields/#hstorefield
     

@@ -24,7 +24,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Event
-        fields = ('url', 'timestamp', 'event', 'device', 'agent')
+        fields = ('url', 'timestamp', 'type', 'device', 'agent')
 
 
 class RegisterSerializer(serializers.ModelSerializer):

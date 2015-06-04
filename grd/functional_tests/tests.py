@@ -88,7 +88,7 @@ class CollectTest(BaseTestCase):
         # He checks he last log
         # XXX TODO encapsulate check last log (type, agent)
         last_log = self.get_latest_log(logs)
-        self.assertEqual('collect', last_log['event'])
+        self.assertEqual('collect', last_log['type'])
         self.assertEqual(self.agent.name, last_log['agent'])
         
         # He checks that the device components do NOT have a collect event
@@ -98,7 +98,7 @@ class CollectTest(BaseTestCase):
             self.assertEqual(len(comp_logs), 1)
             
             last_log = self.get_latest_log(comp_logs)
-            self.assertNotEqual('collect', last_log['event'])
+            self.assertNotEqual('collect', last_log['type'])
 
 
 class RegisterTest(BaseTestCase):
@@ -149,7 +149,7 @@ class RegisterTest(BaseTestCase):
         
         # It checks that the last log is register
         last_log = self.get_latest_log(logs)
-        self.assertEqual('register', last_log['event'])
+        self.assertEqual('register', last_log['type'])
         self.assertEqual(self.agent.name, last_log['agent'])
         
         # It checks that the component has inherit the log
@@ -201,7 +201,7 @@ class RegisterTest(BaseTestCase):
         
         # It checks that the last log is register
         last_log = self.get_latest_log(logs)
-        self.assertEqual('register', last_log['event'])
+        self.assertEqual('register', last_log['type'])
         self.assertEqual(self.agent.name, last_log['agent'])
     
     def test_register_no_data(self):
@@ -264,7 +264,7 @@ class RecycleTest(BaseTestCase):
         
         # He checks he last log
         last_log = self.get_latest_log(logs)
-        self.assertEqual('recycle', last_log['event'])
+        self.assertEqual('recycle', last_log['type'])
         self.assertEqual(self.agent.name, last_log['agent'])
         
         # He checks that the device components do NOT have a recycle event
@@ -274,7 +274,7 @@ class RecycleTest(BaseTestCase):
             self.assertEqual(len(comp_logs), 1)
             
             last_log = self.get_latest_log(comp_logs)
-            self.assertNotEqual('recycle', last_log['event'])
+            self.assertNotEqual('recycle', last_log['type'])
     
     def test_recycle_device_with_components(self):
         # Bob wants to recycle a device that he has previously
@@ -299,7 +299,7 @@ class RecycleTest(BaseTestCase):
         
         # He checks he last log
         last_log = self.get_latest_log(logs)
-        self.assertEqual('recycle', last_log['event'])
+        self.assertEqual('recycle', last_log['type'])
         self.assertEqual(self.agent.name, last_log['agent'])
         
         # He checks that the device components have too a recycle event
@@ -310,7 +310,7 @@ class RecycleTest(BaseTestCase):
             self.assertEqual(len(comp_logs), 2)
             
             last_log = self.get_latest_log(comp_logs)
-            self.assertEqual('recycle', last_log['event'])
+            self.assertEqual('recycle', last_log['type'])
     
     def test_recycle_no_data(self):
         # He tries to recycle the device

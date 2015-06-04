@@ -42,7 +42,7 @@ class DeviceView(viewsets.ModelViewSet):
         except Device.DoesNotExist:
             dev = Device.objects.create(**data['device'])
         agent = request.user.agent
-        log = dev.logs.create(event=Event.REGISTER, agent=agent,
+        log = dev.logs.create(type=Event.REGISTER, agent=agent,
                               event_time=data['event_time'],
                               by_user=data['by_user'])
         
@@ -74,7 +74,7 @@ class DeviceView(viewsets.ModelViewSet):
         
         # create log
         agent = request.user.agent
-        log = dev.logs.create(event=Event.RECYCLE, agent=agent,
+        log = dev.logs.create(type=Event.RECYCLE, agent=agent,
                               event_time=data['event_time'],
                               by_user=data['by_user'])
         
@@ -105,7 +105,7 @@ class DeviceView(viewsets.ModelViewSet):
         
         # create log
         agent = request.user.agent
-        log = dev.logs.create(event=Event.COLLECT, agent=agent,
+        log = dev.logs.create(type=Event.COLLECT, agent=agent,
                               event_time=data['event_time'],
                               by_user=data['by_user'])
         
