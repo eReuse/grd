@@ -38,13 +38,13 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
         response = self.client.get(url)
         return len(response.data)
     
-    def get_latest_log(self, logs):
-        assert len(logs) > 0
-        last_log = logs[0]
-        for log in logs:
-            if log['timestamp'] > last_log['timestamp']:
-                last_log = log
-        return last_log
+    def get_latest_event(self, events):
+        assert len(events) > 0
+        last_event = events[0]
+        for event in events:
+            if event['timestamp'] > last_event['timestamp']:
+                last_event = event
+        return last_event
 
 
 class CollectTest(BaseTestCase):
@@ -77,28 +77,28 @@ class CollectTest(BaseTestCase):
         response = self.client.post(self.device_url + 'collect/',
                                     data=collect_data)
         self.assertEqual(201, response.status_code, response.content)
-        # XXX new_log_url = response['Location']
+        # XXX new_event_url = response['Location']
         
-        # He checks that the device log includes collect event
+        # He checks that the device event includes collect event
         response = self.client.get(self.device_url + 'events/')
         self.assertEqual(200, response.status_code, response.content)
-        logs = response.data
-        self.assertEqual(len(logs), 2)
+        events = response.data
+        self.assertEqual(len(events), 2)
         
-        # He checks he last log
-        # XXX TODO encapsulate check last log (type, agent)
-        last_log = self.get_latest_log(logs)
-        self.assertEqual('collect', last_log['type'])
-        self.assertEqual(self.agent.name, last_log['agent'])
+        # He checks he last event
+        # XXX TODO encapsulate check last event (type, agent)
+        last_event = self.get_latest_event(events)
+        self.assertEqual('collect', last_event['type'])
+        self.assertEqual(self.agent.name, last_event['agent'])
         
         # He checks that the device components do NOT have a collect event
         dev = self.client.get(self.device_url).data
         for component in dev['components']:
-            comp_logs = self.client.get(component['url'] + 'events/').data
-            self.assertEqual(len(comp_logs), 1)
+            comp_events = self.client.get(component['url'] + 'events/').data
+            self.assertEqual(len(comp_events), 1)
             
-            last_log = self.get_latest_log(comp_logs)
-            self.assertNotEqual('collect', last_log['type'])
+            last_event = self.get_latest_event(comp_events)
+            self.assertNotEqual('collect', last_event['type'])
 
 
 class RegisterTest(BaseTestCase):
@@ -141,21 +141,21 @@ class RegisterTest(BaseTestCase):
         # TODO make a more detailed validation.
         self.assertEqual(len(dev['components']), len(data['components']))
         
-        # It checks that the device log includes register event
+        # It checks that the device event includes register event
         response = self.client.get(dev['url'] + 'events/')
         self.assertEqual(200, response.status_code, response.content)
-        logs = response.data
-        self.assertGreater(len(logs), 0)
+        events = response.data
+        self.assertGreater(len(events), 0)
         
-        # It checks that the last log is register
-        last_log = self.get_latest_log(logs)
-        self.assertEqual('register', last_log['type'])
-        self.assertEqual(self.agent.name, last_log['agent'])
+        # It checks that the last event is register
+        last_event = self.get_latest_event(events)
+        self.assertEqual('register', last_event['type'])
+        self.assertEqual(self.agent.name, last_event['agent'])
         
-        # It checks that the component has inherit the log
+        # It checks that the component has inherit the event
         for component in dev['components']:
-            comp_logs = self.client.get(component['url'] + 'events/').data
-            self.assertGreater(len(comp_logs), 0)
+            comp_events = self.client.get(component['url'] + 'events/').data
+            self.assertGreater(len(comp_events), 0)
     
     def test_register_already_traced_device(self):
         # XSR wants to take a snapshot of the current status of a device
@@ -193,16 +193,16 @@ class RegisterTest(BaseTestCase):
         # TODO retrieve device URL and compare id, hid, type
         self.assertEqual(len(dev['components']), len(data['components']))
          
-        # It checks that device log includes register event
+        # It checks that device event includes register event
         response = self.client.get(new_device_url + 'events/')
         self.assertEqual(200, response.status_code, response.content)
-        logs = response.data
-        self.assertEqual(len(logs), 2)
+        events = response.data
+        self.assertEqual(len(events), 2)
         
-        # It checks that the last log is register
-        last_log = self.get_latest_log(logs)
-        self.assertEqual('register', last_log['type'])
-        self.assertEqual(self.agent.name, last_log['agent'])
+        # It checks that the last event is register
+        last_event = self.get_latest_event(events)
+        self.assertEqual('register', last_event['type'])
+        self.assertEqual(self.agent.name, last_event['agent'])
     
     def test_register_no_data(self):
         response = self.client.post('/api/devices/register/', data=None)
@@ -254,27 +254,27 @@ class RecycleTest(BaseTestCase):
         response = self.client.post(self.device_url + 'recycle/',
                                     data=recycle_data)
         self.assertEqual(201, response.status_code, response.content)
-        # XXX new_log_url = response['Location']
+        # XXX new_event_url = response['Location']
         
-        # He checks that the device log includes recycle event
+        # He checks that the device event includes recycle event
         response = self.client.get(self.device_url + 'events/')
         self.assertEqual(200, response.status_code, response.content)
-        logs = response.data
-        self.assertEqual(len(logs), 2)
+        events = response.data
+        self.assertEqual(len(events), 2)
         
-        # He checks he last log
-        last_log = self.get_latest_log(logs)
-        self.assertEqual('recycle', last_log['type'])
-        self.assertEqual(self.agent.name, last_log['agent'])
+        # He checks he last event
+        last_event = self.get_latest_event(events)
+        self.assertEqual('recycle', last_event['type'])
+        self.assertEqual(self.agent.name, last_event['agent'])
         
         # He checks that the device components do NOT have a recycle event
         dev = self.client.get(self.device_url).data
         for component in dev['components']:
-            comp_logs = self.client.get(component['url'] + 'events/').data
-            self.assertEqual(len(comp_logs), 1)
+            comp_events = self.client.get(component['url'] + 'events/').data
+            self.assertEqual(len(comp_events), 1)
             
-            last_log = self.get_latest_log(comp_logs)
-            self.assertNotEqual('recycle', last_log['type'])
+            last_event = self.get_latest_event(comp_events)
+            self.assertNotEqual('recycle', last_event['type'])
     
     def test_recycle_device_with_components(self):
         # Bob wants to recycle a device that he has previously
@@ -289,28 +289,28 @@ class RecycleTest(BaseTestCase):
         response = self.client.post(self.device_url + 'recycle/',
                                     data=recycle_data)
         self.assertEqual(201, response.status_code, response.content)
-        # XXX new_log_url = response['Location']
+        # XXX new_event_url = response['Location']
         
-        # He checks that the device log includes recycle event
+        # He checks that the device event includes recycle event
         response = self.client.get(self.device_url + 'events/')
         self.assertEqual(200, response.status_code, response.content)
-        logs = response.data
-        self.assertEqual(len(logs), 2)
+        events = response.data
+        self.assertEqual(len(events), 2)
         
-        # He checks he last log
-        last_log = self.get_latest_log(logs)
-        self.assertEqual('recycle', last_log['type'])
-        self.assertEqual(self.agent.name, last_log['agent'])
+        # He checks he last event
+        last_event = self.get_latest_event(events)
+        self.assertEqual('recycle', last_event['type'])
+        self.assertEqual(self.agent.name, last_event['agent'])
         
         # He checks that the device components have too a recycle event
         dev = self.client.get(self.device_url).data
         for component in dev['components']:
             
-            comp_logs = self.client.get(component['url'] + 'events/').data
-            self.assertEqual(len(comp_logs), 2)
+            comp_events = self.client.get(component['url'] + 'events/').data
+            self.assertEqual(len(comp_events), 2)
             
-            last_log = self.get_latest_log(comp_logs)
-            self.assertEqual('recycle', last_log['type'])
+            last_event = self.get_latest_event(comp_events)
+            self.assertEqual('recycle', last_event['type'])
     
     def test_recycle_no_data(self):
         # He tries to recycle the device

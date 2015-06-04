@@ -36,13 +36,13 @@ class DeviceView(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
         data = serializer.validated_data
         
-        # create devices and logs
+        # create devices and events
         try:
             dev = Device.objects.get(id=data['device']['id'])
         except Device.DoesNotExist:
             dev = Device.objects.create(**data['device'])
         agent = request.user.agent
-        log = dev.logs.create(type=Event.REGISTER, agent=agent,
+        event = dev.events.create(type=Event.REGISTER, agent=agent,
                               event_time=data['event_time'],
                               by_user=data['by_user'])
         
@@ -50,9 +50,9 @@ class DeviceView(viewsets.ModelViewSet):
             try:
                 device = Device.objects.get(id=component['id'])
             except Device.DoesNotExist:
-                log.components.create(**component)
+                event.components.create(**component)
             else:
-                log.components.add(device)
+                event.components.add(device)
         
         headers = {'Location': reverse('device-detail', args=[dev.pk],
                                        request=request)}
@@ -72,19 +72,19 @@ class DeviceView(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
         data = serializer.validated_data
         
-        # create log
+        # create event
         agent = request.user.agent
-        log = dev.logs.create(type=Event.RECYCLE, agent=agent,
+        event = dev.events.create(type=Event.RECYCLE, agent=agent,
                               event_time=data['event_time'],
                               by_user=data['by_user'])
         
         # Agent should explicity define which components are recycled
         for device in data['components']:
-            log.components.add(device)
+            event.components.add(device)
         
         headers = {'Location': 'foo'}
-        # TODO(slamora): define log-detail view?
-        # headers = {'Location': reverse('log-detail', args=[log.pk],
+        # TODO(slamora): define event-detail view?
+        # headers = {'Location': reverse('event-detail', args=[event.pk],
         #                                 request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
     
@@ -103,19 +103,19 @@ class DeviceView(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
         data = serializer.validated_data
         
-        # create log
+        # create event
         agent = request.user.agent
-        log = dev.logs.create(type=Event.COLLECT, agent=agent,
+        event = dev.events.create(type=Event.COLLECT, agent=agent,
                               event_time=data['event_time'],
                               by_user=data['by_user'])
         
         # Agent should explicity define which components are recycled
         for device in data['components']:
-            log.components.add(device)
+            event.components.add(device)
         
         headers = {'Location': 'foo'}
-        # TODO(slamora): define log-detail view?
-        # headers = {'Location': reverse('log-detail', args=[log.pk],
+        # TODO(slamora): define event-detail view?
+        # headers = {'Location': reverse('event-detail', args=[event.pk],
         #                                 request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
 

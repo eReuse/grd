@@ -28,8 +28,8 @@ class Device(models.Model):
     
     @property
     def components(self):
-        last_log = self.logs.filter(type='register').latest()
-        return last_log.components.all()
+        last_event = self.events.filter(type='register').latest()
+        return last_event.components.all()
 
 
 class EventManager(models.Manager):
@@ -76,8 +76,8 @@ class Event(models.Model):
     by_user = models.CharField('User who performs the event.', max_length=32)
     
     agent = models.ForeignKey('Agent', related_name='+')
-    device = models.ForeignKey('Device', related_name='logs')
-    components = models.ManyToManyField('Device', related_name='parent_logs')
+    device = models.ForeignKey('Device', related_name='events')
+    components = models.ManyToManyField('Device', related_name='parent_events')
     
     objects = EventManager()
 
