@@ -77,7 +77,7 @@ class CollectTest(BaseTestCase):
         response = self.client.post(self.device_url + 'collect/',
                                     data=collect_data)
         self.assertEqual(201, response.status_code, response.content)
-        # XXX new_event_url = response['Location']
+        new_event_url = response['Location']
         
         # He checks that the device event includes collect event
         response = self.client.get(self.device_url + 'events/')
@@ -87,7 +87,7 @@ class CollectTest(BaseTestCase):
         
         # He checks he last event
         # XXX TODO encapsulate check last event (type, agent)
-        last_event = self.get_latest_event(events)
+        last_event = self.client.get(new_event_url).data
         self.assertEqual('collect', last_event['type'])
         self.assertEqual(self.agent.name, last_event['agent'])
         
@@ -254,7 +254,7 @@ class RecycleTest(BaseTestCase):
         response = self.client.post(self.device_url + 'recycle/',
                                     data=recycle_data)
         self.assertEqual(201, response.status_code, response.content)
-        # XXX new_event_url = response['Location']
+        new_event_url = response['Location']
         
         # He checks that the device event includes recycle event
         response = self.client.get(self.device_url + 'events/')
@@ -263,7 +263,7 @@ class RecycleTest(BaseTestCase):
         self.assertEqual(len(events), 2)
         
         # He checks he last event
-        last_event = self.get_latest_event(events)
+        last_event = self.client.get(new_event_url).data
         self.assertEqual('recycle', last_event['type'])
         self.assertEqual(self.agent.name, last_event['agent'])
         

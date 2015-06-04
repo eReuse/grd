@@ -82,10 +82,8 @@ class DeviceView(viewsets.ModelViewSet):
         for device in data['components']:
             event.components.add(device)
         
-        headers = {'Location': 'foo'}
-        # TODO(slamora): define event-detail view?
-        # headers = {'Location': reverse('event-detail', args=[event.pk],
-        #                                 request=request)}
+        headers = {'Location': reverse('event-detail', args=[event.pk],
+                                       request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
@@ -113,10 +111,8 @@ class DeviceView(viewsets.ModelViewSet):
         for device in data['components']:
             event.components.add(device)
         
-        headers = {'Location': 'foo'}
-        # TODO(slamora): define event-detail view?
-        # headers = {'Location': reverse('event-detail', args=[event.pk],
-        #                                 request=request)}
+        headers = {'Location': reverse('event-detail', args=[event.pk],
+                                       request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
 
 
