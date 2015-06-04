@@ -80,7 +80,7 @@ class CollectTest(BaseTestCase):
         # XXX new_log_url = response['Location']
         
         # He checks that the device log includes collect event
-        response = self.client.get(self.device_url + 'log/')
+        response = self.client.get(self.device_url + 'events/')
         self.assertEqual(200, response.status_code, response.content)
         logs = response.data
         self.assertEqual(len(logs), 2)
@@ -94,7 +94,7 @@ class CollectTest(BaseTestCase):
         # He checks that the device components do NOT have a collect event
         dev = self.client.get(self.device_url).data
         for component in dev['components']:
-            comp_logs = self.client.get(component['url'] + 'log/').data
+            comp_logs = self.client.get(component['url'] + 'events/').data
             self.assertEqual(len(comp_logs), 1)
             
             last_log = self.get_latest_log(comp_logs)
@@ -142,7 +142,7 @@ class RegisterTest(BaseTestCase):
         self.assertEqual(len(dev['components']), len(data['components']))
         
         # It checks that the device log includes register event
-        response = self.client.get(dev['url'] + 'log/')
+        response = self.client.get(dev['url'] + 'events/')
         self.assertEqual(200, response.status_code, response.content)
         logs = response.data
         self.assertGreater(len(logs), 0)
@@ -154,7 +154,7 @@ class RegisterTest(BaseTestCase):
         
         # It checks that the component has inherit the log
         for component in dev['components']:
-            comp_logs = self.client.get(component['url'] + 'log/').data
+            comp_logs = self.client.get(component['url'] + 'events/').data
             self.assertGreater(len(comp_logs), 0)
     
     def test_register_already_traced_device(self):
@@ -194,7 +194,7 @@ class RegisterTest(BaseTestCase):
         self.assertEqual(len(dev['components']), len(data['components']))
          
         # It checks that device log includes register event
-        response = self.client.get(new_device_url + 'log/')
+        response = self.client.get(new_device_url + 'events/')
         self.assertEqual(200, response.status_code, response.content)
         logs = response.data
         self.assertEqual(len(logs), 2)
@@ -257,7 +257,7 @@ class RecycleTest(BaseTestCase):
         # XXX new_log_url = response['Location']
         
         # He checks that the device log includes recycle event
-        response = self.client.get(self.device_url + 'log/')
+        response = self.client.get(self.device_url + 'events/')
         self.assertEqual(200, response.status_code, response.content)
         logs = response.data
         self.assertEqual(len(logs), 2)
@@ -270,7 +270,7 @@ class RecycleTest(BaseTestCase):
         # He checks that the device components do NOT have a recycle event
         dev = self.client.get(self.device_url).data
         for component in dev['components']:
-            comp_logs = self.client.get(component['url'] + 'log/').data
+            comp_logs = self.client.get(component['url'] + 'events/').data
             self.assertEqual(len(comp_logs), 1)
             
             last_log = self.get_latest_log(comp_logs)
@@ -292,7 +292,7 @@ class RecycleTest(BaseTestCase):
         # XXX new_log_url = response['Location']
         
         # He checks that the device log includes recycle event
-        response = self.client.get(self.device_url + 'log/')
+        response = self.client.get(self.device_url + 'events/')
         self.assertEqual(200, response.status_code, response.content)
         logs = response.data
         self.assertEqual(len(logs), 2)
@@ -306,7 +306,7 @@ class RecycleTest(BaseTestCase):
         dev = self.client.get(self.device_url).data
         for component in dev['components']:
             
-            comp_logs = self.client.get(component['url'] + 'log/').data
+            comp_logs = self.client.get(component['url'] + 'events/').data
             self.assertEqual(len(comp_logs), 2)
             
             last_log = self.get_latest_log(comp_logs)

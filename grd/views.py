@@ -16,7 +16,7 @@ class DeviceView(viewsets.ModelViewSet):
     # permission_classes = (IsAdminUser,)
     
     @detail_route(methods=['get'])
-    def log(self, request, pk=None):
+    def events(self, request, pk=None):
         device = self.get_object()
         queryset = Event.objects.related_to_device(device)
         serializer = EventSerializer(queryset, many=True,
