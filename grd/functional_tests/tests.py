@@ -47,6 +47,60 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
         return last_log
 
 
+class CollectTest(BaseTestCase):
+    """https://www.wrike.com/open.htm?id=47865028"""
+    #TODO fixture with a registered device
+    def setUp(self):
+        super(CollectTest, self).setUp()
+        
+        # Initialize registered devices before collect tests
+        data = {
+            'device': {
+                'id': '//xsr.cat/device/1234',
+                'hid': 'XPS13-1111-2222',
+                'type': 'computer',
+            },
+            'event_time': '2012-04-10T22:38:20.604391Z',
+            'by_user': 'foo',
+            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
+        }
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        self.device_url = response['Location']
+    
+    def test_collect_device(self):
+        collect_data = {
+            'event_time': '2014-04-10T22:38:20.604391Z',
+            'by_user': 'some authorized center',
+        }
+        
+        response = self.client.post(self.device_url + 'collect/',
+                                    data=collect_data)
+        self.assertEqual(201, response.status_code, response.content)
+        # XXX new_log_url = response['Location']
+        
+        # He checks that the device log includes collect event
+        response = self.client.get(self.device_url + 'log/')
+        self.assertEqual(200, response.status_code, response.content)
+        logs = response.data
+        self.assertEqual(len(logs), 2)
+        
+        # He checks he last log
+        # XXX TODO encapsulate check last log (type, agent)
+        last_log = self.get_latest_log(logs)
+        self.assertEqual('collect', last_log['event'])
+        self.assertEqual(self.agent.name, last_log['agent'])
+        
+        # He checks that the device components do NOT have a collect event
+        dev = self.client.get(self.device_url).data
+        for component in dev['components']:
+            comp_logs = self.client.get(component['url'] + 'log/').data
+            self.assertEqual(len(comp_logs), 1)
+            
+            last_log = self.get_latest_log(comp_logs)
+            self.assertNotEqual('collect', last_log['event'])
+
+
 class RegisterTest(BaseTestCase):
     """https://www.wrike.com/open.htm?id=47864362"""
     
@@ -216,7 +270,6 @@ class RecycleTest(BaseTestCase):
         # He checks that the device components do NOT have a recycle event
         dev = self.client.get(self.device_url).data
         for component in dev['components']:
-            
             comp_logs = self.client.get(component['url'] + 'log/').data
             self.assertEqual(len(comp_logs), 1)
             

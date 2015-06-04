@@ -60,7 +60,7 @@ class Event(models.Model):
         (REGISTER, 'REGISTER'),
         # (USE, 'USE'),
         # (TRANSFER, 'TRANSFER'),
-        # (COLLECT, 'COLLECT'),
+        (COLLECT, 'COLLECT'),
         (RECYCLE, 'RECYCLE'),
     )
     

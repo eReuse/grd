@@ -87,3 +87,34 @@ class DeviceView(viewsets.ModelViewSet):
         # headers = {'Location': reverse('log-detail', args=[log.pk],
         #                                 request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
+    
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def collect(self, request, pk=None):
+        if not request.data:
+            return Response({'invalid_request': 'empty POST request'},
+                            status=status.HTTP_400_BAD_REQUEST)
+        
+        dev = self.get_object()
+        # XXX CollectSerializer??: base EventSerializer + extra fields on subclasses
+        serializer = RecycleSerializer(data=request.data,
+                                       context={'request': request})
+        if not serializer.is_valid():
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
+        data = serializer.validated_data
+        
+        # create log
+        agent = request.user.agent
+        log = dev.logs.create(event=Event.COLLECT, agent=agent,
+                              event_time=data['event_time'],
+                              by_user=data['by_user'])
+        
+        # Agent should explicity define which components are recycled
+        for device in data['components']:
+            log.components.add(device)
+        
+        headers = {'Location': 'foo'}
+        # TODO(slamora): define log-detail view?
+        # headers = {'Location': reverse('log-detail', args=[log.pk],
+        #                                 request=request)}
+        return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
