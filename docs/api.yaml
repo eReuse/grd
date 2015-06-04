@@ -10,7 +10,7 @@ info:
   title: ereuse-grd
 
 paths:
-  /api-auth-token/:
+  /api-token-auth/:
     post:
       description: Get authentication token.
       parameters:
