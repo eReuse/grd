@@ -118,3 +118,8 @@ class DeviceView(viewsets.ModelViewSet):
         # headers = {'Location': reverse('log-detail', args=[log.pk],
         #                                 request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
+
+
+class EventView(viewsets.ReadOnlyModelViewSet):
+    queryset = Event.objects.all()
+    serializer_class = EventSerializer

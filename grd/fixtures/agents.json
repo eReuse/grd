@@ -1,0 +1,11 @@
+[
+{
+    "fields": {
+        "user": 1,
+        "description": "",
+        "name": "XSR"
+    },
+    "model": "grd.agent",
+    "pk": 1
+}
+]

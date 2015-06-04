@@ -1,0 +1,20 @@
+[
+{
+    "pk": "8514b4b1-1107-46cc-b0a9-bd97b82510c4",
+    "fields": {
+        "hid": "XPS13-1111-2222",
+        "id": "//xsr.cat/device/1234",
+        "type": "computer"
+    },
+    "model": "grd.device"
+},
+{
+    "pk": "bd381ed1-5ee7-440b-96bb-29e30f89a286",
+    "fields": {
+        "hid": "DDR3",
+        "id": "1",
+        "type": "monitor"
+    },
+    "model": "grd.device"
+}
+]

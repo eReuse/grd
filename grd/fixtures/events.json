@@ -1,0 +1,32 @@
+[
+{
+    "pk": 1,
+    "fields": {
+        "by_user": "foo",
+        "device": "8514b4b1-1107-46cc-b0a9-bd97b82510c4",
+        "data": "",
+        "components": [
+            "bd381ed1-5ee7-440b-96bb-29e30f89a286"
+        ],
+        "timestamp": "2015-05-29T12:11:53.127Z",
+        "agent": 1,
+        "event_time": "2012-04-10T22:38:20.604Z",
+        "event": "register"
+    },
+    "model": "grd.event"
+},
+{
+    "pk": 2,
+    "fields": {
+        "by_user": "some authorized recycler",
+        "device": "8514b4b1-1107-46cc-b0a9-bd97b82510c4",
+        "data": "",
+        "components": [],
+        "timestamp": "2015-05-29T12:11:53.152Z",
+        "agent": 1,
+        "event_time": "2014-04-10T22:38:20.604Z",
+        "event": "recycle"
+    },
+    "model": "grd.event"
+}
+]

@@ -1,0 +1,20 @@
+[
+{
+    "model": "auth.user",
+    "pk": 1,
+    "fields": {
+        "groups": [],
+        "password": "pbkdf2_sha256$20000$RuAK89tcRSJ1$4+6HIMyFmmD0/qTmphIiIaFowHtPyL4ReDziaXHS5jM=",
+        "first_name": "",
+        "user_permissions": [],
+        "email": "ereuse@ereuse.org",
+        "is_active": true,
+        "date_joined": "2015-05-04T10:51:39.232Z",
+        "last_login": "2015-05-12T12:00:10.130Z",
+        "is_superuser": true,
+        "last_name": "",
+        "username": "ereuse",
+        "is_staff": true
+    }
+}
+]
