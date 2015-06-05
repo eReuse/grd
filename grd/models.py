@@ -32,12 +32,22 @@ class Device(models.Model):
     @property
     def components(self):
         try:
+            # XXX can exists more than one register event??
             last_event = self.events.filter(type=Event.REGISTER).latest()
         except Event.DoesNotExist:
             # Device has been registered as component of another Device
             # so it doesn't have a registered event.
-            return []
-        return last_event.components.all()
+            components = []
+        else:
+            components = list(last_event.components.all())
+        
+        # compute add events!!
+        for add in self.events.filter(type=Event.ADD):
+            components += add.components.all()
+        
+        # XXX compute remove events
+        
+        return components
 
 
 class EventManager(models.Manager):

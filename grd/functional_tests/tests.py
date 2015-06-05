@@ -47,6 +47,35 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
         return last_event
 
 
+class AddTest(BaseTestCase):
+    """https://www.wrike.com/open.htm?id=47865363"""
+    
+    fixtures = ['devices.json']
+    
+    def test_add_component(self):
+        # PRE: 2 devices registered without relationship
+        device_one_url = '/api/devices/%s/' % Device.objects.get(hid="XPS13-1111-2222").pk
+        device_two_url = '/api/devices/%s/' % Device.objects.get(hid="DDR3").pk
+        
+        # Check that device 1 doesn't have device 2 as component
+        device_one = self.client.get(device_one_url).data
+        device_two = self.client.get(device_two_url).data
+        self.assertNotIn(device_two['url'], [comp['url'] for comp in device_one['components']])
+        
+        # Add device 2 to device 1
+        add_data = {
+            'event_time': '2014-05-10T22:38:20.604391Z',
+            'by_user': 'XSR',
+            'components': [device_two['hid']],
+        }
+        response = self.client.post(device_one_url + 'add/', data=add_data)
+        self.assertEqual(201, response.status_code, response.content)
+        
+        # Check that device 1 has device 2 as component
+        device_one = self.client.get(device_one_url).data
+        self.assertIn(device_two['url'], [comp['url'] for comp in device_one['components']])
+
+
 class CollectTest(BaseTestCase):
     """https://www.wrike.com/open.htm?id=47865028"""
     #TODO fixture with a registered device

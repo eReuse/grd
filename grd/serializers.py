@@ -49,3 +49,15 @@ class RecycleSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ('event_time', 'by_user', 'components')
+
+
+class AddSerializer(serializers.ModelSerializer):
+    components = serializers.SlugRelatedField(
+        many=True,
+        queryset=Device.objects.all(),
+        slug_field='hid',
+    )
+    
+    class Meta:
+        model = Event
+        fields = ('event_time', 'by_user', 'components')
