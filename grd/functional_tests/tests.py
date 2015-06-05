@@ -45,6 +45,17 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
             if event['timestamp'] > last_event['timestamp']:
                 last_event = event
         return last_event
+    
+    def assertEventType(self, event_url, type, agent_name=None):
+        if agent_name is None:
+            agent_name = self.agent.name
+        
+        response = self.client.get(event_url)
+        self.assertEqual(200, response.status_code, response.content)
+        
+        event = response.data
+        self.assertEqual(type, event['type'])
+        self.assertEqual(agent_name, event['agent'])
 
 
 class AddTest(BaseTestCase):
@@ -70,6 +81,10 @@ class AddTest(BaseTestCase):
         }
         response = self.client.post(device_one_url + 'add/', data=add_data)
         self.assertEqual(201, response.status_code, response.content)
+        new_event_url = response['Location']
+        
+        # Check that device's last event is an addition
+        self.assertEventType(new_event_url, 'add')
         
         # Check that device 1 has device 2 as component
         device_one = self.client.get(device_one_url).data

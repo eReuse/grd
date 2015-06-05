@@ -27,7 +27,6 @@ class DeviceView(viewsets.ModelViewSet):
                             status=status.HTTP_400_BAD_REQUEST)
         data = serializer.validated_data
         
-        print(data)
         agent = request.user.agent
         
         # create event
@@ -38,9 +37,8 @@ class DeviceView(viewsets.ModelViewSet):
         for device in data['components']:
             event.components.add(device)
         
-        headers = {}
-        #headers = {'Location': reverse('event-detail', args=[event.pk],
-        #                               request=request)}
+        headers = {'Location': reverse('event-detail', args=[event.pk],
+                                       request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
     
     @detail_route(methods=['get'])
