@@ -80,6 +80,7 @@ class Event(models.Model):
         # (TRANSFER, 'TRANSFER'),
         (COLLECT, 'COLLECT'),
         (RECYCLE, 'RECYCLE'),
+        (ADD, 'ADD'),
     )
     
     timestamp = models.DateTimeField(auto_now_add=True)
