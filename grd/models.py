@@ -28,7 +28,12 @@ class Device(models.Model):
     
     @property
     def components(self):
-        last_event = self.events.filter(type='register').latest()
+        try:
+            last_event = self.events.filter(type=Event.REGISTER).latest()
+        except Event.DoesNotExist:
+            # Device has been registered as component of another Device
+            # so it doesn't have a registered event.
+            return []
         return last_event.components.all()
 
 
