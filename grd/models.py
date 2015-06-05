@@ -48,7 +48,14 @@ class Device(models.Model):
         # XXX compute remove events
         
         return components
-
+    
+    @property
+    def parent(self):
+        try:
+            last_event = self.parent_events.filter(type=Event.REGISTER).latest()
+        except Event.DoesNotExist:
+            return None
+        return last_event.device
 
 class EventManager(models.Manager):
     def related_to_device(self, device):
