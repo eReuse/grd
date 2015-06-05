@@ -63,10 +63,15 @@ class AddTest(BaseTestCase):
     
     fixtures = ['devices.json']
     
+    def setUp(self):
+        super(AddTest, self).setUp()
+        self.device_one = Device.objects.get(hid="XPS13-1111-2222")
+        self.device_two = Device.objects.get(hid="DDR3")
+    
     def test_add_component(self):
         # PRE: 2 devices registered without relationship
-        device_one_url = '/api/devices/%s/' % Device.objects.get(hid="XPS13-1111-2222").pk
-        device_two_url = '/api/devices/%s/' % Device.objects.get(hid="DDR3").pk
+        device_one_url = '/api/devices/%s/' % self.device_one.pk
+        device_two_url = '/api/devices/%s/' % self.device_two.pk
         
         # Check that device 1 doesn't have device 2 as component
         device_one = self.client.get(device_one_url).data
@@ -89,6 +94,26 @@ class AddTest(BaseTestCase):
         # Check that device 1 has device 2 as component
         device_one = self.client.get(device_one_url).data
         self.assertIn(device_two['url'], [comp['url'] for comp in device_one['components']])
+    
+    def test_add_component_device_already_attached(self):
+        # PRE: - 2 devices registered.
+        #      - One of them is a component of the other
+        event = self.device_one.events.create(
+            type=Event.REGISTER, agent=self.agent, by_user='XSR',
+            event_time='2014-03-10T22:38:20.604391Z'
+        )
+        event.components.add(self.device_two)
+        
+        device_one_url = '/api/devices/%s/' % self.device_one.pk
+        
+        # Add device 2 to device 1
+        add_data = {
+            'event_time': '2014-05-10T22:38:20.604391Z',
+            'by_user': 'XSR',
+            'components': [self.device_two.hid],
+        }
+        response = self.client.post(device_one_url + 'add/', data=add_data)
+        self.assertEqual(400, response.status_code, response.content)
 
 
 class CollectTest(BaseTestCase):

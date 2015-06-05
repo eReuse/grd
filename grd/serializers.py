@@ -61,3 +61,9 @@ class AddSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ('event_time', 'by_user', 'components')
+    
+    def validate_components(self, value):
+        for device in value:
+            if device.parent is not None:
+                raise serializers.ValidationError('Device already has a parent')
+        return value
