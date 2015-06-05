@@ -27,9 +27,5 @@ class ComponentsTest(TestCase):
         self.assertEqual([], list(device.components))
     
     def test_get_parent(self):
-        print(self.device_two.parent_events.all())
-        from grd.models import Event
-        for e in Event.objects.all():
-            print(e, e.device.pk)
         self.assertEqual(self.device_one, self.device_two.parent)
         self.assertIsNone(self.device_one.parent)
