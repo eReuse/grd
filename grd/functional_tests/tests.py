@@ -129,11 +129,8 @@ class CollectTest(BaseTestCase):
         events = response.data
         self.assertEqual(len(events), 2)
         
-        # He checks he last event
-        # XXX TODO encapsulate check last event (type, agent)
-        last_event = self.client.get(new_event_url).data
-        self.assertEqual('collect', last_event['type'])
-        self.assertEqual(self.agent.name, last_event['agent'])
+        # He checks the last event
+        self.assertEventType(new_event_url, 'collect')
         
         # He checks that the device components do NOT have a collect event
         dev = self.client.get(self.device_url).data
@@ -192,9 +189,7 @@ class RegisterTest(BaseTestCase):
         self.assertGreater(len(events), 0)
         
         # It checks that the last event is register
-        last_event = self.get_latest_event(events)
-        self.assertEqual('register', last_event['type'])
-        self.assertEqual(self.agent.name, last_event['agent'])
+        self.assertEventType(new_event_url, 'register')
         
         # It checks that the component has inherit the event
         for component in dev['components']:
@@ -244,9 +239,7 @@ class RegisterTest(BaseTestCase):
         self.assertEqual(len(events), 2)
         
         # It checks that the last event is register
-        last_event = self.get_latest_event(events)
-        self.assertEqual('register', last_event['type'])
-        self.assertEqual(self.agent.name, last_event['agent'])
+        self.assertEventType(new_event_url, 'register')
     
     def test_register_no_data(self):
         response = self.client.post('/api/devices/register/', data=None)
@@ -306,10 +299,8 @@ class RecycleTest(BaseTestCase):
         events = response.data
         self.assertEqual(len(events), 2)
         
-        # He checks he last event
-        last_event = self.client.get(new_event_url).data
-        self.assertEqual('recycle', last_event['type'])
-        self.assertEqual(self.agent.name, last_event['agent'])
+        # He checks the last event
+        self.assertEventType(new_event_url, 'recycle')
         
         # He checks that the device components do NOT have a recycle event
         dev = self.client.get(self.device_url).data
@@ -341,10 +332,8 @@ class RecycleTest(BaseTestCase):
         events = response.data
         self.assertEqual(len(events), 2)
         
-        # He checks he last event
-        last_event = self.get_latest_event(events)
-        self.assertEqual('recycle', last_event['type'])
-        self.assertEqual(self.agent.name, last_event['agent'])
+        # He checks the last event
+        self.assertEventType(new_event_url, 'recycle')
         
         # He checks that the device components have too a recycle event
         dev = self.client.get(self.device_url).data
