@@ -26,6 +26,9 @@ class Device(models.Model):
     type = models.CharField(max_length=16, choices=TYPES)
     # XXX is_id_secured & ituuid
     
+    def __str__(self):
+        return "%s %s" % (self.type, self.pk)
+    
     @property
     def components(self):
         try:
@@ -69,9 +72,6 @@ class Event(models.Model):
         (RECYCLE, 'RECYCLE'),
     )
     
-    class Meta:
-        get_latest_by = 'timestamp'
-    
     timestamp = models.DateTimeField(auto_now_add=True)
     type = models.CharField(max_length=16, choices=TYPES)
     data = models.TextField()  # Use PostgreSQL HStore field?
@@ -85,9 +85,19 @@ class Event(models.Model):
     components = models.ManyToManyField('Device', related_name='parent_events')
     
     objects = EventManager()
+    
+    class Meta:
+        get_latest_by = 'timestamp'
+    
+    def __str__(self):
+        event_date = self.timestamp.strftime("%Y-%m-%d")
+        return "%s %s %s" % (self.agent, self.type, event_date)
 
 
 class Agent(models.Model):
     name = models.CharField(max_length=128, unique=True)
     description = models.TextField()
     user = models.OneToOneField(settings.AUTH_USER_MODEL)
+    
+    def __str__(self):
+        return self.name
