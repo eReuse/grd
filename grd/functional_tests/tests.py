@@ -189,7 +189,8 @@ class RegisterTest(BaseTestCase):
         self.assertGreater(len(events), 0)
         
         # It checks that the last event is register
-        self.assertEventType(new_event_url, 'register')
+        last_event = self.get_latest_event(events)
+        self.assertEventType(last_event['url'], 'register')
         
         # It checks that the component has inherit the event
         for component in dev['components']:
@@ -239,7 +240,8 @@ class RegisterTest(BaseTestCase):
         self.assertEqual(len(events), 2)
         
         # It checks that the last event is register
-        self.assertEventType(new_event_url, 'register')
+        last_event = self.get_latest_event(events)
+        self.assertEventType(last_event['url'], 'register')
     
     def test_register_no_data(self):
         response = self.client.post('/api/devices/register/', data=None)
@@ -324,7 +326,7 @@ class RecycleTest(BaseTestCase):
         response = self.client.post(self.device_url + 'recycle/',
                                     data=recycle_data)
         self.assertEqual(201, response.status_code, response.content)
-        # XXX new_event_url = response['Location']
+        new_event_url = response['Location']
         
         # He checks that the device event includes recycle event
         response = self.client.get(self.device_url + 'events/')
