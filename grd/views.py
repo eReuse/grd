@@ -22,9 +22,7 @@ class DeviceView(viewsets.ModelViewSet):
         serializer = AddSerializer(data=request.data,
                                    context={'request': request})
         
-        if not serializer.is_valid():
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+        serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         
         agent = request.user.agent
@@ -51,15 +49,10 @@ class DeviceView(viewsets.ModelViewSet):
     
     @list_route(methods=['post'], permission_classes=[IsAuthenticated])
     def register(self, request):
-        if not request.data:
-            return Response({'invalid_request': 'empty POST request'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        
         serializer = RegisterSerializer(data=request.data,
                                         context={'request': request})
-        if not serializer.is_valid():
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         
         # create devices and events
@@ -91,16 +84,11 @@ class DeviceView(viewsets.ModelViewSet):
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def recycle(self, request, pk=None):
-        if not request.data:
-            return Response({'invalid_request': 'empty POST request'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        
         dev = self.get_object()
         serializer = RecycleSerializer(data=request.data,
                                        context={'request': request})
-        if not serializer.is_valid():
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         
         # create event
@@ -119,17 +107,12 @@ class DeviceView(viewsets.ModelViewSet):
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def collect(self, request, pk=None):
-        if not request.data:
-            return Response({'invalid_request': 'empty POST request'},
-                            status=status.HTTP_400_BAD_REQUEST)
-        
         dev = self.get_object()
         # XXX CollectSerializer??: base EventSerializer + extra fields on subclasses
         serializer = RecycleSerializer(data=request.data,
                                        context={'request': request})
-        if not serializer.is_valid():
-            return Response(serializer.errors,
-                            status=status.HTTP_400_BAD_REQUEST)
+        
+        serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         
         # create event
