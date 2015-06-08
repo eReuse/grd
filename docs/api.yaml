@@ -69,7 +69,7 @@ paths:
         201:
           description: Device registered
           schema:
-            $ref: '#/definitions/Device'
+            $ref: '#/definitions/Event'
         400:
           description: Validation error
           schema:

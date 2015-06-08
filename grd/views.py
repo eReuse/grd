@@ -73,8 +73,7 @@ class DeviceView(viewsets.ModelViewSet):
             else:
                 event.components.add(device)
         
-        # XXX should return the URL of a device or an event?
-        headers = {'Location': reverse('device-detail', args=[dev.pk],
+        headers = {'Location': reverse('event-detail', args=[event.pk],
                                        request=request)}
         return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
     

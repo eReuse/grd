@@ -141,7 +141,8 @@ class CollectTest(BaseTestCase):
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
-        self.device_url = response['Location']
+        event_url = response['Location']
+        self.device_url = self.client.get(event_url).data['device']
     
     def test_collect_device(self):
         collect_data = {
@@ -229,7 +230,12 @@ class RegisterTest(BaseTestCase):
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
-        new_device_url = response['Location']
+        new_event_url = response['Location']
+        
+        # It checks that the last event is register
+        last_event = self.client.get(new_event_url).data
+        self.assertEventType(last_event['url'], 'register')
+        new_device_url = last_event['device']
         
         # It checks that the device is listed
         response = self.client.get('/api/devices/')
@@ -251,10 +257,6 @@ class RegisterTest(BaseTestCase):
         self.assertEqual(200, response.status_code, response.content)
         events = response.data
         self.assertGreater(len(events), 0)
-        
-        # It checks that the last event is register
-        last_event = self.get_latest_event(events)
-        self.assertEventType(last_event['url'], 'register')
         
         # It checks that the component has inherit the event
         for component in dev['components']:
@@ -284,7 +286,12 @@ class RegisterTest(BaseTestCase):
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
         self.assertEqual(2, self.count_listed_objects('/api/devices/'))
-        new_device_url = response['Location']
+        new_event_url = response['Location']
+        
+        # It checks that the last event is register
+        last_event = self.client.get(new_event_url).data
+        self.assertEventType(last_event['url'], 'register')
+        new_device_url = last_event['device']
         
         # It verifies that the device has the proper id
         response = self.client.get(new_device_url)
@@ -302,10 +309,6 @@ class RegisterTest(BaseTestCase):
         self.assertEqual(200, response.status_code, response.content)
         events = response.data
         self.assertEqual(len(events), 2)
-        
-        # It checks that the last event is register
-        last_event = self.get_latest_event(events)
-        self.assertEventType(last_event['url'], 'register')
     
     def test_register_no_data(self):
         response = self.client.post('/api/devices/register/', data=None)
@@ -343,7 +346,8 @@ class RecycleTest(BaseTestCase):
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
-        self.device_url = response['Location']
+        event_url = response['Location']
+        self.device_url = self.client.get(event_url).data['device']
     
     def test_recycle_device(self):
         # Bob wants to recycle a device that he has previously
