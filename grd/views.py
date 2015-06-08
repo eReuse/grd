@@ -73,9 +73,11 @@ class DeviceView(viewsets.ModelViewSet):
             else:
                 event.components.add(device)
         
+        serializer = EventSerializer(event, context={'request': request})
         headers = {'Location': reverse('event-detail', args=[event.pk],
                                        request=request)}
-        return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def recycle(self, request, pk=None):

@@ -233,7 +233,7 @@ class RegisterTest(BaseTestCase):
         new_event_url = response['Location']
         
         # It checks that the last event is register
-        last_event = self.client.get(new_event_url).data
+        last_event = response.data
         self.assertEventType(last_event['url'], 'register')
         new_device_url = last_event['device']
         
@@ -289,7 +289,7 @@ class RegisterTest(BaseTestCase):
         new_event_url = response['Location']
         
         # It checks that the last event is register
-        last_event = self.client.get(new_event_url).data
+        last_event = response.data
         self.assertEventType(last_event['url'], 'register')
         new_device_url = last_event['device']
         
