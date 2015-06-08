@@ -130,9 +130,64 @@ paths:
         description: ID of device to use
         required: true
         type: string
+      - name: EventDevice
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/EventDevice'
       responses:
         201:
           description: Device recycled.
+          schema:
+            $ref: '#/definitions/Event'
+        400:
+          description: Validation error
+          schema:
+            $ref: '#/definitions/Error'
+  
+  /devices/{id}/collect/:
+    post:
+      description: |
+        Collect a `Device`.
+      parameters:
+      - name: id
+        in: path
+        description: ID of device to use
+        required: true
+        type: string
+      - name: EventDevice
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/EventDevice'
+      responses:
+        201:
+          description: Device collected.
+          schema:
+            $ref: '#/definitions/Event'
+        400:
+          description: Validation error
+          schema:
+            $ref: '#/definitions/Error'
+  
+  /devices/{id}/add/:
+    post:
+      description: |
+        Add a `Device` to another `Device`.
+      parameters:
+      - name: id
+        in: path
+        description: ID of device to use
+        required: true
+        type: string
+      - name: event
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/EventDevice'
+      responses:
+        201:
+          description: Device added.
           schema:
             $ref: '#/definitions/Event'
         400:
@@ -185,6 +240,9 @@ definitions:
   Event:
     type: object
     properties:
+      type:
+        type: string
+        enum: ["register", "collect", "recycle", "add"]
       timestamp:
         type: string
       event:
@@ -197,6 +255,18 @@ definitions:
     properties:
       message:
         type: string
+
+  EventDevice:
+    type: object
+    properties:
+      event_time:
+        type: string
+      by_user:
+        type: string
+      components:
+        type: array
+        items:
+          $ref: '#/definitions/Device'
 
   RegisterDevice:
     type: object
