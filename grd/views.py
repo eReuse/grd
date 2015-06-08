@@ -66,8 +66,8 @@ class DeviceView(viewsets.ModelViewSet):
             dev = Device.objects.create(**data['device'])
         agent = request.user.agent
         event = dev.events.create(type=Event.REGISTER, agent=agent,
-                              event_time=data['event_time'],
-                              by_user=data['by_user'])
+                                  event_time=data['event_time'],
+                                  by_user=data['by_user'])
         
         for component in data['components']:
             try:
@@ -94,8 +94,8 @@ class DeviceView(viewsets.ModelViewSet):
         # create event
         agent = request.user.agent
         event = dev.events.create(type=Event.RECYCLE, agent=agent,
-                              event_time=data['event_time'],
-                              by_user=data['by_user'])
+                                  event_time=data['event_time'],
+                                  by_user=data['by_user'])
         
         # Agent should explicity define which components are recycled
         for device in data['components']:
@@ -118,8 +118,8 @@ class DeviceView(viewsets.ModelViewSet):
         # create event
         agent = request.user.agent
         event = dev.events.create(type=Event.COLLECT, agent=agent,
-                              event_time=data['event_time'],
-                              by_user=data['by_user'])
+                                  event_time=data['event_time'],
+                                  by_user=data['by_user'])
         
         # Agent should explicity define which components are collected
         for device in data['components']:

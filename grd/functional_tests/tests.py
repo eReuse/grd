@@ -76,7 +76,10 @@ class AddTest(BaseTestCase):
         # Check that device 1 doesn't have device 2 as component
         device_one = self.client.get(device_one_url).data
         device_two = self.client.get(device_two_url).data
-        self.assertNotIn(device_two['url'], [comp['url'] for comp in device_one['components']])
+        self.assertNotIn(
+            device_two['url'],
+            [comp['url'] for comp in device_one['components']]
+        )
         
         # Add device 2 to device 1
         add_data = {
@@ -93,7 +96,10 @@ class AddTest(BaseTestCase):
         
         # Check that device 1 has device 2 as component
         device_one = self.client.get(device_one_url).data
-        self.assertIn(device_two['url'], [comp['url'] for comp in device_one['components']])
+        self.assertIn(
+            device_two['url'],
+            [comp['url'] for comp in device_one['components']]
+        )
     
     def test_add_component_device_already_attached(self):
         # PRE: - 2 devices registered.
@@ -118,7 +124,7 @@ class AddTest(BaseTestCase):
 
 class CollectTest(BaseTestCase):
     """https://www.wrike.com/open.htm?id=47865028"""
-    #TODO fixture with a registered device
+    # TODO fixture with a registered device
     def setUp(self):
         super(CollectTest, self).setUp()
         

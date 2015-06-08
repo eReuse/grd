@@ -65,5 +65,7 @@ class AddSerializer(serializers.ModelSerializer):
     def validate_components(self, value):
         for device in value:
             if device.parent is not None:
-                raise serializers.ValidationError('Device already has a parent')
+                raise serializers.ValidationError(
+                    "Device '%s' already has a parent." % device
+                )
         return value

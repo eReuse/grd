@@ -52,10 +52,11 @@ class Device(models.Model):
     @property
     def parent(self):
         try:
-            last_event = self.parent_events.filter(type=Event.REGISTER).latest()
+            register = self.parent_events.filter(type=Event.REGISTER).latest()
         except Event.DoesNotExist:
             return None
-        return last_event.device
+        return register.device
+
 
 class EventManager(models.Manager):
     def related_to_device(self, device):
