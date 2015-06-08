@@ -8,4 +8,3 @@ class EventTest(TestCase):
     def test_event_representation(self):
         for event in Event.objects.all():
             self.assertIsNotNone(repr(event))
-
