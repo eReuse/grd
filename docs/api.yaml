@@ -98,10 +98,10 @@ paths:
             additionalProperties:
               $ref: '#/definitions/Device'
 
-  /devices/{id}/log/:
+  /devices/{id}/events/:
     get:
       description: |
-        Gets `Device`'s logs.
+        Gets `Device`'s events.
       parameters:
       - name: id
         in: path
@@ -112,10 +112,10 @@ paths:
         200:
           description: Successful response
           schema:
-            title: ArrayOfLogs
+            title: ArrayOfEvents
             type: array
             items:
-              title: Log
+              title: Event
               type: object
               additionalProperties:
                 $ref: '#/definitions/Event'
