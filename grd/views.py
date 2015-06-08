@@ -57,11 +57,7 @@ class DeviceView(viewsets.ModelViewSet):
         
         # create devices and events
         try:
-            # TODO(santiago): replace Device.id by Device.hid
-            #     hardware identifier can be obtained by anyone
-            #     but id is an arbitrary identifier that in
-            #     addition depends on the agent.
-            dev = Device.objects.get(id=data['device']['id'])
+            dev = Device.objects.get(hid=data['device']['hid'])
         except Device.DoesNotExist:
             dev = Device.objects.create(**data['device'])
         agent = request.user.agent
@@ -71,7 +67,7 @@ class DeviceView(viewsets.ModelViewSet):
         
         for component in data['components']:
             try:
-                device = Device.objects.get(id=component['id'])
+                device = Device.objects.get(hid=component['hid'])
             except Device.DoesNotExist:
                 event.components.create(**component)
             else:
