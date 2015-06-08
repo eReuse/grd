@@ -165,6 +165,39 @@ class CollectTest(BaseTestCase):
             
             last_event = self.get_latest_event(comp_events)
             self.assertNotEqual('collect', last_event['type'])
+    
+    def test_collect_device_with_components(self):
+        # Bob wants to recycle a device that he has previously
+        # registered and its components.
+        
+        # He recycles the device specifying its components
+        collect_data = {
+            'event_time': '2014-04-10T22:38:20.604391Z',
+            'by_user': 'some authorized collecter point',
+            'components': ['DDR3'],
+        }
+        response = self.client.post(self.device_url + 'collect/',
+                                    data=collect_data)
+        self.assertEqual(201, response.status_code, response.content)
+        new_event_url = response['Location']
+        
+        # He checks that the device event includes collect event
+        response = self.client.get(self.device_url + 'events/')
+        self.assertEqual(200, response.status_code, response.content)
+        events = response.data
+        self.assertEqual(len(events), 2)
+        
+        # He checks the last event
+        self.assertEventType(new_event_url, 'collect')
+        
+        # He checks that the device components have too a recycle event
+        dev = self.client.get(self.device_url).data
+        for component in dev['components']:
+            comp_events = self.client.get(component['url'] + 'events/').data
+            self.assertEqual(len(comp_events), 2,
+                             "Component doesn't have collect event.")
+            last_event = self.get_latest_event(comp_events)
+            self.assertEqual('collect', last_event['type'])
 
 
 class RegisterTest(BaseTestCase):

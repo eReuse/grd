@@ -121,7 +121,7 @@ class DeviceView(viewsets.ModelViewSet):
                               event_time=data['event_time'],
                               by_user=data['by_user'])
         
-        # Agent should explicity define which components are recycled
+        # Agent should explicity define which components are collected
         for device in data['components']:
             event.components.add(device)
         
