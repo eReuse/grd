@@ -2,7 +2,6 @@ from rest_framework import status, viewsets
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
-from rest_framework.reverse import reverse
 
 from .models import Device, Event
 from .serializers import (
@@ -35,9 +34,10 @@ class DeviceView(viewsets.ModelViewSet):
         for device in data['components']:
             event.components.add(device)
         
-        headers = {'Location': reverse('event-detail', args=[event.pk],
-                                       request=request)}
-        return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
+        serializer = EventSerializer(event, context={'request': request})
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
     
     @detail_route(methods=['get'])
     def events(self, request, pk=None):
@@ -74,8 +74,7 @@ class DeviceView(viewsets.ModelViewSet):
                 event.components.add(device)
         
         serializer = EventSerializer(event, context={'request': request})
-        headers = {'Location': reverse('event-detail', args=[event.pk],
-                                       request=request)}
+        headers = self.get_success_headers(serializer.data)
         return Response(serializer.data, status=status.HTTP_201_CREATED,
                         headers=headers)
     
@@ -98,14 +97,15 @@ class DeviceView(viewsets.ModelViewSet):
         for device in data['components']:
             event.components.add(device)
         
-        headers = {'Location': reverse('event-detail', args=[event.pk],
-                                       request=request)}
-        return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
+        serializer = EventSerializer(event, context={'request': request})
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def collect(self, request, pk=None):
         dev = self.get_object()
-        # XXX CollectSerializer??: base EventSerializer + extra fields on subclasses
+        # XXX CollectSerializer: EventSerializer + extra fields on subclasses
         serializer = RecycleSerializer(data=request.data,
                                        context={'request': request})
         
@@ -122,9 +122,10 @@ class DeviceView(viewsets.ModelViewSet):
         for device in data['components']:
             event.components.add(device)
         
-        headers = {'Location': reverse('event-detail', args=[event.pk],
-                                       request=request)}
-        return Response('{}', status=status.HTTP_201_CREATED, headers=headers)
+        serializer = EventSerializer(event, context={'request': request})
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
 
 
 class EventView(viewsets.ReadOnlyModelViewSet):
