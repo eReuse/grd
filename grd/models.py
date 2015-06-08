@@ -34,7 +34,8 @@ class Device(models.Model):
     @property
     def components(self):
         try:
-            # XXX can exists more than one register event??
+            # Get the latest register event (can exist several because
+            # of snapshots)
             last_event = self.events.filter(type=Event.REGISTER).latest()
         except Event.DoesNotExist:
             # Device has been registered as component of another Device
