@@ -1,61 +1,7 @@
 import time
-import unittest
 
-from django.contrib.auth import get_user_model
-from django.contrib.staticfiles.testing import StaticLiveServerTestCase
-from rest_framework.test import APILiveServerTestCase
-
-from grd.models import Agent, Device, Event
-
-
-class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
-    def setUp(self):
-        self.username = 'ereuse'
-        self.password = 'ereuse'
-        
-        User = get_user_model()
-        user = User.objects.create_user(self.username,
-                                        'test@localhost',
-                                        self.password)
-        
-        self.agent = Agent.objects.create(name='XSR', user=user)
-        
-        # authenticate the user
-        token = self.get_user_token(self.username, self.password)
-        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
-    
-    def get_user_token(self, username, password):
-        response = self.client.post(
-            '/api-token-auth/',
-            data={'username': username, 'password': password},
-        )
-        self.assertEqual(200, response.status_code,
-                         "Unable to log in with provided credentials.")
-        
-        return response.data['token']
-    
-    def count_listed_objects(self, url):
-        response = self.client.get(url)
-        return len(response.data)
-    
-    def get_latest_event(self, events):
-        assert len(events) > 0
-        last_event = events[0]
-        for event in events:
-            if event['timestamp'] > last_event['timestamp']:
-                last_event = event
-        return last_event
-    
-    def assertEventType(self, event_url, type, agent_name=None):
-        if agent_name is None:
-            agent_name = self.agent.name
-        
-        response = self.client.get(event_url)
-        self.assertEqual(200, response.status_code, response.content)
-        
-        event = response.data
-        self.assertEqual(type, event['type'])
-        self.assertEqual(agent_name, event['agent'])
+from grd.functional_tests.common import BaseTestCase
+from grd.models import Device, Event
 
 
 class AddTest(BaseTestCase):
@@ -429,25 +375,3 @@ class RecycleTest(BaseTestCase):
         response = self.client.post(self.device_url + 'recycle/',
                                     data=recycle_data)
         self.assertEqual(400, response.status_code, response.content)
-
-
-class ApiTest(StaticLiveServerTestCase, APILiveServerTestCase):
-    fixtures = ['agents.json', 'devices.json', 'events.json', 'users.json']
-    
-    def test_retrieve_api_base(self):
-        response = self.client.get('/api/')
-        self.assertEqual(200, response.status_code)
-    
-    def test_retrieve_device_list(self):
-        response = self.client.get('/api/devices/')
-        self.assertEqual(200, response.status_code)
-    
-    def test_retrieve_event_list(self):
-        response = self.client.get('/api/events/')
-        self.assertEqual(200, response.status_code)
-    
-    def test_retrieve_event_detail(self):
-        response = self.client.get('/api/events/1/')
-        self.assertEqual(200, response.status_code)
-        event = response.data
-        self.assertIn('url', event)
