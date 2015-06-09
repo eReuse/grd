@@ -173,7 +173,7 @@ paths:
   /api/devices/{id}/add/:
     post:
       description: |
-        Add a `Device` to another `Device`.
+        Add `Device`(s) to the `Device`.
       parameters:
       - name: id
         in: path
@@ -188,6 +188,31 @@ paths:
       responses:
         201:
           description: Device added.
+          schema:
+            $ref: '#/definitions/Event'
+        400:
+          description: Validation error
+          schema:
+            $ref: '#/definitions/Error'
+  
+  /api/devices/{id}/remove/:
+    post:
+      description: |
+        Remove `Device`(s) from the `Device`.
+      parameters:
+      - name: id
+        in: path
+        description: ID of device to use
+        required: true
+        type: string
+      - name: event
+        in: body
+        required: true
+        schema:
+          $ref: '#/definitions/EventDevice'
+      responses:
+        201:
+          description: Device(s) removed.
           schema:
             $ref: '#/definitions/Event'
         400:
