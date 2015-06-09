@@ -34,7 +34,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
   
-  /devices/:
+  /api/devices/:
     get:
       # Describe this verb here. Note: you can use markdown
       description: |
@@ -53,7 +53,7 @@ paths:
                 url:
                   type: string
   
-  /devices/register/:
+  /api/devices/register/:
     post:
       description: Register a `Device`.
       produces:
@@ -75,7 +75,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
   
-  /devices/{id}:
+  /api/devices/{id}:
     get:
       description: |
         Gets `Device` object details.
@@ -98,7 +98,7 @@ paths:
             additionalProperties:
               $ref: '#/definitions/Device'
 
-  /devices/{id}/events/:
+  /api/devices/{id}/events/:
     get:
       description: |
         Gets `Device`'s events.
@@ -120,7 +120,7 @@ paths:
               additionalProperties:
                 $ref: '#/definitions/Event'
   
-  /devices/{id}/recycle/:
+  /api/devices/{id}/recycle/:
     post:
       description: |
         Recycle a `Device`.
@@ -145,7 +145,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
   
-  /devices/{id}/collect/:
+  /api/devices/{id}/collect/:
     post:
       description: |
         Collect a `Device`.
@@ -170,7 +170,7 @@ paths:
           schema:
             $ref: '#/definitions/Error'
   
-  /devices/{id}/add/:
+  /api/devices/{id}/add/:
     post:
       description: |
         Add a `Device` to another `Device`.
@@ -205,6 +205,10 @@ definitions:
         type: string
       email:
         type: string
+      url:
+        type: string
+        format: url
+        readOnly: true
   
   Device:
     type: object
@@ -216,6 +220,7 @@ definitions:
     properties:
       uuid: # GRD identifier
         type: string
+        readOnly: true
       id: # PRL identifier
         type: string
       hid: # Hardware identifier
@@ -223,19 +228,10 @@ definitions:
       type:
         type: string
         enum: ["computer", "screen", "peripheral"]
-      # Xavier proposal:
-      # FIXME(slamora:) it's necessary to store this information at GRD?
-      model:
-        type: string
-      manufacturer:
-        type: string
-      serialNumber: #FIXME(slamora): duplicates hid
-        type: string
-      isUidSecured:
-        type: boolean
       url:
         type: string
         format: url
+        readOnly: true
   
   Event:
     type: object
@@ -249,6 +245,10 @@ definitions:
         type: string
       by_user:
         type: string
+      url:
+        type: string
+        format: url
+        readOnly: true
   
   Error:
     type: object
