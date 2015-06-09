@@ -22,15 +22,20 @@ class DeviceView(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_201_CREATED,
                         headers=headers)
     
+    def create_event(self, serializer, type):
+        serializer.is_valid(raise_exception=True)
+        
+        return serializer.save(
+            agent=self.request.user.agent,
+            device=self.get_object(),
+            type=type
+        )
+    
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def add(self, request, pk=None):
-        agent = request.user.agent
-        device = self.get_object()
         serializer = AddSerializer(data=request.data,
                                    context={'request': request})
-        
-        serializer.is_valid(raise_exception=True)
-        event = serializer.save(agent=agent, device=device, type=Event.ADD)
+        event = self.create_event(serializer, type=Event.ADD)
         
         return self.get_success_event_creation_response(request, event)
     
@@ -47,6 +52,7 @@ class DeviceView(viewsets.ModelViewSet):
         serializer = RegisterSerializer(data=request.data,
                                         context={'request': request})
         
+        # TODO(santiago): move this logic to the serializer
         serializer.is_valid(raise_exception=True)
         data = serializer.validated_data
         
@@ -77,22 +83,16 @@ class DeviceView(viewsets.ModelViewSet):
         serializer = RecycleSerializer(data=request.data,
                                        context={'request': request})
         
-        serializer.is_valid(raise_exception=True)
-        event = serializer.save(agent=agent, device=dev, type=Event.RECYCLE)
+        event = self.create_event(serializer, type=Event.RECYCLE)
         
         return self.get_success_event_creation_response(request, event)
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def collect(self, request, pk=None):
-        agent = request.user.agent
-        dev = self.get_object()
-        
         # XXX CollectSerializer: EventSerializer + extra fields on subclasses
         serializer = RecycleSerializer(data=request.data,
                                        context={'request': request})
-        
-        serializer.is_valid(raise_exception=True)
-        event = serializer.save(agent=agent, device=dev, type=Event.COLLECT)
+        event = self.create_event(serializer, type=Event.COLLECT)
         
         return self.get_success_event_creation_response(request, event)
 
