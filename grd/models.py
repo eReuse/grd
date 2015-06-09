@@ -56,11 +56,17 @@ class Device(models.Model):
     
     @property
     def parent(self):
+        # Compute events that modify relation between devices.
+        RELATION_EVENTS = [Event.REGISTER, Event.ADD, Event.REMOVE]
         try:
-            register = self.parent_events.filter(type=Event.REGISTER).latest()
+            event = self.parent_events.filter(type__in=RELATION_EVENTS).latest()
         except Event.DoesNotExist:
             return None
-        return register.device
+        
+        if event.type == Event.REMOVE:
+            return None
+        
+        return event.device
 
 
 class EventManager(models.Manager):
