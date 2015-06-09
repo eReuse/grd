@@ -412,7 +412,7 @@ class RemoveTest(BaseTestCase):
             'by_user': 'XSR',
             'components': [self.device_two.hid],
         }
-        response = self.client.post(device_one_url + 'remove/', data=add_data)
+        response = self.client.post(device_one_url + 'remove/', data=remove_data)
         self.assertEqual(201, response.status_code, response.content)
         new_event_url = response['Location']
         
@@ -426,3 +426,25 @@ class RemoveTest(BaseTestCase):
             device_two['url'],
             [comp['url'] for comp in device_one['components']]
         )
+    
+    def test_remove_component_not_in_the_device(self):
+        # PRE: 2 registered devices that are NOT related
+        # Check that device 1 doesn't have device 2 as component
+        device_one_url = '/api/devices/%s/' % self.device_one.pk
+        device_two_url = '/api/devices/%s/' % self.device_two.pk
+        
+        device_one = self.client.get(device_one_url).data
+        device_two = self.client.get(device_two_url).data
+        self.assertNotIn(
+            device_two['url'],
+            [comp['url'] for comp in device_one['components']]
+        )
+        
+        # Remove device 2 of device 1
+        remove_data = {
+            'event_time': '2014-12-12T12:38:20.604391Z',
+            'by_user': 'XSR',
+            'components': [self.device_two.hid],
+        }
+        response = self.client.post(device_one_url + 'remove/', data=remove_data)
+        self.assertEqual(400, response.status_code, response.content)

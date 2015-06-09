@@ -34,8 +34,6 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ('device', 'event_time', 'by_user', 'components')
-    
-    # XXX validate data
 
 
 class RecycleSerializer(serializers.ModelSerializer):
@@ -51,7 +49,7 @@ class RecycleSerializer(serializers.ModelSerializer):
         fields = ('event_time', 'by_user', 'components')
 
 
-class AddRemoveSerializer(serializers.ModelSerializer):
+class AddSerializer(serializers.ModelSerializer):
     components = serializers.SlugRelatedField(
         many=True,
         queryset=Device.objects.all(),
@@ -69,3 +67,25 @@ class AddRemoveSerializer(serializers.ModelSerializer):
                     "Device '%s' already has a parent." % device
                 )
         return value
+
+
+class RemoveSerializer(serializers.ModelSerializer):
+    components = serializers.SlugRelatedField(
+        many=True,
+        queryset=Device.objects.all(),
+        slug_field='hid',
+    )
+    
+    class Meta:
+        model = Event
+        fields = ('event_time', 'by_user', 'components')
+    
+    def validate(self, data):
+        device = self.context['device']
+        
+        for component in data['components']:
+            if component.parent != device:
+                raise serializers.ValidationError(
+                    "Device '%s' is not a component of '%s'." % (component, device)
+                )
+        return data

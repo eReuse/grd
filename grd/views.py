@@ -5,8 +5,8 @@ from rest_framework.response import Response
 
 from .models import Device, Event
 from .serializers import (
-    AddRemoveSerializer, DeviceSerializer, EventSerializer, RecycleSerializer,
-    RegisterSerializer
+    AddSerializer, DeviceSerializer, EventSerializer, RecycleSerializer,
+    RegisterSerializer, RemoveSerializer
 )
 
 
@@ -33,7 +33,7 @@ class DeviceView(viewsets.ModelViewSet):
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def add(self, request, pk=None):
-        serializer = AddRemoveSerializer(data=request.data,
+        serializer = AddSerializer(data=request.data,
                                    context={'request': request})
         event = self.create_event(serializer, type=Event.ADD)
         
@@ -41,8 +41,9 @@ class DeviceView(viewsets.ModelViewSet):
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def remove(self, request, pk=None):
-        serializer = AddRemoveSerializer(data=request.data,
-                                   context={'request': request})
+        serializer = RemoveSerializer(data=request.data,
+                                      context={'request': request,
+                                               'device': self.get_object()})
         event = self.create_event(serializer, type=Event.REMOVE)
         
         return self.get_success_event_creation_response(request, event)
