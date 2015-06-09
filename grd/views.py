@@ -15,29 +15,24 @@ class DeviceView(viewsets.ModelViewSet):
     serializer_class = DeviceSerializer
     # permission_classes = (IsAdminUser,)
     
+    def get_success_event_creation_response(self, request, event):
+        serializer = EventSerializer(event, context={'request': request})
+        headers = self.get_success_headers(serializer.data)
+        
+        return Response(serializer.data, status=status.HTTP_201_CREATED,
+                        headers=headers)
+    
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def add(self, request, pk=None):
+        agent = request.user.agent
         device = self.get_object()
         serializer = AddSerializer(data=request.data,
                                    context={'request': request})
         
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
+        event = serializer.save(agent=agent, device=device, type=Event.ADD)
         
-        agent = request.user.agent
-        
-        # create event
-        event = device.events.create(type=Event.ADD, agent=agent,
-                                     event_time=data['event_time'],
-                                     by_user=data['by_user'])
-        
-        for device in data['components']:
-            event.components.add(device)
-        
-        serializer = EventSerializer(event, context={'request': request})
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED,
-                        headers=headers)
+        return self.get_success_event_creation_response(request, event)
     
     @detail_route(methods=['get'])
     def events(self, request, pk=None):
@@ -73,59 +68,33 @@ class DeviceView(viewsets.ModelViewSet):
             else:
                 event.components.add(device)
         
-        serializer = EventSerializer(event, context={'request': request})
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED,
-                        headers=headers)
+        return self.get_success_event_creation_response(request, event)
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def recycle(self, request, pk=None):
+        agent = request.user.agent
         dev = self.get_object()
         serializer = RecycleSerializer(data=request.data,
                                        context={'request': request})
         
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
+        event = serializer.save(agent=agent, device=dev, type=Event.RECYCLE)
         
-        # create event
-        agent = request.user.agent
-        event = dev.events.create(type=Event.RECYCLE, agent=agent,
-                                  event_time=data['event_time'],
-                                  by_user=data['by_user'])
-        
-        # Agent should explicity define which components are recycled
-        for device in data['components']:
-            event.components.add(device)
-        
-        serializer = EventSerializer(event, context={'request': request})
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED,
-                        headers=headers)
+        return self.get_success_event_creation_response(request, event)
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def collect(self, request, pk=None):
+        agent = request.user.agent
         dev = self.get_object()
+        
         # XXX CollectSerializer: EventSerializer + extra fields on subclasses
         serializer = RecycleSerializer(data=request.data,
                                        context={'request': request})
         
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
+        event = serializer.save(agent=agent, device=dev, type=Event.COLLECT)
         
-        # create event
-        agent = request.user.agent
-        event = dev.events.create(type=Event.COLLECT, agent=agent,
-                                  event_time=data['event_time'],
-                                  by_user=data['by_user'])
-        
-        # Agent should explicity define which components are collected
-        for device in data['components']:
-            event.components.add(device)
-        
-        serializer = EventSerializer(event, context={'request': request})
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED,
-                        headers=headers)
+        return self.get_success_event_creation_response(request, event)
 
 
 class EventView(viewsets.ReadOnlyModelViewSet):
