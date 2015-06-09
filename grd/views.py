@@ -87,8 +87,6 @@ class DeviceView(viewsets.ModelViewSet):
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def recycle(self, request, pk=None):
-        agent = request.user.agent
-        dev = self.get_object()
         serializer = RecycleSerializer(data=request.data,
                                        context={'request': request})
         

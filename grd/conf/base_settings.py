@@ -1,5 +1,3 @@
-import os
-
 # Django settings for ereuse_grd project.
 
 DEBUG = True

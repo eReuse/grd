@@ -1,5 +1,3 @@
-import unittest
-
 from django.test import TestCase
 
 from grd.serializers import DeviceSerializer

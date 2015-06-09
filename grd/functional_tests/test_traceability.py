@@ -176,12 +176,10 @@ class RegisterTest(BaseTestCase):
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
-        new_event_url = response['Location']
         
         # It checks that the last event is register
-        last_event = response.data
-        self.assertEventType(last_event['url'], 'register')
-        new_device_url = last_event['device']
+        self.assertEventType(response['Location'], 'register')
+        new_device_url = response.data['device']
         
         # It checks that the device is listed
         response = self.client.get('/api/devices/')
@@ -232,12 +230,11 @@ class RegisterTest(BaseTestCase):
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
         self.assertEqual(2, self.count_listed_objects('/api/devices/'))
-        new_event_url = response['Location']
         
         # It checks that the last event is register
-        last_event = response.data
-        self.assertEventType(last_event['url'], 'register')
-        new_device_url = last_event['device']
+        
+        self.assertEventType(response['Location'], 'register')
+        new_device_url = response.data['device']
         
         # It verifies that the device has the proper id
         response = self.client.get(new_device_url)
@@ -412,7 +409,8 @@ class RemoveTest(BaseTestCase):
             'by_user': 'XSR',
             'components': [self.device_two.hid],
         }
-        response = self.client.post(device_one_url + 'remove/', data=remove_data)
+        response = self.client.post(device_one_url + 'remove/',
+                                    data=remove_data)
         self.assertEqual(201, response.status_code, response.content)
         new_event_url = response['Location']
         
@@ -446,5 +444,6 @@ class RemoveTest(BaseTestCase):
             'by_user': 'XSR',
             'components': [self.device_two.hid],
         }
-        response = self.client.post(device_one_url + 'remove/', data=remove_data)
+        response = self.client.post(device_one_url + 'remove/',
+                                    data=remove_data)
         self.assertEqual(400, response.status_code, response.content)
