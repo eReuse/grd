@@ -44,11 +44,13 @@ class Device(models.Model):
         else:
             components = list(last_event.components.all())
         
-        # compute add events!!
-        for add in self.events.filter(type=Event.ADD):
-            components += add.components.all()
-        
-        # XXX compute remove events
+        # Compute add and remove events. Get add and remove together
+        # because the order of the operations affects the final result.
+        for e in self.events.filter(Q(type=Event.ADD) | Q(type=Event.REMOVE)):
+            if e.type == Event.ADD:
+                components += e.components.all()
+            else:  # Event.REMOVE
+                components = list(set(components) - set(e.components.all()))
         
         return components
     
@@ -92,6 +94,7 @@ class Event(models.Model):
         (COLLECT, 'COLLECT'),
         (RECYCLE, 'RECYCLE'),
         (ADD, 'ADD'),
+        (REMOVE, 'REMOVE'),
     )
     
     timestamp = models.DateTimeField(auto_now_add=True)

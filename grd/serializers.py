@@ -51,7 +51,7 @@ class RecycleSerializer(serializers.ModelSerializer):
         fields = ('event_time', 'by_user', 'components')
 
 
-class AddSerializer(serializers.ModelSerializer):
+class AddRemoveSerializer(serializers.ModelSerializer):
     components = serializers.SlugRelatedField(
         many=True,
         queryset=Device.objects.all(),
