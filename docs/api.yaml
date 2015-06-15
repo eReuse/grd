@@ -34,6 +34,77 @@ paths:
           schema:
             $ref: '#/definitions/Error'
   
+  /api/agents/:
+    get:
+      description: |
+        Gets `Agent` objects.
+      responses:
+        200:
+          description: Successful response
+          schema:
+            title: ArrayOfAgents
+            type: array
+            items:
+              title: Agent
+              type: object
+              properties:
+                url:
+                  type: string
+  
+  /api/agents/{id}:
+    get:
+      description: |
+        Gets `Agent` object details.
+      produces:
+      - application/json
+      parameters:
+        - name: id
+          in: path
+          description: ID of device to use
+          required: true
+          type: string
+      responses:
+        200:
+          description: Agent response
+          schema:
+            title: Agent
+            type: object
+            additionalProperties:
+              $ref: '#/definitions/Agent'
+        # TODO 404
+    patch:
+        description: |
+          Updates `Agent` object details.
+        produces:
+          - application/json
+        parameters:
+          - name: id
+            in: path
+            description: ID of agent to use
+            required: true
+            type: string
+          # TODO parameters that can be updated
+        responses:
+          200:
+            description: Updated Agent response
+            schema:
+              title: Agent
+              type: object
+              additionalProperties:
+                $ref: '#/definitions/Agent'
+    
+    delete:
+      description: Deletes `Agent` object.
+      parameters:
+          - name: id
+            in: path
+            description: ID of agent to use
+            required: true
+            type: string
+      responses:
+        204:
+          description: OK
+  
   /api/devices/:
     get:
       # Describe this verb here. Note: you can use markdown

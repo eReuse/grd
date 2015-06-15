@@ -7,6 +7,7 @@ from grd import views
 
 
 router = routers.DefaultRouter()
+router.register(r'agents', views.AgentView)
 router.register(r'devices', views.DeviceView)
 router.register(r'events', views.EventView)
 

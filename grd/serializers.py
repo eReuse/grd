@@ -1,6 +1,30 @@
+from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Device, Event
+from .models import Agent, Device, Event
+
+
+User = get_user_model()
+
+
+class UserSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = User
+        fields = ('username', 'email',)
+
+
+class AgentSerializer(serializers.HyperlinkedModelSerializer):
+    user = UserSerializer()
+    
+    class Meta:
+        model = Agent
+        fields = ('name', 'description', 'url', 'user')
+    
+    def create(self, validated_data):
+        user_data = validated_data.pop('user')
+        user = User.objects.create(**user_data)
+        agent = Agent.objects.create(user=user, **validated_data)
+        return agent
 
 
 class SimpleDeviceSerializer(serializers.HyperlinkedModelSerializer):
@@ -10,6 +34,7 @@ class SimpleDeviceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DeviceSerializer(serializers.HyperlinkedModelSerializer):
+    # TODO replace with HyperlinkedModelSerializer??
     components = SimpleDeviceSerializer(many=True, read_only=True)
     
     class Meta:

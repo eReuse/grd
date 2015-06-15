@@ -1,13 +1,19 @@
 from rest_framework import status, viewsets
 from rest_framework.decorators import detail_route, list_route
-from rest_framework.permissions import IsAuthenticated
+from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
-from .models import Device, Event
+from .models import Agent, Device, Event
 from .serializers import (
-    AddSerializer, DeviceSerializer, EventSerializer, RecycleSerializer,
-    RegisterSerializer, RemoveSerializer
+    AddSerializer, AgentSerializer, DeviceSerializer, EventSerializer,
+    RecycleSerializer, RegisterSerializer, RemoveSerializer
 )
+
+
+class AgentView(viewsets.ModelViewSet):
+    queryset = Agent.objects.all()
+    serializer_class = AgentSerializer
+    permission_classes = (IsAdminUser,)
 
 
 class DeviceView(viewsets.ModelViewSet):
