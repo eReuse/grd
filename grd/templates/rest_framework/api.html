@@ -1,0 +1,10 @@
+{% extends "rest_framework/base.html" %}
+{% load utils %}
+
+{% block title %}GRD REST API{% endblock %}
+
+{% block branding %}
+    <a class='navbar-brand' rel="nofollow" href="{% url 'api-root' %}">
+        Global Record of Devices REST API <span class="version">{% version %}</span>
+    </a>
+{% endblock %}
