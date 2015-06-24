@@ -1,6 +1,7 @@
 import uuid
 
 from django.conf import settings
+from django.contrib.postgres.fields import HStoreField
 from django.db import models
 from django.db.models import Q
 
@@ -105,8 +106,7 @@ class Event(models.Model):
     
     timestamp = models.DateTimeField(auto_now_add=True)
     type = models.CharField(max_length=16, choices=TYPES)
-    data = models.TextField()  # Use PostgreSQL HStore field?
-    # https://docs.djangoproject.com/en/1.8/ref/contrib/postgres/fields/#hstorefield
+    data = HStoreField(default={})  # A field for storing mappings of strings to strings.
     
     event_time = models.DateTimeField('Time when the event has happened.')
     by_user = models.CharField('User who performs the event.', max_length=32)
