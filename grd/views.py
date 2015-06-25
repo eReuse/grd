@@ -6,7 +6,7 @@ from rest_framework.response import Response
 from .models import Agent, Device, Event
 from .serializers import (
     AddSerializer, AgentSerializer, DeviceSerializer, EventSerializer,
-    RecycleSerializer, RegisterSerializer, RemoveSerializer
+    EventWritableSerializer, RegisterSerializer, RemoveSerializer
 )
 
 
@@ -93,8 +93,8 @@ class DeviceView(viewsets.ModelViewSet):
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def recycle(self, request, pk=None):
-        serializer = RecycleSerializer(data=request.data,
-                                       context={'request': request})
+        serializer = EventWritableSerializer(data=request.data,
+                                             context={'request': request})
         
         event = self.create_event(serializer, type=Event.RECYCLE)
         
@@ -103,8 +103,8 @@ class DeviceView(viewsets.ModelViewSet):
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def collect(self, request, pk=None):
         # XXX CollectSerializer: EventSerializer + extra fields on subclasses
-        serializer = RecycleSerializer(data=request.data,
-                                       context={'request': request})
+        serializer = EventWritableSerializer(data=request.data,
+                                             context={'request': request})
         event = self.create_event(serializer, type=Event.COLLECT)
         
         return self.get_success_event_creation_response(request, event)

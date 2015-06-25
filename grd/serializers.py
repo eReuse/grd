@@ -61,7 +61,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         fields = ('device', 'event_time', 'by_user', 'components')
 
 
-class RecycleSerializer(serializers.ModelSerializer):
+class EventWritableSerializer(serializers.ModelSerializer):
     components = serializers.SlugRelatedField(
         many=True,
         default=[],
@@ -74,16 +74,9 @@ class RecycleSerializer(serializers.ModelSerializer):
         fields = ('event_time', 'by_user', 'components')
 
 
-class AddSerializer(serializers.ModelSerializer):
-    components = serializers.SlugRelatedField(
-        many=True,
-        queryset=Device.objects.all(),
-        slug_field='hid',
-    )
-    
-    class Meta:
-        model = Event
-        fields = ('event_time', 'by_user', 'components')
+class AddSerializer(EventWritableSerializer):
+    class Meta(EventWritableSerializer.Meta):
+        pass
     
     def validate_components(self, value):
         for device in value:
@@ -94,16 +87,9 @@ class AddSerializer(serializers.ModelSerializer):
         return value
 
 
-class RemoveSerializer(serializers.ModelSerializer):
-    components = serializers.SlugRelatedField(
-        many=True,
-        queryset=Device.objects.all(),
-        slug_field='hid',
-    )
-    
-    class Meta:
-        model = Event
-        fields = ('event_time', 'by_user', 'components')
+class RemoveSerializer(EventWritableSerializer):
+    class Meta(EventWritableSerializer.Meta):
+        pass
     
     def validate(self, data):
         device = self.context['device']
