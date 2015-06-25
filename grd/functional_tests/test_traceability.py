@@ -42,10 +42,7 @@ class AddTest(BaseTestCase):
         
         # Check that device 1 has device 2 as component
         device_one = self.client.get(device_one_url).data
-        self.assertIn(
-            device_two['url'],
-            [comp['url'] for comp in device_one['components']]
-        )
+        self.assertIn(device_two['url'], device_one['components'])
     
     def test_add_component_device_already_attached(self):
         # PRE: - 2 devices registered.
@@ -113,7 +110,7 @@ class CollectTest(BaseTestCase):
         # He checks that the device components do NOT have a collect event
         dev = self.client.get(self.device_url).data
         for component in dev['components']:
-            comp_events = self.client.get(component['url'] + 'events/').data
+            comp_events = self.client.get(component + 'events/').data
             self.assertEqual(len(comp_events), 1)
             
             last_event = self.get_latest_event(comp_events)
@@ -146,7 +143,7 @@ class CollectTest(BaseTestCase):
         # He checks that the device components have too a recycle event
         dev = self.client.get(self.device_url).data
         for component in dev['components']:
-            comp_events = self.client.get(component['url'] + 'events/').data
+            comp_events = self.client.get(component + 'events/').data
             self.assertEqual(len(comp_events), 2,
                              "Component doesn't have collect event.")
             last_event = self.get_latest_event(comp_events)
@@ -204,7 +201,7 @@ class RegisterTest(BaseTestCase):
         
         # It checks that the component has inherit the event
         for component in dev['components']:
-            comp_events = self.client.get(component['url'] + 'events/').data
+            comp_events = self.client.get(component + 'events/').data
             self.assertGreater(len(comp_events), 0)
     
     def test_register_already_traced_device(self):
@@ -318,7 +315,7 @@ class RecycleTest(BaseTestCase):
         # He checks that the device components do NOT have a recycle event
         dev = self.client.get(self.device_url).data
         for component in dev['components']:
-            comp_events = self.client.get(component['url'] + 'events/').data
+            comp_events = self.client.get(component + 'events/').data
             self.assertEqual(len(comp_events), 1)
             
             last_event = self.get_latest_event(comp_events)
@@ -352,7 +349,7 @@ class RecycleTest(BaseTestCase):
         dev = self.client.get(self.device_url).data
         for component in dev['components']:
             
-            comp_events = self.client.get(component['url'] + 'events/').data
+            comp_events = self.client.get(component + 'events/').data
             self.assertEqual(len(comp_events), 2)
             
             last_event = self.get_latest_event(comp_events)
@@ -398,10 +395,7 @@ class RemoveTest(BaseTestCase):
         # Check that device 1 has device 2 as component
         device_one = self.client.get(device_one_url).data
         device_two = self.client.get(device_two_url).data
-        self.assertIn(
-            device_two['url'],
-            [comp['url'] for comp in device_one['components']]
-        )
+        self.assertIn(device_two['url'], device_one['components'])
         
         # Remove device 2 of device 1
         remove_data = {

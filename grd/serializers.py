@@ -27,15 +27,12 @@ class AgentSerializer(serializers.HyperlinkedModelSerializer):
         return agent
 
 
-class SimpleDeviceSerializer(serializers.HyperlinkedModelSerializer):
-    class Meta:
-        model = Device
-        fields = ('url',)
-
-
 class DeviceSerializer(serializers.HyperlinkedModelSerializer):
-    # TODO replace with HyperlinkedModelSerializer??
-    components = SimpleDeviceSerializer(many=True, read_only=True)
+    components = serializers.HyperlinkedRelatedField(
+        many=True,
+        read_only=True,
+        view_name='device-detail'
+    )
     
     class Meta:
         model = Device
