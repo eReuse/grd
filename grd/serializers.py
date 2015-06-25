@@ -41,12 +41,14 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
-    # XXX AgentSerializer & View
-    agent = serializers.SlugRelatedField(read_only=True, slug_field='name')
+    agent = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='agent-detail'
+    )
     
     class Meta:
         model = Event
-        fields = ('url', 'timestamp', 'type', 'device', 'agent')
+        fields = ('url', 'timestamp', 'type', 'device', 'agent', 'components')
 
 
 class RegisterSerializer(serializers.ModelSerializer):

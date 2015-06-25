@@ -11,9 +11,9 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
         self.password = 'ereuse'
         
         User = get_user_model()
-        user = User.objects.create_user(self.username,
-                                        'test@localhost',
-                                        self.password)
+        user = User.objects.create_superuser(self.username,
+                                             'test@localhost',
+                                             self.password)
         
         self.agent = Agent.objects.create(name='XSR', user=user)
         
@@ -52,4 +52,8 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
         
         event = response.data
         self.assertEqual(type, event['type'])
-        self.assertEqual(agent_name, event['agent'])
+        
+        response = self.client.get(event['agent'])
+        self.assertEqual(200, response.status_code, response.content)
+        agent = response.data
+        self.assertEqual(agent_name, agent['name'])
