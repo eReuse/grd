@@ -1,6 +1,6 @@
 from django.test import TestCase
 from django.utils import timezone
-from grd.models import Agent, Device, Event
+from grd.models import Agent, Device, Event, Location
 
 
 class EventTest(TestCase):
@@ -21,3 +21,20 @@ class EventTest(TestCase):
         )
         self.assertEqual('1', e.data['to'])
         self.assertEqual('blibli', e.data['extra_info'])
+    
+    def test_event_creation_with_location(self):
+        e = Event.objects.create(
+            type=Event.RECYCLE,
+            event_time=timezone.now(),
+            by_user='user1',
+            agent=Agent.objects.first(),
+            device=Device.objects.first(),
+        )
+        loc = Location.objects.create(
+            event=e,
+            label='label1',
+            lon=0.0,
+            lat=0.0,
+        )
+        self.assertIsNotNone(e.location)
+        self.assertEqual(e.location.lat, 0.0)

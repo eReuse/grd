@@ -8,7 +8,7 @@ TEMPLATE_DEBUG = DEBUG
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.contrib.gis.db.backends.postgis',
         'NAME': 'ereuse_grd',
         'USER': 'ereuse',
         'PASSWORD': 'ereuse',
@@ -30,6 +30,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
+    'django.contrib.gis',
     'django.contrib.postgres',
     'django.contrib.sessions',
     'django.contrib.messages',

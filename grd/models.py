@@ -1,6 +1,7 @@
 import uuid
 
 from django.conf import settings
+from django.contrib.gis.db import models as gis_models
 from django.contrib.postgres.fields import HStoreField
 from django.db import models
 from django.db.models import Q
@@ -132,3 +133,17 @@ class Agent(models.Model):
     
     def __str__(self):
         return self.name
+
+
+class Location(gis_models.Model):
+    #TODO default spatial reference system for geometry fields is WGS84
+    label = models.CharField(max_length=50)
+    lon = models.FloatField()
+    lat = models.FloatField()
+    
+    event = models.OneToOneField('Event', primary_key=True)
+    
+    objects = gis_models.GeoManager()
+    
+    def __str__(self):
+        return self.label
