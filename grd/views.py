@@ -6,7 +6,8 @@ from rest_framework.response import Response
 from .models import Agent, Device, Event
 from .serializers import (
     AddSerializer, AgentSerializer, DeviceSerializer, EventSerializer,
-    EventWritableSerializer, RegisterSerializer, RemoveSerializer
+    EventWritableSerializer, MigrateSerializer, RegisterSerializer,
+    RemoveSerializer
 )
 
 
@@ -31,7 +32,7 @@ class DeviceView(viewsets.ModelViewSet):
     def create_event(self, serializer, type):
         serializer.is_valid(raise_exception=True)
         
-        return serializer.save(
+        return serializer.save(  # TODO replace with .create?
             agent=self.request.user.agent,
             device=self.get_object(),
             type=type
@@ -102,10 +103,18 @@ class DeviceView(viewsets.ModelViewSet):
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def collect(self, request, pk=None):
-        # XXX CollectSerializer: EventSerializer + extra fields on subclasses
         serializer = EventWritableSerializer(data=request.data,
                                              context={'request': request})
         event = self.create_event(serializer, type=Event.COLLECT)
+        
+        return self.get_success_event_creation_response(request, event)
+    
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def migrate(self, request, pk=None):
+        serializer = MigrateSerializer(data=request.data,
+                                       context={'request': request})
+        
+        event = self.create_event(serializer, type=Event.MIGRATE)
         
         return self.get_success_event_creation_response(request, event)
 

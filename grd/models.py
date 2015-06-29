@@ -3,6 +3,7 @@ import uuid
 from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.postgres.fields import HStoreField
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
 
@@ -103,6 +104,7 @@ class Event(models.Model):
         (RECYCLE, 'RECYCLE'),
         (ADD, 'ADD'),
         (REMOVE, 'REMOVE'),
+        (MIGRATE, 'MIGRATE'),
     )
     
     timestamp = models.DateTimeField(auto_now_add=True)
@@ -124,6 +126,10 @@ class Event(models.Model):
     def __str__(self):
         event_date = self.timestamp.strftime("%Y-%m-%d")
         return "%s %s %s" % (self.agent, self.type, event_date)
+    
+    @property
+    def to(self):
+        return self.data.get('to', None)
 
 
 class Agent(models.Model):
@@ -133,6 +139,9 @@ class Agent(models.Model):
     
     def __str__(self):
         return self.name
+    
+    def get_absolute_url(self):
+        return reverse('agent-detail', args=[self.pk])
 
 
 class Location(gis_models.Model):

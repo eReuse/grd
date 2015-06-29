@@ -45,10 +45,15 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         read_only=True,
         view_name='agent-detail'
     )
+    to = serializers.HyperlinkedRelatedField(
+        read_only=True,
+        view_name='agent-detail'
+    )
     
     class Meta:
         model = Event
-        fields = ('url', 'timestamp', 'type', 'device', 'agent', 'components')
+        fields = ('url', 'timestamp', 'type', 'device', 'agent', 'components',
+                  'to')
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -71,6 +76,24 @@ class EventWritableSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ('event_time', 'by_user', 'components')
+
+
+class MigrateSerializer(EventWritableSerializer):
+    to = serializers.HyperlinkedRelatedField(
+        view_name='agent-detail',
+        queryset=Agent.objects.all(),
+    )
+    
+    class Meta:
+        model = Event
+        fields = ('event_time', 'by_user', 'components', 'to')
+    
+    def save(self, **kwargs):
+        to = self.validated_data.pop('to')
+        # convert all HStore data to string
+        self.validated_data['data'] = {'to': str(to.pk)}
+        
+        return super(MigrateSerializer, self).save(**kwargs)
 
 
 class AddSerializer(EventWritableSerializer):

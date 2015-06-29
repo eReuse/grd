@@ -1,7 +1,59 @@
 import time
 
+from django.contrib.auth import get_user_model
+
 from grd.functional_tests.common import BaseTestCase
-from grd.models import Device, Event
+from grd.models import Agent, Device, Event
+
+
+User = get_user_model()
+
+
+class MigrateTest(BaseTestCase):
+    """https://www.wrike.com/open.htm?id=47891868"""
+    
+    # TODO fixture with a registered device
+    def setUp(self):
+        super(MigrateTest, self).setUp()
+        
+        # Initialize registered devices
+        data = {
+            'device': {
+                'id': '//xsr.cat/device/1234',
+                'hid': 'XPS13-1111-2222',
+                'type': 'computer',
+            },
+            'event_time': '2012-04-10T22:38:20.604391Z',
+            'by_user': 'foo',
+            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
+        }
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        event_url = response['Location']
+        self.device_url = self.client.get(event_url).data['device']
+        
+        # Create another agent to migrate devices to it
+        user = User.objects.create_user('agent2', 'agent2@localhost', 'agent2')
+        self.agent2 = Agent.objects.create(name='Agent2', user=user)
+    
+    def test_migrate_device(self):
+        agent2 = self.client.get(self.agent2.get_absolute_url()).data
+        event_data = {
+            'event_time': '2015-04-10T22:38:20.604391Z',
+            'by_user': 'foo',
+            'to': agent2['url'],
+        }
+        
+        response = self.client.post(self.device_url + 'migrate/',
+                                    data=event_data)
+        self.assertEqual(201, response.status_code, response.content)
+        new_event_url = response['Location']
+        
+        self.assertEventType(new_event_url, 'migrate')
+        
+        # validate data
+        event = self.client.get(new_event_url).data
+        self.assertEqual(event['to'], event_data['to'])
 
 
 class AddTest(BaseTestCase):
