@@ -25,7 +25,7 @@ class MigrateTest(BaseTestCase):
             },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
-            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -132,7 +132,7 @@ class CollectTest(BaseTestCase):
             },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
-            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -221,7 +221,7 @@ class RegisterTest(BaseTestCase):
             },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
-            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -242,8 +242,21 @@ class RegisterTest(BaseTestCase):
         self.assertEqual(dev['hid'], data['device']['hid'])
         
         # It checks that device includes related components
-        # TODO make a more detailed validation.
         self.assertEqual(len(dev['components']), len(data['components']))
+        
+        components = []
+        for dev_url in dev['components']:
+            dev = self.client.get(dev_url).data
+            components.append({
+                'hid': dev['hid'],
+                'id': dev['id'],
+                'type': dev['type'],
+            })
+        
+        components = sorted(components, key=lambda k: k['hid'])
+        data_comps = sorted(data['components'], key=lambda k: k['hid'])
+        
+        self.assertEqual(components, data_comps)
         
         # It checks that the device event includes register event
         response = self.client.get(dev['url'] + 'events/')
@@ -270,7 +283,7 @@ class RegisterTest(BaseTestCase):
             },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
-            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(2, self.count_listed_objects('/api/devices/'))
@@ -292,9 +305,21 @@ class RegisterTest(BaseTestCase):
         self.assertEqual(dev['hid'], data['device']['hid'])
         
         # It checks that device includes same components
-        # TODO make a more detailed validation.
-        # TODO retrieve device URL and compare id, hid, type
         self.assertEqual(len(dev['components']), len(data['components']))
+        
+        components = []
+        for dev_url in dev['components']:
+            dev = self.client.get(dev_url).data
+            components.append({
+                'hid': dev['hid'],
+                'id': dev['id'],
+                'type': dev['type'],
+            })
+        
+        components = sorted(components, key=lambda k: k['hid'])
+        data_comps = sorted(data['components'], key=lambda k: k['hid'])
+        
+        self.assertEqual(components, data_comps)
          
         # It checks that device event includes register event
         response = self.client.get(new_device_url + 'events/')
@@ -334,7 +359,7 @@ class RecycleTest(BaseTestCase):
             },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
-            'components': [{'id': 1, 'hid': 'DDR3', 'type': 'monitor'}],
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
