@@ -63,6 +63,28 @@ class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = Event
         fields = ('device', 'event_time', 'by_user', 'components')
+    
+    def save(self, agent=None, **kwargs):
+        # create devices and events
+        data = self.validated_data
+        
+        try:
+            dev = Device.objects.get(hid=data['device']['hid'])
+        except Device.DoesNotExist:
+            dev = Device.objects.create(**data['device'])
+        event = dev.events.create(type=Event.REGISTER, agent=agent,
+                                  event_time=data['event_time'],
+                                  by_user=data['by_user'])
+        
+        for component in data['components']:
+            try:
+                device = Device.objects.get(hid=component['hid'])
+            except Device.DoesNotExist:
+                event.components.create(**component)
+            else:
+                event.components.add(device)
+        
+        return event
 
 
 class EventWritableSerializer(serializers.ModelSerializer):

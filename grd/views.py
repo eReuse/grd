@@ -32,7 +32,7 @@ class DeviceView(viewsets.ModelViewSet):
     def create_event(self, serializer, type):
         serializer.is_valid(raise_exception=True)
         
-        return serializer.save(  # TODO replace with .create?
+        return serializer.save(
             agent=self.request.user.agent,
             device=self.get_object(),
             type=type
@@ -68,27 +68,8 @@ class DeviceView(viewsets.ModelViewSet):
         serializer = RegisterSerializer(data=request.data,
                                         context={'request': request})
         
-        # TODO(santiago): move this logic to the serializer
         serializer.is_valid(raise_exception=True)
-        data = serializer.validated_data
-        
-        # create devices and events
-        try:
-            dev = Device.objects.get(hid=data['device']['hid'])
-        except Device.DoesNotExist:
-            dev = Device.objects.create(**data['device'])
-        agent = request.user.agent
-        event = dev.events.create(type=Event.REGISTER, agent=agent,
-                                  event_time=data['event_time'],
-                                  by_user=data['by_user'])
-        
-        for component in data['components']:
-            try:
-                device = Device.objects.get(hid=component['hid'])
-            except Device.DoesNotExist:
-                event.components.create(**component)
-            else:
-                event.components.add(device)
+        event = serializer.save(agent=request.user.agent)
         
         return self.get_success_event_creation_response(request, event)
     
