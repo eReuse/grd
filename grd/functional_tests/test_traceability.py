@@ -204,6 +204,26 @@ class CollectTest(BaseTestCase):
 
 class RegisterTest(BaseTestCase):
     """https://www.wrike.com/open.htm?id=47864362"""
+    def assertDeviceHasComponents(self, device_url, components):
+        response = self.client.get(device_url)
+        self.assertNotEqual(404, response.status_code, response.content)
+        device = response.data
+        
+        self.assertEqual(len(device['components']), len(components))
+        
+        device_components = []
+        for dev_url in device['components']:
+            dev = self.client.get(dev_url).data
+            device_components.append({
+                'hid': dev['hid'],
+                'id': dev['id'],
+                'type': dev['type'],
+            })
+        
+        device_components = sorted(device_components, key=lambda k: k['hid'])
+        components = sorted(components, key=lambda k: k['hid'])
+        
+        self.assertEqual(device_components, components)
     
     def test_register_device(self):
         # XSR wants to use etraceability functionality of ereuse.
@@ -236,36 +256,21 @@ class RegisterTest(BaseTestCase):
         self.assertGreater(len(devices), 0)
         
         # It verifies that the device has the proper id
-        response = self.client.get(new_device_url)
-        dev = response.data
-        self.assertEqual(dev['id'], data['device']['id'])
-        self.assertEqual(dev['hid'], data['device']['hid'])
+        device = self.client.get(new_device_url).data
+        self.assertEqual(device['id'], data['device']['id'])
+        self.assertEqual(device['hid'], data['device']['hid'])
         
         # It checks that device includes related components
-        self.assertEqual(len(dev['components']), len(data['components']))
-        
-        components = []
-        for dev_url in dev['components']:
-            dev = self.client.get(dev_url).data
-            components.append({
-                'hid': dev['hid'],
-                'id': dev['id'],
-                'type': dev['type'],
-            })
-        
-        components = sorted(components, key=lambda k: k['hid'])
-        data_comps = sorted(data['components'], key=lambda k: k['hid'])
-        
-        self.assertEqual(components, data_comps)
+        self.assertDeviceHasComponents(new_device_url, data['components'])
         
         # It checks that the device event includes register event
-        response = self.client.get(dev['url'] + 'events/')
+        response = self.client.get(device['url'] + 'events/')
         self.assertEqual(200, response.status_code, response.content)
         events = response.data
         self.assertGreater(len(events), 0)
         
         # It checks that the component has inherit the event
-        for component in dev['components']:
+        for component in device['components']:
             comp_events = self.client.get(component + 'events/').data
             self.assertGreater(len(comp_events), 0)
     
@@ -299,27 +304,12 @@ class RegisterTest(BaseTestCase):
         new_device_url = response.data['device']
         
         # It verifies that the device has the proper id
-        response = self.client.get(new_device_url)
-        dev = response.data  # FIXME rename dev > device
-        self.assertEqual(dev['id'], data['device']['id'])
-        self.assertEqual(dev['hid'], data['device']['hid'])
+        device = self.client.get(new_device_url).data
+        self.assertEqual(device['id'], data['device']['id'])
+        self.assertEqual(device['hid'], data['device']['hid'])
         
         # It checks that device includes same components
-        self.assertEqual(len(dev['components']), len(data['components']))
-        
-        components = []
-        for dev_url in dev['components']:
-            dev = self.client.get(dev_url).data
-            components.append({
-                'hid': dev['hid'],
-                'id': dev['id'],
-                'type': dev['type'],
-            })
-        
-        components = sorted(components, key=lambda k: k['hid'])
-        data_comps = sorted(data['components'], key=lambda k: k['hid'])
-        
-        self.assertEqual(components, data_comps)
+        self.assertDeviceHasComponents(device['url'], data['components'])
          
         # It checks that device event includes register event
         response = self.client.get(new_device_url + 'events/')
@@ -361,22 +351,7 @@ class RegisterTest(BaseTestCase):
         
         # It checks that device includes updated components
         device_url = response.data['device']
-        response = self.client.get(device_url)
-        device = response.data
-        
-        components = []
-        for dev_url in device['components']:
-            dev = self.client.get(dev_url).data
-            components.append({
-                'hid': dev['hid'],
-                'id': dev['id'],
-                'type': dev['type'],
-            })
-        
-        components = sorted(components, key=lambda k: k['hid'])
-        data_comps = sorted(data['components'], key=lambda k: k['hid'])
-        
-        self.assertEqual(components, data_comps)
+        self.assertDeviceHasComponents(device_url, data['components'])
 
 
 class RecycleTest(BaseTestCase):
