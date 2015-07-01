@@ -274,7 +274,7 @@ class RegisterTest(BaseTestCase):
         # which is already being traced by the GRD.
         self.assertEqual(0, self.count_listed_objects('/api/devices/'))
         
-        # It had registered a device
+        # PRE: It had registered a device
         data = {
             'device': {
                 'id': '//xsr.cat/device/1234',
@@ -300,7 +300,7 @@ class RegisterTest(BaseTestCase):
         
         # It verifies that the device has the proper id
         response = self.client.get(new_device_url)
-        dev = response.data
+        dev = response.data  # FIXME rename dev > device
         self.assertEqual(dev['id'], data['device']['id'])
         self.assertEqual(dev['hid'], data['device']['hid'])
         
@@ -340,8 +340,43 @@ class RegisterTest(BaseTestCase):
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(400, response.status_code, response.content)
     
-    # TODO def test_register_updating_components(self):
+    def test_register_updating_components(self):
+        # PRE: It had registered a device
+        data = {
+            'device': {
+                'id': '//xsr.cat/device/1234',
+                'hid': 'XPS13-1111-2222',
+                'type': 'computer',
+            },
+            'event_time': '2012-04-10T22:38:20.604391Z',
+            'by_user': 'foo',
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
+        }
+        self.client.post('/api/devices/register/', data=data)
+        
+        # It takes a snapshot of the device with different components
+        data['components'] = [{'id': '2', 'hid': 'R5', 'type': 'monitor'}]
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        
         # It checks that device includes updated components
+        device_url = response.data['device']
+        response = self.client.get(device_url)
+        device = response.data
+        
+        components = []
+        for dev_url in device['components']:
+            dev = self.client.get(dev_url).data
+            components.append({
+                'hid': dev['hid'],
+                'id': dev['id'],
+                'type': dev['type'],
+            })
+        
+        components = sorted(components, key=lambda k: k['hid'])
+        data_comps = sorted(data['components'], key=lambda k: k['hid'])
+        
+        self.assertEqual(components, data_comps)
 
 
 class RecycleTest(BaseTestCase):
