@@ -118,6 +118,10 @@ class Event(models.Model):
     
     class Meta:
         get_latest_by = 'timestamp'
+        # WARNING: the order of the events affects the computation of
+        # the device's state, so be sure that you know what are you
+        # doing before changing this field.
+        ordering = ['timestamp']
     
     def __str__(self):
         event_date = self.timestamp.strftime("%Y-%m-%d")

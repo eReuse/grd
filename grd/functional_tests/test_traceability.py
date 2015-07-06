@@ -501,10 +501,7 @@ class RemoveTest(BaseTestCase):
         # Check that device 1 doesn't have device 2 as component anymore
         device_one = self.client.get(device_one_url).data
         device_two = self.client.get(device_two_url).data
-        self.assertNotIn(
-            device_two['url'],
-            [comp['url'] for comp in device_one['components']]
-        )
+        self.assertNotIn(device_two['url'], device_one['components'])
     
     def test_remove_component_not_in_the_device(self):
         # PRE: 2 registered devices that are NOT related
@@ -514,10 +511,7 @@ class RemoveTest(BaseTestCase):
         
         device_one = self.client.get(device_one_url).data
         device_two = self.client.get(device_two_url).data
-        self.assertNotIn(
-            device_two['url'],
-            [comp['url'] for comp in device_one['components']]
-        )
+        self.assertNotIn(device_two['url'], device_one['components'])
         
         # Remove device 2 of device 1
         remove_data = {
