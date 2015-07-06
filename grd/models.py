@@ -145,7 +145,7 @@ class Agent(models.Model):
 
 
 class Location(gis_models.Model):
-    #TODO default spatial reference system for geometry fields is WGS84
+    # TODO default spatial reference system for geometry fields is WGS84
     label = models.CharField(max_length=50)
     lon = models.FloatField()
     lat = models.FloatField()

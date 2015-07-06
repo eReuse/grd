@@ -11,4 +11,7 @@ class AgentTest(TestCase):
     
     def test_get_absolute_url(self):
         agent = Agent.objects.first()
-        self.assertEqual(agent.get_absolute_url(), '/api/agents/%d/' % (agent.pk,))
+        self.assertEqual(
+            agent.get_absolute_url(),
+            '/api/agents/%d/' % agent.pk
+        )

@@ -1,0 +1,48 @@
+import unittest
+
+from django.test import TestCase
+from django.utils import timezone
+from grd.models import Agent, Device, Event
+
+
+class EventTest(TestCase):
+    fixtures = ['agents.json', 'devices.json', 'events.json', 'users.json']
+    
+    def test_event_representation(self):
+        for event in Event.objects.all():
+            self.assertIsNotNone(repr(event))
+    
+    def test_event_creation(self):
+        e = Event.objects.create(
+            type=Event.REGISTER,
+            data={'to': '1', 'extra_info': 'blibli'},
+            event_time=timezone.now(),
+            by_user='John',
+            agent=Agent.objects.first(),
+            device=Device.objects.first(),
+        )
+        self.assertEqual('1', e.data['to'])
+        self.assertEqual('blibli', e.data['extra_info'])
+    
+    @unittest.skip
+    def test_event_to(self):
+        # XXX fixture?
+        e = Event.objects.create(
+            type=Event.REGISTER,
+            event_time=timezone.now(),
+            by_user='John',
+            agent=Agent.objects.first(),
+            device=Device.objects.first(),
+        )
+        self.assertEqual(None, e.to)
+        
+        migrate_to = str(Agent.objects.last().pk)
+        e = Event.objects.create(
+            type=Event.MIGRATE,
+            data={'to': migrate_to},
+            event_time=timezone.now(),
+            by_user='John',
+            agent=Agent.objects.first(),
+            device=Device.objects.first(),
+        )
+        self.assertEqual(migrate_to, e.to)
