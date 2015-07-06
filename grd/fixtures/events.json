@@ -3,10 +3,10 @@
     "pk": 1,
     "fields": {
         "by_user": "foo",
-        "device": "8514b4b1-1107-46cc-b0a9-bd97b82510c4",
+        "device": "XPS13-1111-2222",
         "data": {},
         "components": [
-            "bd381ed1-5ee7-440b-96bb-29e30f89a286"
+            "DDR3"
         ],
         "timestamp": "2015-05-29T12:11:53.127Z",
         "agent": 1,
@@ -19,7 +19,7 @@
     "pk": 2,
     "fields": {
         "by_user": "some authorized recycler",
-        "device": "8514b4b1-1107-46cc-b0a9-bd97b82510c4",
+        "device": "XPS13-1111-2222",
         "data": {},
         "components": [],
         "timestamp": "2015-05-29T12:11:53.152Z",

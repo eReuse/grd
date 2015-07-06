@@ -36,8 +36,8 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Device
-        fields = ('uuid', 'url', 'id', 'hid', 'type', 'components')
-        read_only_fields = ('uuid', 'url', 'components')
+        fields = ('url', 'hid', 'id', 'type', 'components')
+        read_only_fields = ('url', 'components')
 
 
 class EventSerializer(serializers.HyperlinkedModelSerializer):
