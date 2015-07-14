@@ -347,6 +347,30 @@ class RegisterTest(BaseTestCase):
             comp_events = self.client.get(component + 'events/').data
             self.assertGreater(len(comp_events), 0)
     
+    def test_register_device_with_location(self):
+        # PRE: It had registered a device
+        data = {
+            'device': {
+                'id': '//xsr.cat/device/1234',
+                'hid': 'XPS13-1111-2222',
+                'type': 'computer',
+            },
+            'components': [],
+            'event_time': '2012-04-10T22:38:20.604391Z',
+            'by_user': 'foo',
+            'location': {
+                'lat': 27.9878943,
+                'lon': 86.9247837,
+            }
+        }
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        
+        # it checks that it has the proper location
+        event = response.data
+        self.assertIsNotNone(event['location'])
+        self.assertEqual(event['location'], data['location'])
+    
     def test_register_no_data(self):
         response = self.client.post('/api/devices/register/', data=None)
         self.assertEqual(400, response.status_code, response.content)

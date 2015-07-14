@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Agent, Device, Event
+from .models import Agent, Device, Event, Location
 
 
 User = get_user_model()
@@ -40,11 +40,18 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ('url', 'components')
 
 
+class LocationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Location
+        fields = ('lat', 'lon')
+
+
 class EventSerializer(serializers.HyperlinkedModelSerializer):
     agent = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='agent-detail'
     )
+    location = LocationSerializer()
     to = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='agent-detail'
@@ -53,16 +60,17 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Event
         fields = ('url', 'timestamp', 'type', 'device', 'agent', 'components',
-                  'to')
+                  'to', 'location')
 
 
 class RegisterSerializer(serializers.ModelSerializer):
     device = DeviceSerializer()
     components = DeviceSerializer(many=True)
+    location = LocationSerializer(required=False)
     
     class Meta:
         model = Event
-        fields = ('device', 'event_time', 'by_user', 'components')
+        fields = ('device', 'event_time', 'by_user', 'components', 'location')
     
     def save(self, agent=None, **kwargs):
         # create devices and events
@@ -83,6 +91,12 @@ class RegisterSerializer(serializers.ModelSerializer):
                 event.components.create(**component)
             else:
                 event.components.add(device)
+        
+        # TODO refactor location creation
+        location = LocationSerializer(data=data.get('location', None))
+        if location.is_valid():
+            location.validated_data['event_id'] = event.pk
+            location.create(location.validated_data)
         
         return event
 
