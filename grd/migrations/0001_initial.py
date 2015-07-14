@@ -2,8 +2,8 @@
 from __future__ import unicode_literals
 
 from django.db import models, migrations
-import django.contrib.postgres.fields.hstore
 from django.conf import settings
+import django.contrib.postgres.fields.hstore
 
 
 class Migration(migrations.Migration):
@@ -97,12 +97,12 @@ class Migration(migrations.Migration):
             ],
             options={
                 'get_latest_by': 'timestamp',
+                'ordering': ['timestamp'],
             },
         ),
         migrations.CreateModel(
             name='Location',
             fields=[
-                ('label', models.CharField(max_length=50)),
                 ('lon', models.FloatField()),
                 ('lat', models.FloatField()),
                 ('event', models.OneToOneField(serialize=False, to='grd.Event',
