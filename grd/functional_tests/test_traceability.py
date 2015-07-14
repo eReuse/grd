@@ -1,4 +1,5 @@
 import time
+import unittest
 
 from django.contrib.auth import get_user_model
 
@@ -8,6 +9,78 @@ from grd.models import Agent, Device, Event
 
 User = get_user_model()
 
+@unittest.skip
+# TODO update test according to new specs
+class SnaphostTest(BaseTestCase):
+    def test_snapshot_traced_device(self):
+        # XSR wants to take a snapshot of the current status of a device
+        # which is already being traced by the GRD.
+        self.assertEqual(0, self.count_listed_objects('/api/devices/'))
+        
+        # PRE: It had registered a device
+        data = {
+            'device': {
+                'id': '//xsr.cat/device/1234',
+                'hid': 'XPS13-1111-2222',
+                'type': 'computer',
+            },
+            'event_time': '2012-04-10T22:38:20.604391Z',
+            'by_user': 'foo',
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
+        }
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(2, self.count_listed_objects('/api/devices/'))
+        
+        # It registers a already traced device
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        self.assertEqual(2, self.count_listed_objects('/api/devices/'))
+        
+        # It checks that the last event is register
+        
+        self.assertEventType(response['Location'], 'register')
+        new_device_url = response.data['device']
+        
+        # It verifies that the device has the proper id
+        device = self.client.get(new_device_url).data
+        self.assertEqual(device['id'], data['device']['id'])
+        self.assertEqual(device['hid'], data['device']['hid'])
+        
+        # It checks that device includes same components
+        self.assertDeviceHasComponents(device['url'], data['components'])
+         
+        # It checks that device event includes register event
+        response = self.client.get(new_device_url + 'events/')
+        self.assertEqual(200, response.status_code, response.content)
+        events = response.data
+        self.assertEqual(len(events), 2)
+    
+    
+    def test_snapshot_updating_components(self):
+        # PRE: It had registered a device
+        data = {
+            'device': {
+                'id': '//xsr.cat/device/1234',
+                'hid': 'XPS13-1111-2222',
+                'type': 'computer',
+            },
+            'event_time': '2012-04-10T22:38:20.604391Z',
+            'by_user': 'foo',
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
+        }
+        self.client.post('/api/devices/register/', data=data)
+        
+        # It takes a snapshot of the device with different components
+        data['components'] = [{'id': '2', 'hid': 'R5', 'type': 'monitor'}]
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        
+        # It checks that device includes updated components
+        device_url = response.data['device']
+        self.assertDeviceHasComponents(device_url, data['components'])
+
+
+    
 
 class MigrateTest(BaseTestCase):
     """https://www.wrike.com/open.htm?id=47891868"""
@@ -274,49 +347,6 @@ class RegisterTest(BaseTestCase):
             comp_events = self.client.get(component + 'events/').data
             self.assertGreater(len(comp_events), 0)
     
-    def test_register_already_traced_device(self):
-        # XSR wants to take a snapshot of the current status of a device
-        # which is already being traced by the GRD.
-        self.assertEqual(0, self.count_listed_objects('/api/devices/'))
-        
-        # PRE: It had registered a device
-        data = {
-            'device': {
-                'id': '//xsr.cat/device/1234',
-                'hid': 'XPS13-1111-2222',
-                'type': 'computer',
-            },
-            'event_time': '2012-04-10T22:38:20.604391Z',
-            'by_user': 'foo',
-            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
-        }
-        response = self.client.post('/api/devices/register/', data=data)
-        self.assertEqual(2, self.count_listed_objects('/api/devices/'))
-        
-        # It registers a alreday traced device
-        response = self.client.post('/api/devices/register/', data=data)
-        self.assertEqual(201, response.status_code, response.content)
-        self.assertEqual(2, self.count_listed_objects('/api/devices/'))
-        
-        # It checks that the last event is register
-        
-        self.assertEventType(response['Location'], 'register')
-        new_device_url = response.data['device']
-        
-        # It verifies that the device has the proper id
-        device = self.client.get(new_device_url).data
-        self.assertEqual(device['id'], data['device']['id'])
-        self.assertEqual(device['hid'], data['device']['hid'])
-        
-        # It checks that device includes same components
-        self.assertDeviceHasComponents(device['url'], data['components'])
-         
-        # It checks that device event includes register event
-        response = self.client.get(new_device_url + 'events/')
-        self.assertEqual(200, response.status_code, response.content)
-        events = response.data
-        self.assertEqual(len(events), 2)
-    
     def test_register_no_data(self):
         response = self.client.post('/api/devices/register/', data=None)
         self.assertEqual(400, response.status_code, response.content)
@@ -330,7 +360,7 @@ class RegisterTest(BaseTestCase):
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(400, response.status_code, response.content)
     
-    def test_register_updating_components(self):
+    def test_register_already_traced_device(self):
         # PRE: It had registered a device
         data = {
             'device': {
@@ -342,18 +372,13 @@ class RegisterTest(BaseTestCase):
             'by_user': 'foo',
             'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
         }
-        self.client.post('/api/devices/register/', data=data)
-        
-        # It takes a snapshot of the device with different components
-        data['components'] = [{'id': '2', 'hid': 'R5', 'type': 'monitor'}]
         response = self.client.post('/api/devices/register/', data=data)
-        self.assertEqual(201, response.status_code, response.content)
+        self.assertEqual(2, self.count_listed_objects('/api/devices/'))
         
-        # It checks that device includes updated components
-        device_url = response.data['device']
-        self.assertDeviceHasComponents(device_url, data['components'])
-
-
+        # It tries to register again an already traced device
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(400, response.status_code, response.content)
+    
 class RecycleTest(BaseTestCase):
     """https://www.wrike.com/open.htm?id=48035113"""
     

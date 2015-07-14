@@ -32,7 +32,6 @@ class EventTest(TestCase):
         )
         loc = Location.objects.create(
             event=e,
-            label='label1',
             lon=0.0,
             lat=0.0,
         )
