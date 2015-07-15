@@ -108,10 +108,19 @@ class EventWritableSerializer(serializers.ModelSerializer):
         queryset=Device.objects.all(),
         slug_field='hid',
     )
+    location = LocationSerializer(required=False)
     
     class Meta:
         model = Event
-        fields = ('event_time', 'by_user', 'components')
+        fields = ('event_time', 'by_user', 'components', 'location')
+    
+    def create(self, validated_data):
+        location_data = validated_data.pop('location', None)
+        event = super(EventWritableSerializer, self).create(validated_data)
+        
+        if location_data is not None:
+            Location.objects.create(event=event, **location_data)
+        return event
 
 
 class MigrateSerializer(EventWritableSerializer):
@@ -122,7 +131,7 @@ class MigrateSerializer(EventWritableSerializer):
     
     class Meta:
         model = Event
-        fields = ('event_time', 'by_user', 'components', 'to')
+        fields = ('event_time', 'by_user', 'components', 'to', 'location')
     
     def save(self, **kwargs):
         to = self.validated_data.pop('to')

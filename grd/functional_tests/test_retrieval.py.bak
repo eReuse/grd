@@ -1,0 +1,42 @@
+import sys
+
+from django.contrib.staticfiles.testing import StaticLiveServerTestCase
+from rest_framework.test import APILiveServerTestCase
+
+
+class ApiTest(APILiveServerTestCase):
+    fixtures = ['agents.json', 'devices.json', 'events.json', 'users.json']
+    
+    @classmethod
+    def setUpClass(cls):
+        for arg in sys.argv:
+            if 'liveserver' in arg:
+                print("HHHHHH")
+                cls.server_url = 'http://' + arg.split('=')[1]
+                return
+        super().setUpClass()
+        cls.server_url = cls.live_server_url
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.server_url == cls.live_server_url:
+            super().tearDownClass()
+    
+    def test_retrieve_api_base(self):
+        response = self.client.get('/api/')
+        response = self.client.get(self.server_url)
+        self.assertEqual(200, response.status_code)
+    
+    def test_retrieve_device_list(self):
+        response = self.client.get('/api/devices/')
+        self.assertEqual(200, response.status_code)
+    
+    def test_retrieve_event_list(self):
+        response = self.client.get('/api/events/')
+        self.assertEqual(200, response.status_code)
+    
+    def test_retrieve_event_detail(self):
+        response = self.client.get('/api/events/1/')
+        self.assertEqual(200, response.status_code)
+        event = response.data
+        self.assertIn('url', event)

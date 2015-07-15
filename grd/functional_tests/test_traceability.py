@@ -491,6 +491,23 @@ class RecycleTest(BaseTestCase):
             last_event = self.get_latest_event(comp_events)
             self.assertEqual('recycle', last_event['type'])
     
+    def test_recycle_device_with_location(self):
+        data = {
+            'event_time': '2014-04-10T22:38:20.604391Z',
+            'by_user': 'some authorized recycler',
+            'location': {
+                'lat': 27.9878943,
+                'lon': 86.9247837,
+            }
+        }
+        response = self.client.post(self.device_url + 'recycle/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        
+        # it checks that it has the proper location
+        event = response.data
+        self.assertIsNotNone(event['location'])
+        self.assertEqual(event['location'], data['location'])
+    
     def test_recycle_no_data(self):
         # He tries to recycle the device
         response = self.client.post(self.device_url + 'recycle/', data=None)
