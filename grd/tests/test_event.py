@@ -30,7 +30,7 @@ class EventTest(TestCase):
             agent=Agent.objects.first(),
             device=Device.objects.first(),
         )
-        loc = Location.objects.create(
+        Location.objects.create(
             event=e,
             lon=0.0,
             lat=0.0,

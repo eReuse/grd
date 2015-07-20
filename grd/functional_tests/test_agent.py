@@ -12,16 +12,18 @@ class AgentTest(BaseTestCase):
         self.username = 'admin'
         self.password = 'adminpass'
         User = get_user_model()
-        user = User.objects.create_superuser(self.username,
-                                             'test@localhost',
-                                             self.password)
+        User.objects.create_superuser(
+            self.username,
+            'test@localhost',
+            self.password
+        )
         
         # log in as superuser
         token = self.get_user_token(self.username, self.password)
         self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
     
     def test_CRUD(self):
-        #create(self):
+        # create
         data = {
             'name': 'Xarxa Support Reutilització',
             'description': 'Reutilitza.cat és una xarxa social.',

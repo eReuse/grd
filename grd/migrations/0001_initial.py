@@ -73,7 +73,7 @@ class Migration(migrations.Migration):
                             ('remove', 'REMOVE'),
                             ('migrate', 'MIGRATE')
                         ],
-                    max_length=16)
+                        max_length=16)
                 ),
                 (
                     'data',
