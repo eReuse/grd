@@ -9,35 +9,6 @@ from grd.models import Agent, Device, Event
 
 User = get_user_model()
 
-# TODO update test according to new specs
-class SnapshotTest(BaseTestCase):
-    
-    @unittest.skip("TBD")
-    def test_snapshot_updating_components(self):
-        # PRE: It had registered a device
-        data = {
-            'device': {
-                'id': '//xsr.cat/device/1234',
-                'hid': 'XPS13-1111-2222',
-                'type': 'computer',
-            },
-            'event_time': '2012-04-10T22:38:20.604391Z',
-            'by_user': 'foo',
-            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
-        }
-        self.client.post('/api/devices/register/', data=data)
-        
-        # It takes a snapshot of the device with different components
-        data['components'] = [{'id': '2', 'hid': 'R5', 'type': 'monitor'}]
-        response = self.client.post('/api/devices/register/', data=data)
-        self.assertEqual(201, response.status_code, response.content)
-        
-        # It checks that device includes updated components
-        device_url = response.data['device']
-        self.assertDeviceHasComponents(device_url, data['components'])
-
-
-    
 
 class MigrateTest(BaseTestCase):
     """https://www.wrike.com/open.htm?id=47891868"""
@@ -384,6 +355,31 @@ class RegisterTest(BaseTestCase):
         events = response.data
         self.assertEqual(len(events), 2)
     
+    def test_snapshot_updating_components(self):
+        # TODO should a snapshot be replaced with add/remove events?
+        # PRE: It had registered a device
+        data = {
+            'device': {
+                'id': '//xsr.cat/device/1234',
+                'hid': 'XPS13-1111-2222',
+                'type': 'computer',
+            },
+            'event_time': '2012-04-10T22:38:20.604391Z',
+            'by_user': 'foo',
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
+        }
+        self.client.post('/api/devices/register/', data=data)
+        
+        # It takes a snapshot of the device with different components
+        data['components'] = [{'id': '2', 'hid': 'R5', 'type': 'monitor'}]
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        
+        # It checks that device includes updated components
+        device_url = response.data['device']
+        self.assertDeviceHasComponents(device_url, data['components'])
+
+
 class RecycleTest(BaseTestCase):
     """https://www.wrike.com/open.htm?id=48035113"""
     
