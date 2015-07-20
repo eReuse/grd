@@ -43,10 +43,7 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
                 last_event = event
         return last_event
     
-    def assertEventType(self, event_url, type, agent_name=None):
-        if agent_name is None:
-            agent_name = self.agent.name
-        
+    def assertEventType(self, event_url, type):
         response = self.client.get(event_url)
         self.assertEqual(200, response.status_code, response.content)
         
@@ -56,4 +53,4 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
         response = self.client.get(event['agent'])
         self.assertEqual(200, response.status_code, response.content)
         agent = response.data
-        self.assertEqual(agent_name, agent['name'])
+        self.assertEqual(self.agent.name, agent['name'])
