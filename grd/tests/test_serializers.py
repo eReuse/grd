@@ -1,6 +1,6 @@
 from django.test import TestCase
 
-from grd.serializers import DeviceSerializer
+from grd.serializers import DeviceSerializer, DeviceRegisterSerializer
 
 
 class DeviceSerializerTest(TestCase):
@@ -44,3 +44,33 @@ class DeviceSerializerTest(TestCase):
         }
         serializer = DeviceSerializer(data=data)
         self.assertFalse(serializer.is_valid())
+
+
+class DeviceRegisterSerializerTest(TestCase):
+    
+    def test_unregistered_device(self):
+        data = {
+            'id': '//xsr.cat/device/1234',
+            'hid': 'XPS13-1111-2222',
+            'type': 'computer',
+        }
+        serializer = DeviceRegisterSerializer(data=data)
+        self.assertTrue(serializer.is_valid())
+        
+        # check if deserialized object is a valid object
+        obj = serializer.save()
+        obj.full_clean()
+    
+    def test_registered_device(self):
+        data = {
+            'id': '//xsr.cat/device/1234',
+            'hid': 'XPS13-1111-2222',
+            'type': 'computer',
+        }
+        # PRE - already exists a Device with this HID
+        from grd.models import Device
+        Device.objects.create(**data)
+        self.assertTrue(Device.objects.filter(hid=data['hid']).exists())
+        
+        serializer = DeviceRegisterSerializer(data=data)
+        self.assertTrue(serializer.is_valid(), serializer.errors)

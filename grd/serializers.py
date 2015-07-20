@@ -27,6 +27,21 @@ class AgentSerializer(serializers.HyperlinkedModelSerializer):
         return agent
 
 
+class DeviceRegisterSerializer(serializers.ModelSerializer):
+    hid = serializers.CharField(label='Hardware identifier.', max_length=128)
+    
+    class Meta:
+        model = Device
+        fields = ('hid', 'id', 'type')
+    
+    def create(self, validated_data):
+        obj, _ = Device.objects.get_or_create(
+            hid=validated_data.pop('hid'),
+            defaults=validated_data
+        )
+        return obj
+
+
 class DeviceSerializer(serializers.HyperlinkedModelSerializer):
     components = serializers.HyperlinkedRelatedField(
         many=True,
@@ -64,8 +79,8 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    device = DeviceSerializer()
-    components = DeviceSerializer(many=True)
+    device = DeviceRegisterSerializer()
+    components = DeviceRegisterSerializer(many=True)
     location = LocationSerializer(required=False)
     
     class Meta:
@@ -76,21 +91,15 @@ class RegisterSerializer(serializers.ModelSerializer):
         # create devices and events
         data = self.validated_data
         
-        try:
-            dev = Device.objects.get(hid=data['device']['hid'])
-        except Device.DoesNotExist:
-            dev = Device.objects.create(**data['device'])
+        dev = DeviceRegisterSerializer().create(data.pop('device'))
         event = dev.events.create(type=Event.REGISTER, agent=agent,
                                   event_time=data['event_time'],
                                   by_user=data['by_user'])
         
-        for component in data['components']:
-            try:
-                device = Device.objects.get(hid=component['hid'])
-            except Device.DoesNotExist:
-                event.components.create(**component)
-            else:
-                event.components.add(device)
+        for device_data in data['components']:
+            event.components.add(
+                DeviceRegisterSerializer().create(device_data)
+            )
         
         # TODO refactor location creation
         location = LocationSerializer(data=data.get('location', None))
