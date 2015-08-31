@@ -9,11 +9,13 @@ from django.db.models import Q
 class Device(models.Model):
     # Device types
     COMPUTER = 'computer'
+    LAPTOP = 'laptop'
     MOBILE = 'mobile'
     MONITOR = 'monitor'
     PERIPHERAL = 'peripheral'
     TYPES = (
         (COMPUTER, 'computer'),
+        (LAPTOP, 'laptop'),
         (MOBILE, 'mobile'),
         (MONITOR, 'monitor'),
         (PERIPHERAL, 'peripheral'),
