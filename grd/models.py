@@ -108,7 +108,7 @@ class Event(models.Model):
     data = HStoreField(default={})  # A field for storing mappings of strings to strings.
     
     event_time = models.DateTimeField('Time when the event has happened.')
-    by_user = models.CharField('User who performs the event.', max_length=32)
+    by_user = models.CharField('User who performs the event.', max_length=128)
     
     agent = models.ForeignKey('Agent', related_name='+')
     device = models.ForeignKey('Device', related_name='events')
