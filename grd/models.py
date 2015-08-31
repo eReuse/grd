@@ -8,11 +8,11 @@ from django.db.models import Q
 
 class Device(models.Model):
     # Device types
-    COMPUTER = 'computer'
-    LAPTOP = 'laptop'
-    MOBILE = 'mobile'
-    MONITOR = 'monitor'
-    PERIPHERAL = 'peripheral'
+    COMPUTER = 'Computer'
+    LAPTOP = 'Laptop'
+    MOBILE = 'Mobile'
+    MONITOR = 'Monitor'
+    PERIPHERAL = 'Peripheral'
     TYPES = (
         (COMPUTER, 'computer'),
         (LAPTOP, 'laptop'),
@@ -77,22 +77,22 @@ class EventManager(models.Manager):
 
 class Event(models.Model):
     # initial events (iteration 1)
-    REGISTER = 'register'
-    RECYCLE = 'recycle'
+    REGISTER = 'Register'
+    RECYCLE = 'Recycle'
     
     # base events (iteration 2)
-    USE = 'use'
-    TRANSFER = 'transfer'
-    COLLECT = 'collect'
+    USE = 'Use'
+    TRANSFER = 'Transfer'
+    COLLECT = 'Collect'
     
     # extended events (iteration 3)
-    DEREGISTER = 'deregister'
-    LOCATE = 'locate'
-    ADD = 'add'
-    REMOVE = 'remove'
-    SNAPSHOT = 'snapshot'
-    MIGRATE = 'migrate'
-    INCIDENCE = 'incidence'
+    DEREGISTER = 'Deregister'
+    LOCATE = 'Locate'
+    ADD = 'Add'
+    REMOVE = 'Remove'
+    SNAPSHOT = 'Snapshot'
+    MIGRATE = 'Migrate'
+    INCIDENCE = 'Incidence'
     
     TYPES = (
         (REGISTER, 'REGISTER'),
