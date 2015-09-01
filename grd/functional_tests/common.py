@@ -39,7 +39,7 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
         assert len(events) > 0
         last_event = events[0]
         for event in events:
-            if event['timestamp'] > last_event['timestamp']:
+            if event['grdTimestamp'] > last_event['grdTimestamp']:
                 last_event = event
         return last_event
     

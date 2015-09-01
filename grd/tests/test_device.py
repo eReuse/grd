@@ -28,8 +28,8 @@ class DeviceTest(TestCase):
             agent=Agent.objects.first(),
             device=self.device_one,
             type=Event.ADD,
-            event_time=timezone.now(),
-            by_user='XSR',
+            date=timezone.now(),
+            byUser='XSR',
         )
         event.components.add(self.device_two)
         self.assertEqual(self.device_two.parent, self.device_one)
@@ -63,8 +63,8 @@ class ComponentsTest(TestCase):
             agent=Agent.objects.first(),
             device=self.device_one,
             type=Event.REMOVE,
-            event_time=timezone.now(),
-            by_user='XSR',
+            date=timezone.now(),
+            byUser='XSR',
         )
         event.components.add(self.device_two)
         self.assertIsNone(self.device_two.parent)

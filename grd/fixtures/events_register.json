@@ -2,28 +2,28 @@
 {
     "pk": 1,
     "fields": {
-        "by_user": "foo",
+        "byUser": "foo",
         "device": "XPS13-1111-2222",
         "data": {},
         "components": [],
-        "timestamp": "2015-05-29T12:11:53.127Z",
+        "grdTimestamp": "2015-05-29T12:11:53.127Z",
         "agent": 1,
-        "event_time": "2012-04-10T22:38:20.604Z",
-        "type": "register"
+        "date": "2012-04-10T22:38:20.604Z",
+        "type": "Register"
     },
     "model": "grd.event"
 },
 {
     "pk": 2,
     "fields": {
-        "by_user": "foo",
+        "byUser": "foo",
         "device": "DDR3",
         "data": {},
         "components": [],
-        "timestamp": "2015-05-29T12:11:53.127Z",
+        "grdTimestamp": "2015-05-29T12:11:53.127Z",
         "agent": 1,
-        "event_time": "2012-04-10T22:38:20.604Z",
-        "type": "register"
+        "date": "2012-04-10T22:38:20.604Z",
+        "type": "Register"
     },
     "model": "grd.event"
 }

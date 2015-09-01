@@ -76,6 +76,7 @@ class EventManager(models.Manager):
 
 
 class Event(models.Model):
+    # TODO(santiago) clean and update Event.TYPES
     # initial events (iteration 1)
     REGISTER = 'Register'
     RECYCLE = 'Recycle'
@@ -106,28 +107,28 @@ class Event(models.Model):
         (LOCATE, 'LOCATE'),
     )
     
-    timestamp = models.DateTimeField(auto_now_add=True)
     type = models.CharField(max_length=16, choices=TYPES)
-    data = HStoreField(default={})  # A field for storing mappings of strings to strings.
-    
-    event_time = models.DateTimeField('Time when the event has happened.')
-    by_user = models.CharField('User who performs the event.', max_length=128)
+    date = models.DateTimeField('Time when the event has happened.')
+    grdTimestamp = models.DateTimeField(auto_now_add=True)
+    byUser = models.CharField('User who performs the event.', max_length=128)
     
     agent = models.ForeignKey('Agent', related_name='+')
     device = models.ForeignKey('Device', related_name='events')
     components = models.ManyToManyField('Device', related_name='parent_events')
     
+    data = HStoreField(default={})  # A field for storing mappings of strings to strings.
+    
     objects = EventManager()
     
     class Meta:
-        get_latest_by = 'timestamp'
+        get_latest_by = 'grdTimestamp'
         # WARNING: the order of the events affects the computation of
         # the device's state, so be sure that you know what are you
         # doing before changing this field.
-        ordering = ['timestamp']
+        ordering = ['grdTimestamp']
     
     def __str__(self):
-        event_date = self.timestamp.strftime("%Y-%m-%d")
+        event_date = self.grdTimestamp.strftime("%Y-%m-%d")
         return "%s %s %s" % (self.agent, self.type, event_date)
     
     @property

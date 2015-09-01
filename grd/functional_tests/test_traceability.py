@@ -24,8 +24,8 @@ class MigrateTest(BaseTestCase):
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
-            'event_time': '2012-04-10T22:38:20.604391Z',
-            'by_user': 'foo',
+            'date': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'foo',
             'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -40,8 +40,8 @@ class MigrateTest(BaseTestCase):
     def test_migrate_device(self):
         agent2 = self.client.get(self.agent2.get_absolute_url()).data
         event_data = {
-            'event_time': '2015-04-10T22:38:20.604391Z',
-            'by_user': 'foo',
+            'date': '2015-04-10T22:38:20.604391Z',
+            'byUser': 'foo',
             'to': agent2['url'],
         }
         
@@ -50,7 +50,7 @@ class MigrateTest(BaseTestCase):
         self.assertEqual(201, response.status_code, response.content)
         new_event_url = response['Location']
         
-        self.assertEventType(new_event_url, 'migrate')
+        self.assertEventType(new_event_url, 'Migrate')
         
         # validate data
         event = self.client.get(new_event_url).data
@@ -82,8 +82,8 @@ class AddTest(BaseTestCase):
         
         # Add device 2 to device 1
         add_data = {
-            'event_time': '2014-05-10T22:38:20.604391Z',
-            'by_user': 'XSR',
+            'date': '2014-05-10T22:38:20.604391Z',
+            'byUser': 'XSR',
             'components': [device_two['hid']],
         }
         response = self.client.post(device_one_url + 'add/', data=add_data)
@@ -91,7 +91,7 @@ class AddTest(BaseTestCase):
         new_event_url = response['Location']
         
         # Check that device's last event is an addition
-        self.assertEventType(new_event_url, 'add')
+        self.assertEventType(new_event_url, 'Add')
         
         # Check that device 1 has device 2 as component
         device_one = self.client.get(device_one_url).data
@@ -101,8 +101,8 @@ class AddTest(BaseTestCase):
         # PRE: - 2 devices registered.
         #      - One of them is a component of the other
         event = self.device_one.events.create(
-            type=Event.REGISTER, agent=self.agent, by_user='XSR',
-            event_time='2014-03-10T22:38:20.604391Z'
+            type=Event.REGISTER, agent=self.agent, byUser='XSR',
+            date='2014-03-10T22:38:20.604391Z'
         )
         event.components.add(self.device_two)
         
@@ -110,8 +110,8 @@ class AddTest(BaseTestCase):
         
         # Add device 2 to device 1
         add_data = {
-            'event_time': '2014-05-10T22:38:20.604391Z',
-            'by_user': 'XSR',
+            'date': '2014-05-10T22:38:20.604391Z',
+            'byUser': 'XSR',
             'components': [self.device_two.hid],
         }
         response = self.client.post(device_one_url + 'add/', data=add_data)
@@ -131,8 +131,8 @@ class CollectTest(BaseTestCase):
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
-            'event_time': '2012-04-10T22:38:20.604391Z',
-            'by_user': 'foo',
+            'date': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'foo',
             'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -142,8 +142,8 @@ class CollectTest(BaseTestCase):
     
     def test_collect_device(self):
         collect_data = {
-            'event_time': '2014-04-10T22:38:20.604391Z',
-            'by_user': 'some authorized center',
+            'date': '2014-04-10T22:38:20.604391Z',
+            'byUser': 'some authorized center',
         }
         
         response = self.client.post(self.device_url + 'collect/',
@@ -158,7 +158,7 @@ class CollectTest(BaseTestCase):
         self.assertEqual(len(events), 2)
         
         # He checks the last event
-        self.assertEventType(new_event_url, 'collect')
+        self.assertEventType(new_event_url, 'Collect')
         
         # He checks that the device components do NOT have a collect event
         dev = self.client.get(self.device_url).data
@@ -167,7 +167,7 @@ class CollectTest(BaseTestCase):
             self.assertEqual(len(comp_events), 1)
             
             last_event = self.get_latest_event(comp_events)
-            self.assertNotEqual('collect', last_event['type'])
+            self.assertNotEqual('Collect', last_event['type'])
     
     def test_collect_device_with_components(self):
         # Bob wants to recycle a device that he has previously
@@ -175,8 +175,8 @@ class CollectTest(BaseTestCase):
         
         # He recycles the device specifying its components
         collect_data = {
-            'event_time': '2014-04-10T22:38:20.604391Z',
-            'by_user': 'some authorized collecter point',
+            'date': '2014-04-10T22:38:20.604391Z',
+            'byUser': 'some authorized collecter point',
             'components': ['DDR3'],
         }
         response = self.client.post(self.device_url + 'collect/',
@@ -191,7 +191,7 @@ class CollectTest(BaseTestCase):
         self.assertEqual(len(events), 2)
         
         # He checks the last event
-        self.assertEventType(new_event_url, 'collect')
+        self.assertEventType(new_event_url, 'Collect')
         
         # He checks that the device components have too a recycle event
         dev = self.client.get(self.device_url).data
@@ -200,7 +200,7 @@ class CollectTest(BaseTestCase):
             self.assertEqual(len(comp_events), 2,
                              "Component doesn't have collect event.")
             last_event = self.get_latest_event(comp_events)
-            self.assertEqual('collect', last_event['type'])
+            self.assertEqual('Collect', last_event['type'])
 
 
 class RegisterTest(BaseTestCase):
@@ -240,15 +240,15 @@ class RegisterTest(BaseTestCase):
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
-            'event_time': '2012-04-10T22:38:20.604391Z',
-            'by_user': 'foo',
+            'date': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'foo',
             'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
         
         # It checks that the last event is register
-        self.assertEventType(response['Location'], 'register')
+        self.assertEventType(response['Location'], 'Register')
         new_device_url = response.data['device']
         
         # It checks that the device is listed
@@ -284,8 +284,8 @@ class RegisterTest(BaseTestCase):
                 'type': 'Computer',
             },
             'components': [],
-            'event_time': '2012-04-10T22:38:20.604391Z',
-            'by_user': 'foo',
+            'date': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'foo',
             'location': {
                 'lat': 27.9878943,
                 'lon': 86.9247837,
@@ -324,8 +324,8 @@ class RegisterTest(BaseTestCase):
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
-            'event_time': '2012-04-10T22:38:20.604391Z',
-            'by_user': 'foo',
+            'date': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'foo',
             'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -338,7 +338,7 @@ class RegisterTest(BaseTestCase):
         
         # It checks that the last event is register
         
-        self.assertEventType(response['Location'], 'register')
+        self.assertEventType(response['Location'], 'Register')
         new_device_url = response.data['device']
         
         # It verifies that the device has the proper id
@@ -364,8 +364,8 @@ class RegisterTest(BaseTestCase):
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
-            'event_time': '2012-04-10T22:38:20.604391Z',
-            'by_user': 'foo',
+            'date': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'foo',
             'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
         }
         self.client.post('/api/devices/register/', data=data)
@@ -393,8 +393,8 @@ class RecycleTest(BaseTestCase):
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
-            'event_time': '2012-04-10T22:38:20.604391Z',
-            'by_user': 'foo',
+            'date': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'foo',
             'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -408,8 +408,8 @@ class RecycleTest(BaseTestCase):
         
         # He recycles the device
         recycle_data = {
-            'event_time': '2014-04-10T22:38:20.604391Z',
-            'by_user': 'some authorized recycler',
+            'date': '2014-04-10T22:38:20.604391Z',
+            'byUser': 'some authorized recycler',
         }
         response = self.client.post(self.device_url + 'recycle/',
                                     data=recycle_data)
@@ -423,7 +423,7 @@ class RecycleTest(BaseTestCase):
         self.assertEqual(len(events), 2)
         
         # He checks the last event
-        self.assertEventType(new_event_url, 'recycle')
+        self.assertEventType(new_event_url, 'Recycle')
         
         # He checks that the device components do NOT have a recycle event
         dev = self.client.get(self.device_url).data
@@ -432,7 +432,7 @@ class RecycleTest(BaseTestCase):
             self.assertEqual(len(comp_events), 1)
             
             last_event = self.get_latest_event(comp_events)
-            self.assertNotEqual('recycle', last_event['type'])
+            self.assertNotEqual('Recycle', last_event['type'])
     
     def test_recycle_device_with_components(self):
         # Bob wants to recycle a device that he has previously
@@ -440,8 +440,8 @@ class RecycleTest(BaseTestCase):
         
         # He recycles the device specifying its components
         recycle_data = {
-            'event_time': '2014-04-10T22:38:20.604391Z',
-            'by_user': 'some authorized recycler',
+            'date': '2014-04-10T22:38:20.604391Z',
+            'byUser': 'some authorized recycler',
             'components': ['DDR3'],
         }
         response = self.client.post(self.device_url + 'recycle/',
@@ -456,7 +456,7 @@ class RecycleTest(BaseTestCase):
         self.assertEqual(len(events), 2)
         
         # He checks the last event
-        self.assertEventType(new_event_url, 'recycle')
+        self.assertEventType(new_event_url, 'Recycle')
         
         # He checks that the device components have too a recycle event
         dev = self.client.get(self.device_url).data
@@ -466,12 +466,12 @@ class RecycleTest(BaseTestCase):
             self.assertEqual(len(comp_events), 2)
             
             last_event = self.get_latest_event(comp_events)
-            self.assertEqual('recycle', last_event['type'])
+            self.assertEqual('Recycle', last_event['type'])
     
     def test_recycle_device_with_location(self):
         data = {
-            'event_time': '2014-04-10T22:38:20.604391Z',
-            'by_user': 'some authorized recycler',
+            'date': '2014-04-10T22:38:20.604391Z',
+            'byUser': 'some authorized recycler',
             'location': {
                 'lat': 27.9878943,
                 'lon': 86.9247837,
@@ -493,7 +493,7 @@ class RecycleTest(BaseTestCase):
     def test_recycle_invalid_data(self):
         # He tries to recycle the device
         recycle_data = {
-            'event_time': '2014-04-10T22:38:20.604391Z',
+            'date': '2014-04-10T22:38:20.604391Z',
             'components': ['DDR3'],
         }
         response = self.client.post(self.device_url + 'recycle/',
@@ -515,8 +515,8 @@ class RemoveTest(BaseTestCase):
         device_two_url = '/api/devices/%s/' % self.device_two.pk
         
         add_data = {
-            'event_time': '2014-05-10T22:38:20.604391Z',
-            'by_user': 'XSR',
+            'date': '2014-05-10T22:38:20.604391Z',
+            'byUser': 'XSR',
             'components': [self.device_two.hid],
         }
         response = self.client.post(device_one_url + 'add/', data=add_data)
@@ -529,8 +529,8 @@ class RemoveTest(BaseTestCase):
         
         # Remove device 2 of device 1
         remove_data = {
-            'event_time': '2014-12-12T12:38:20.604391Z',
-            'by_user': 'XSR',
+            'date': '2014-12-12T12:38:20.604391Z',
+            'byUser': 'XSR',
             'components': [self.device_two.hid],
         }
         response = self.client.post(device_one_url + 'remove/',
@@ -539,7 +539,7 @@ class RemoveTest(BaseTestCase):
         new_event_url = response['Location']
         
         # Check that last event is a removal
-        self.assertEventType(new_event_url, 'remove')
+        self.assertEventType(new_event_url, 'Remove')
         
         # Check that device 1 doesn't have device 2 as component anymore
         device_one = self.client.get(device_one_url).data
@@ -558,8 +558,8 @@ class RemoveTest(BaseTestCase):
         
         # Remove device 2 of device 1
         remove_data = {
-            'event_time': '2014-12-12T12:38:20.604391Z',
-            'by_user': 'XSR',
+            'date': '2014-12-12T12:38:20.604391Z',
+            'byUser': 'XSR',
             'components': [self.device_two.hid],
         }
         response = self.client.post(device_one_url + 'remove/',

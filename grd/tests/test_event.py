@@ -14,8 +14,8 @@ class EventTest(TestCase):
         e = Event.objects.create(
             type=Event.REGISTER,
             data={'to': '1', 'extra_info': 'blibli'},
-            event_time=timezone.now(),
-            by_user='John',
+            date=timezone.now(),
+            byUser='John',
             agent=Agent.objects.first(),
             device=Device.objects.first(),
         )
@@ -25,8 +25,8 @@ class EventTest(TestCase):
     def test_event_creation_with_location(self):
         e = Event.objects.create(
             type=Event.RECYCLE,
-            event_time=timezone.now(),
-            by_user='user1',
+            date=timezone.now(),
+            byUser='user1',
             agent=Agent.objects.first(),
             device=Device.objects.first(),
         )

@@ -74,7 +74,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Event
-        fields = ('url', 'timestamp', 'type', 'device', 'agent', 'components',
+        fields = ('url', 'grdTimestamp', 'type', 'device', 'agent', 'components',
                   'to', 'location')
 
 
@@ -85,7 +85,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Event
-        fields = ('device', 'event_time', 'by_user', 'components', 'location')
+        fields = ('device', 'date', 'byUser', 'components', 'location')
     
     def save(self, agent=None, **kwargs):
         # create devices and events
@@ -93,8 +93,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         
         dev = DeviceRegisterSerializer().create(data.pop('device'))
         event = dev.events.create(type=Event.REGISTER, agent=agent,
-                                  event_time=data['event_time'],
-                                  by_user=data['by_user'])
+                                  date=data['date'],
+                                  byUser=data['byUser'])
         
         for device_data in data['components']:
             event.components.add(
@@ -121,7 +121,7 @@ class EventWritableSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Event
-        fields = ('event_time', 'by_user', 'components', 'location')
+        fields = ('date', 'byUser', 'components', 'location')
     
     def create(self, validated_data):
         location_data = validated_data.pop('location', None)
@@ -140,7 +140,7 @@ class MigrateSerializer(EventWritableSerializer):
     
     class Meta:
         model = Event
-        fields = ('event_time', 'by_user', 'components', 'to', 'location')
+        fields = ('date', 'byUser', 'components', 'to', 'location')
     
     def save(self, **kwargs):
         to = self.validated_data.pop('to')
