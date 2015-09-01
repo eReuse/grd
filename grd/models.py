@@ -76,35 +76,35 @@ class EventManager(models.Manager):
 
 
 class Event(models.Model):
-    # TODO(santiago) clean and update Event.TYPES
-    # initial events (iteration 1)
+    # Administrative (affects resposible agent)
     REGISTER = 'Register'
+    LOCATE = 'Locate'
+    MIGRATE = 'Migrate'
+    COLLECT = 'Collect'
     RECYCLE = 'Recycle'
     
-    # base events (iteration 2)
-    USE = 'Use'
-    TRANSFER = 'Transfer'
-    COLLECT = 'Collect'
+    # Users (logging purposes)
+    ALLOCATE = 'Allocate'
+    DEALLOCATE = 'Deallocate'
+    RECEIVE = 'Receive'
+    USAGEPROOF = 'UsageProof'
     
-    # extended events (iteration 3)
-    DEREGISTER = 'Deregister'
-    LOCATE = 'Locate'
+    # Device interrelationships
     ADD = 'Add'
     REMOVE = 'Remove'
-    SNAPSHOT = 'Snapshot'
-    MIGRATE = 'Migrate'
-    INCIDENCE = 'Incidence'
     
     TYPES = (
-        (REGISTER, 'REGISTER'),
-        # (USE, 'USE'),
-        # (TRANSFER, 'TRANSFER'),
-        (COLLECT, 'COLLECT'),
-        (RECYCLE, 'RECYCLE'),
         (ADD, 'ADD'),
-        (REMOVE, 'REMOVE'),
-        (MIGRATE, 'MIGRATE'),
+        (ALLOCATE, 'ALLOCATE'),
+        (COLLECT, 'COLLECT'),  # TODO(santiago) remove this event
+        (DEALLOCATE, 'DEALLOCATE'),
         (LOCATE, 'LOCATE'),
+        (MIGRATE, 'MIGRATE'),
+        (REGISTER, 'REGISTER'),
+        (RECEIVE, 'RECEIVE'),
+        (RECYCLE, 'RECYCLE'),
+        (REMOVE, 'REMOVE'),
+        (USAGEPROOF, 'USAGEPROOF'),
     )
     
     type = models.CharField(max_length=16, choices=TYPES)
@@ -149,7 +149,7 @@ class Agent(models.Model):
 
 
 class Location(gis_models.Model):
-    # TODO default spatial reference system for geometry fields is WGS84
+    # NOTE default spatial reference system for geometry fields is WGS84
     lat = models.FloatField()
     lon = models.FloatField()
     
