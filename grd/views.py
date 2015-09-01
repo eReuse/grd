@@ -83,14 +83,6 @@ class DeviceView(viewsets.ModelViewSet):
         return self.get_success_event_creation_response(request, event)
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
-    def collect(self, request, pk=None):
-        serializer = EventWritableSerializer(data=request.data,
-                                             context={'request': request})
-        event = self.create_event(serializer, type=Event.COLLECT)
-        
-        return self.get_success_event_creation_response(request, event)
-    
-    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def migrate(self, request, pk=None):
         serializer = MigrateSerializer(data=request.data,
                                        context={'request': request})

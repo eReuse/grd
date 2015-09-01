@@ -80,7 +80,6 @@ class Event(models.Model):
     REGISTER = 'Register'
     LOCATE = 'Locate'
     MIGRATE = 'Migrate'
-    COLLECT = 'Collect'
     RECYCLE = 'Recycle'
     
     # Users (logging purposes)
@@ -96,7 +95,6 @@ class Event(models.Model):
     TYPES = (
         (ADD, 'ADD'),
         (ALLOCATE, 'ALLOCATE'),
-        (COLLECT, 'COLLECT'),  # TODO(santiago) remove this event
         (DEALLOCATE, 'DEALLOCATE'),
         (LOCATE, 'LOCATE'),
         (MIGRATE, 'MIGRATE'),
