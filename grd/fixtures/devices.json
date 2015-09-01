@@ -3,7 +3,7 @@
     "pk": "XPS13-1111-2222",
     "fields": {
         "id": "//xsr.cat/device/1234",
-        "type": "computer"
+        "type": "Computer"
     },
     "model": "grd.device"
 },
@@ -11,7 +11,7 @@
     "pk": "DDR3",
     "fields": {
         "id": "1",
-        "type": "monitor"
+        "type": "Monitor"
     },
     "model": "grd.device"
 }

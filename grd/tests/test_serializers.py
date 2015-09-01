@@ -9,7 +9,7 @@ class DeviceSerializerTest(TestCase):
         data = {
             'id': '//xsr.cat/device/1234',
             'hid': 'XPS13-1111-2222',
-            'type': 'computer',
+            'type': 'Computer',
         }
         serializer = DeviceSerializer(data=data)
         self.assertTrue(serializer.is_valid())
@@ -22,7 +22,7 @@ class DeviceSerializerTest(TestCase):
         data = {
             'id': None,
             'hid': 'XPS13-1111-2222',
-            'type': 'computer',
+            'type': 'Computer',
         }
         serializer = DeviceSerializer(data=data)
         self.assertFalse(serializer.is_valid())
@@ -31,7 +31,7 @@ class DeviceSerializerTest(TestCase):
         data = {
             'id': '//xsr.cat/device/1234',
             'hid': None,
-            'type': 'computer',
+            'type': 'Computer',
         }
         serializer = DeviceSerializer(data=data)
         self.assertFalse(serializer.is_valid())
@@ -52,7 +52,7 @@ class DeviceRegisterSerializerTest(TestCase):
         data = {
             'id': '//xsr.cat/device/1234',
             'hid': 'XPS13-1111-2222',
-            'type': 'computer',
+            'type': 'Computer',
         }
         serializer = DeviceRegisterSerializer(data=data)
         self.assertTrue(serializer.is_valid())
@@ -65,7 +65,7 @@ class DeviceRegisterSerializerTest(TestCase):
         data = {
             'id': '//xsr.cat/device/1234',
             'hid': 'XPS13-1111-2222',
-            'type': 'computer',
+            'type': 'Computer',
         }
         # PRE - already exists a Device with this HID
         from grd.models import Device

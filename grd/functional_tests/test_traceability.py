@@ -22,11 +22,11 @@ class MigrateTest(BaseTestCase):
             'device': {
                 'id': '//xsr.cat/device/1234',
                 'hid': 'XPS13-1111-2222',
-                'type': 'computer',
+                'type': 'Computer',
             },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
-            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -129,11 +129,11 @@ class CollectTest(BaseTestCase):
             'device': {
                 'id': '//xsr.cat/device/1234',
                 'hid': 'XPS13-1111-2222',
-                'type': 'computer',
+                'type': 'Computer',
             },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
-            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -238,11 +238,11 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'id': '//xsr.cat/device/1234',
                 'hid': 'XPS13-1111-2222',
-                'type': 'computer',
+                'type': 'Computer',
             },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
-            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -281,7 +281,7 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'id': '//xsr.cat/device/1234',
                 'hid': 'XPS13-1111-2222',
-                'type': 'computer',
+                'type': 'Computer',
             },
             'components': [],
             'event_time': '2012-04-10T22:38:20.604391Z',
@@ -306,7 +306,7 @@ class RegisterTest(BaseTestCase):
     def test_register_invalid_data(self):
         data = {
             'device': {
-                'type': 'computer',
+                'type': 'Computer',
             }
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -322,11 +322,11 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'id': '//xsr.cat/device/1234',
                 'hid': 'XPS13-1111-2222',
-                'type': 'computer',
+                'type': 'Computer',
             },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
-            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(2, self.count_listed_objects('/api/devices/'))
@@ -362,16 +362,16 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'id': '//xsr.cat/device/1234',
                 'hid': 'XPS13-1111-2222',
-                'type': 'computer',
+                'type': 'Computer',
             },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
-            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
         }
         self.client.post('/api/devices/register/', data=data)
         
         # It takes a snapshot of the device with different components
-        data['components'] = [{'id': '2', 'hid': 'R5', 'type': 'monitor'}]
+        data['components'] = [{'id': '2', 'hid': 'R5', 'type': 'Monitor'}]
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
         
@@ -391,11 +391,11 @@ class RecycleTest(BaseTestCase):
             'device': {
                 'id': '//xsr.cat/device/1234',
                 'hid': 'XPS13-1111-2222',
-                'type': 'computer',
+                'type': 'Computer',
             },
             'event_time': '2012-04-10T22:38:20.604391Z',
             'by_user': 'foo',
-            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'monitor'}],
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
