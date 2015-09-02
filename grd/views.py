@@ -4,10 +4,10 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Agent, Device, Event
-from .serializers import (
+from .serializers import (  # FIXME alphabetic order
     AddSerializer, AgentSerializer, DeviceSerializer, EventSerializer,
     EventWritableSerializer, MigrateSerializer, RegisterSerializer,
-    RemoveSerializer, AllocateSerializer  # FIXME alphabetic order
+    RemoveSerializer, AllocateSerializer, DeallocateSerializer
 )
 
 
@@ -97,6 +97,16 @@ class DeviceView(viewsets.ModelViewSet):
                                         context={'request': request})
         
         event = self.create_event(serializer, type=Event.ALLOCATE)
+        
+        return self.get_success_event_creation_response(request, event)
+    
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def deallocate(self, request, pk=None):
+        serializer = DeallocateSerializer(
+            data=request.data,
+            context={'request': request, 'device': self.get_object()}
+        )
+        event = self.create_event(serializer, type=Event.DEALLOCATE)
         
         return self.get_success_event_creation_response(request, event)
 

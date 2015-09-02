@@ -47,6 +47,7 @@ class Device(models.Model):
         
         # Compute add and remove events. Get add and remove together
         # because the order of the operations affects the final result.
+        # TODO refactor query to use IN instead of OR
         for e in self.events.filter(Q(type=Event.ADD) | Q(type=Event.REMOVE)):
             if e.type == Event.ADD:
                 components += e.components.all()
@@ -57,8 +58,18 @@ class Device(models.Model):
     
     @property
     def owners(self):
-        return self.events.filter(type=Event.ALLOCATE).values_list('owner__url',
-                                                                   flat=True)
+        ASSIGNATION_EVENTS = [Event.ALLOCATE, Event.DEALLOCATE]
+        
+        # Compute allocate and deallocate events. Get both together
+        # because the order of the operations affects the final result.
+        device_owners = []
+        for e in self.events.filter(type__in=ASSIGNATION_EVENTS):
+            if e.type == Event.ALLOCATE:
+                device_owners.append(e.owner.url)
+            else:  # Event.DEALLOCATE
+                device_owners.remove(e.owner.url)
+        
+        return device_owners
     
     @property
     def parent(self):
