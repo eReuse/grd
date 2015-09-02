@@ -14,6 +14,15 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='device',
             name='type',
-            field=models.CharField(max_length=16, choices=[('computer', 'computer'), ('laptop', 'laptop'), ('mobile', 'mobile'), ('monitor', 'monitor'), ('peripheral', 'peripheral')]),
+            field=models.CharField(
+                max_length=16,
+                choices=[
+                    ('computer', 'computer'),
+                    ('laptop', 'laptop'),
+                    ('mobile', 'mobile'),
+                    ('monitor', 'monitor'),
+                    ('peripheral', 'peripheral')
+                ]
+            ),
         ),
     ]

@@ -14,6 +14,17 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='event',
             name='type',
-            field=models.CharField(choices=[('register', 'REGISTER'), ('collect', 'COLLECT'), ('recycle', 'RECYCLE'), ('add', 'ADD'), ('remove', 'REMOVE'), ('migrate', 'MIGRATE'), ('locate', 'LOCATE')], max_length=16),
+            field=models.CharField(
+                choices=[
+                    ('register', 'REGISTER'),
+                    ('collect', 'COLLECT'),
+                    ('recycle', 'RECYCLE'),
+                    ('add', 'ADD'),
+                    ('remove', 'REMOVE'),
+                    ('migrate', 'MIGRATE'),
+                    ('locate', 'LOCATE')
+                ],
+                max_length=16
+            ),
         ),
     ]

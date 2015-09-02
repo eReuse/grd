@@ -14,6 +14,20 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='event',
             name='type',
-            field=models.CharField(choices=[('Add', 'ADD'), ('Allocate', 'ALLOCATE'), ('Deallocate', 'DEALLOCATE'), ('Locate', 'LOCATE'), ('Migrate', 'MIGRATE'), ('Register', 'REGISTER'), ('Receive', 'RECEIVE'), ('Recycle', 'RECYCLE'), ('Remove', 'REMOVE'), ('UsageProof', 'USAGEPROOF')], max_length=16),
+            field=models.CharField(
+                choices=[
+                    ('Add', 'ADD'),
+                    ('Allocate', 'ALLOCATE'),
+                    ('Deallocate', 'DEALLOCATE'),
+                    ('Locate', 'LOCATE'),
+                    ('Migrate', 'MIGRATE'),
+                    ('Register', 'REGISTER'),
+                    ('Receive', 'RECEIVE'),
+                    ('Recycle', 'RECYCLE'),
+                    ('Remove', 'REMOVE'),
+                    ('UsageProof', 'USAGEPROOF')
+                ],
+                max_length=16
+            ),
         ),
     ]

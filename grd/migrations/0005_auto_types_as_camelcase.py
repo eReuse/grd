@@ -14,11 +14,31 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='device',
             name='type',
-            field=models.CharField(choices=[('Computer', 'computer'), ('Laptop', 'laptop'), ('Mobile', 'mobile'), ('Monitor', 'monitor'), ('Peripheral', 'peripheral')], max_length=16),
+            field=models.CharField(
+                choices=[
+                    ('Computer', 'computer'),
+                    ('Laptop', 'laptop'),
+                    ('Mobile', 'mobile'),
+                    ('Monitor', 'monitor'),
+                    ('Peripheral', 'peripheral')
+                ],
+                max_length=16
+            ),
         ),
         migrations.AlterField(
             model_name='event',
             name='type',
-            field=models.CharField(choices=[('Register', 'REGISTER'), ('Collect', 'COLLECT'), ('Recycle', 'RECYCLE'), ('Add', 'ADD'), ('Remove', 'REMOVE'), ('Migrate', 'MIGRATE'), ('Locate', 'LOCATE')], max_length=16),
+            field=models.CharField(
+                choices=[
+                    ('Register', 'REGISTER'),
+                    ('Collect', 'COLLECT'),
+                    ('Recycle', 'RECYCLE'),
+                    ('Add', 'ADD'),
+                    ('Remove', 'REMOVE'),
+                    ('Migrate', 'MIGRATE'),
+                    ('Locate', 'LOCATE')
+                ],
+                max_length=16
+            ),
         ),
     ]

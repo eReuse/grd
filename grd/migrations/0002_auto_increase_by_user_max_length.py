@@ -14,6 +14,7 @@ class Migration(migrations.Migration):
         migrations.AlterField(
             model_name='event',
             name='by_user',
-            field=models.CharField(verbose_name='User who performs the event.', max_length=128),
+            field=models.CharField(verbose_name='User who performs the event.',
+                                   max_length=128),
         ),
     ]
