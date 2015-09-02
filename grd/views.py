@@ -7,7 +7,7 @@ from .models import Agent, Device, Event
 from .serializers import (
     AddSerializer, AgentSerializer, DeviceSerializer, EventSerializer,
     EventWritableSerializer, MigrateSerializer, RegisterSerializer,
-    RemoveSerializer
+    RemoveSerializer, AllocateSerializer  # FIXME alphabetic order
 )
 
 
@@ -88,6 +88,15 @@ class DeviceView(viewsets.ModelViewSet):
                                        context={'request': request})
         
         event = self.create_event(serializer, type=Event.MIGRATE)
+        
+        return self.get_success_event_creation_response(request, event)
+    
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def allocate(self, request, pk=None):
+        serializer = AllocateSerializer(data=request.data,
+                                        context={'request': request})
+        
+        event = self.create_event(serializer, type=Event.ALLOCATE)
         
         return self.get_success_event_creation_response(request, event)
 

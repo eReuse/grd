@@ -1,7 +1,7 @@
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 
-from .models import Agent, Device, Event, Location
+from .models import Agent, AgentUser, Device, Event, Location
 
 
 User = get_user_model()
@@ -51,8 +51,8 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Device
-        fields = ('url', 'hid', 'id', 'type', 'components')
-        read_only_fields = ('url', 'components')
+        fields = ('url', 'hid', 'id', 'type', 'components', 'owners')
+        read_only_fields = ('url', 'components', 'owners')
 
 
 class LocationSerializer(serializers.ModelSerializer):
@@ -67,6 +67,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         view_name='agent-detail'
     )
     location = LocationSerializer()
+    owner = serializers.SlugRelatedField(slug_field='url', read_only=True)
     to = serializers.HyperlinkedRelatedField(
         read_only=True,
         view_name='agent-detail'
@@ -75,7 +76,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     class Meta:
         model = Event
         fields = ('url', 'grdTimestamp', 'type', 'device', 'agent', 'components',
-                  'to', 'location')
+                  'to', 'location', 'owner')
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -130,6 +131,18 @@ class EventWritableSerializer(serializers.ModelSerializer):
         if location_data is not None:
             Location.objects.create(event=event, **location_data)
         return event
+
+
+class AllocateSerializer(EventWritableSerializer):
+    owner = serializers.URLField()
+    
+    class Meta:
+        model = Event
+        fields = ('date', 'byUser', 'owner', 'location')
+    
+    def validate_owner(self, value):
+        agent_user, _ = AgentUser.objects.get_or_create(url=value)
+        return agent_user
 
 
 class MigrateSerializer(EventWritableSerializer):

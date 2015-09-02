@@ -56,6 +56,11 @@ class Device(models.Model):
         return components
     
     @property
+    def owners(self):
+        return self.events.filter(type=Event.ALLOCATE).values_list('owner__url',
+                                                                   flat=True)
+    
+    @property
     def parent(self):
         # Compute events that modify relation between devices.
         RELATION_EVENTS = [Event.REGISTER, Event.ADD, Event.REMOVE]
@@ -108,11 +113,15 @@ class Event(models.Model):
     type = models.CharField(max_length=16, choices=TYPES)
     date = models.DateTimeField('Time when the event has happened.')
     grdTimestamp = models.DateTimeField(auto_now_add=True)
+    # TODO replace with AgentUser
     byUser = models.CharField('User who performs the event.', max_length=128)
     
     agent = models.ForeignKey('Agent', related_name='+')
     device = models.ForeignKey('Device', related_name='events')
     components = models.ManyToManyField('Device', related_name='parent_events')
+    
+    # Allocate/Deallocate Event attributes
+    owner = models.ForeignKey('AgentUser', null=True)
     
     data = HStoreField(default={})  # A field for storing mappings of strings to strings.
     
@@ -144,6 +153,11 @@ class Agent(models.Model):
     
     def get_absolute_url(self):
         return reverse('agent-detail', args=[self.pk])
+
+
+class AgentUser(models.Model):
+    url = models.URLField('URL pointing to an User or an Organization.',
+                          max_length=128, unique=True)
 
 
 class Location(gis_models.Model):

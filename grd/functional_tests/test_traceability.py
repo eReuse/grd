@@ -10,6 +10,56 @@ from grd.models import Agent, Device, Event
 User = get_user_model()
 
 
+class AllocateTest(BaseTestCase):
+    # TODO fixture with a registered device
+    def setUp(self):
+        super(AllocateTest, self).setUp()
+        
+        # Initialize registered devices
+        data = {
+            'device': {
+                'id': '//xsr.cat/device/1234',
+                'hid': 'XPS13-1111-2222',
+                'type': 'Computer',
+            },
+            'date': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'foo',
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
+        }
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        event_url = response['Location']
+        self.device_url = self.client.get(event_url).data['device']
+    
+    def test_allocate_device(self):
+        # Bob wants to allocate a device to Alice.
+        data = {
+            'date': '2015-09-02T10:00:00.000000Z',
+            'byUser': 'Bob',
+            'owner': 'http://example.org/user/1',
+        }
+        response = self.client.post(self.device_url + 'allocate/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        new_event_url = response['Location']
+        
+        # He checks that the device event includes recycle event
+        response = self.client.get(self.device_url + 'events/')
+        self.assertEqual(200, response.status_code, response.content)
+        events = response.data
+        self.assertEqual(len(events), 2)
+        
+        # He checks the last event
+        self.assertEventType(new_event_url, 'Allocate')
+        
+        # validate data
+        event = self.client.get(new_event_url).data
+        self.assertEqual(event['owner'], data['owner'])
+        
+        # validate Device's owner
+        device = self.client.get(self.device_url).data
+        self.assertIn(event['owner'], device['owners'])
+
+
 class MigrateTest(BaseTestCase):
     """https://www.wrike.com/open.htm?id=47891868"""
     
