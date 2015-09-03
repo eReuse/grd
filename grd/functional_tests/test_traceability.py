@@ -59,7 +59,29 @@ class AllocateTest(BaseTestCase):
         device = self.client.get(self.device_url).data
         self.assertIn(event['owner'], device['owners'])
         
-        # XXX def test_allocate_multiple_users(self):
+    def test_allocate_multiple_users(self):
+        # Bob wants to allocate the device to Alice.
+        data = {
+            'date': '2015-09-02T10:00:00.000000Z',
+            'byUser': 'Bob',
+            'owner': 'http://example.org/user/alice/',
+        }
+        response = self.client.post(self.device_url + 'allocate/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        
+        # Bob also wants to allocate the device to Brian.
+        data2 = {
+            'date': '2015-09-02T10:10:00.000000Z',
+            'byUser': 'Bob',
+            'owner': 'http://example.org/user/brian/',
+        }
+        response = self.client.post(self.device_url + 'allocate/', data=data2)
+        self.assertEqual(201, response.status_code, response.content)
+        
+        # Both are Device's owners
+        device = self.client.get(self.device_url).data
+        self.assertIn(data['owner'], device['owners'])
+        self.assertIn(data2['owner'], device['owners'])
     
     def test_allocate_twice_same_user_to_device(self):
         # Bob wants to allocate a device to Alice.
