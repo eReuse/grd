@@ -141,6 +141,11 @@ class AllocateSerializer(EventWritableSerializer):
         fields = ('date', 'byUser', 'owner', 'location')
     
     def validate_owner(self, value):
+        device = self.context['device']
+        if value in device.owners:
+            raise serializers.ValidationError(
+                "'%s' is already allocated to '%s'." % (device, value)
+            )
         agent_user, _ = AgentUser.objects.get_or_create(url=value)
         return agent_user
 

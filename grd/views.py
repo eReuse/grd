@@ -93,8 +93,10 @@ class DeviceView(viewsets.ModelViewSet):
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def allocate(self, request, pk=None):
-        serializer = AllocateSerializer(data=request.data,
-                                        context={'request': request})
+        serializer = AllocateSerializer(
+            data=request.data,
+            context={'request': request, 'device': self.get_object()}
+        )
         
         event = self.create_event(serializer, type=Event.ALLOCATE)
         

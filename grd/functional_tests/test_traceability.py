@@ -60,7 +60,20 @@ class AllocateTest(BaseTestCase):
         self.assertIn(event['owner'], device['owners'])
         
         # XXX def test_allocate_multiple_users(self):
-        # XXX def test_allocate_twice_same_user_to_device(self):
+    
+    def test_allocate_twice_same_user_to_device(self):
+        # Bob wants to allocate a device to Alice.
+        data = {
+            'date': '2015-09-02T10:00:00.000000Z',
+            'byUser': 'Bob',
+            'owner': 'http://example.org/user/alice/',
+        }
+        response = self.client.post(self.device_url + 'allocate/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        
+        # Bob tries to allocate again the device to Alice.
+        response = self.client.post(self.device_url + 'allocate/', data=data)
+        self.assertEqual(400, response.status_code, response.content)
 
 
 class DeallocateTest(BaseTestCase):
