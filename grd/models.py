@@ -47,7 +47,7 @@ class Device(models.Model):
         
         # Compute add and remove events. Get add and remove together
         # because the order of the operations affects the final result.
-        for e in self.events.filter(type__in[Event.ADD, Event.REMOVE]):
+        for e in self.events.filter(type__in=[Event.ADD, Event.REMOVE]):
             if e.type == Event.ADD:
                 components += e.components.all()
             else:  # Event.REMOVE
