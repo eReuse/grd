@@ -47,8 +47,7 @@ class Device(models.Model):
         
         # Compute add and remove events. Get add and remove together
         # because the order of the operations affects the final result.
-        # TODO refactor query to use IN instead of OR
-        for e in self.events.filter(Q(type=Event.ADD) | Q(type=Event.REMOVE)):
+        for e in self.events.filter(type__in[Event.ADD, Event.REMOVE]):
             if e.type == Event.ADD:
                 components += e.components.all()
             else:  # Event.REMOVE
@@ -74,9 +73,9 @@ class Device(models.Model):
     @property
     def parent(self):
         # Compute events that modify relation between devices.
-        RELATION_EVENTS = [Event.REGISTER, Event.ADD, Event.REMOVE]
+        DEV_REL_EVENTS = [Event.REGISTER, Event.ADD, Event.REMOVE]
         try:
-            event = self.parent_events.filter(type__in=RELATION_EVENTS).latest()
+            event = self.parent_events.filter(type__in=DEV_REL_EVENTS).latest()
         except Event.DoesNotExist:
             return None
         
