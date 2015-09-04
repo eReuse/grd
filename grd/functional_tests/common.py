@@ -54,3 +54,19 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
         self.assertEqual(200, response.status_code, response.content)
         agent = response.data
         self.assertEqual(self.agent.name, agent['name'])
+    
+    def register_device(self):
+        data = {
+            'device': {
+                'id': 'http://example.org/device/1234/',
+                'hid': 'XPS13-1111-2222',
+                'type': 'Computer',
+            },
+            'date': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'foo',
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
+        }
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        event_url = response['Location']
+        self.device_url = self.client.get(event_url).data['device']

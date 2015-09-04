@@ -11,25 +11,11 @@ User = get_user_model()
 
 
 class AllocateTest(BaseTestCase):
-    # TODO fixture with a registered device
     def setUp(self):
         super(AllocateTest, self).setUp()
+        # Register a device
+        self.register_device()
         
-        # Initialize registered devices
-        data = {
-            'device': {
-                'id': 'http://example.org/device/1234/',
-                'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
-            },
-            'date': '2012-04-10T22:38:20.604391Z',
-            'byUser': 'foo',
-            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
-        }
-        response = self.client.post('/api/devices/register/', data=data)
-        self.assertEqual(201, response.status_code, response.content)
-        event_url = response['Location']
-        self.device_url = self.client.get(event_url).data['device']
     
     def test_allocate_device(self):
         # Bob wants to allocate a device to Alice.
@@ -101,25 +87,11 @@ class AllocateTest(BaseTestCase):
 class DeallocateTest(BaseTestCase):
     """https://wiki.ereuse.org/arch:events#deallocate"""
     
-    # TODO fixture with a registered device
     def setUp(self):
         super(DeallocateTest, self).setUp()
         
-        # Initialize registered devices
-        data = {
-            'device': {
-                'id': 'http://example.org/device/1234/',
-                'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
-            },
-            'date': '2012-04-10T22:38:20.604391Z',
-            'byUser': 'foo',
-            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
-        }
-        response = self.client.post('/api/devices/register/', data=data)
-        self.assertEqual(201, response.status_code, response.content)
-        event_url = response['Location']
-        self.device_url = self.client.get(event_url).data['device']
+        # Register a device
+        self.register_device()
         
         # Allocate the device
         data = {
@@ -164,25 +136,10 @@ class DeallocateTest(BaseTestCase):
 
 
 class ReceiveTest(BaseTestCase):
-    # TODO fixture with a registered device
     def setUp(self):
         super(ReceiveTest, self).setUp()
-        
-        # Initialize registered devices
-        data = {
-            'device': {
-                'id': 'http://example.org/device/1234/',
-                'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
-            },
-            'date': '2012-04-10T22:38:20.604391Z',
-            'byUser': 'foo',
-            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
-        }
-        response = self.client.post('/api/devices/register/', data=data)
-        self.assertEqual(201, response.status_code, response.content)
-        event_url = response['Location']
-        self.device_url = self.client.get(event_url).data['device']
+        # Register a device
+        self.register_device()
     
     def test_receive_device(self):
         # Bob allocates the device to Alice.
@@ -224,25 +181,10 @@ class ReceiveTest(BaseTestCase):
 class MigrateTest(BaseTestCase):
     """https://wiki.ereuse.org/arch:events#migrate"""
     
-    # TODO fixture with a registered device
     def setUp(self):
         super(MigrateTest, self).setUp()
-        
-        # Initialize registered devices
-        data = {
-            'device': {
-                'id': 'http://example.org/device/1234/',
-                'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
-            },
-            'date': '2012-04-10T22:38:20.604391Z',
-            'byUser': 'foo',
-            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
-        }
-        response = self.client.post('/api/devices/register/', data=data)
-        self.assertEqual(201, response.status_code, response.content)
-        event_url = response['Location']
-        self.device_url = self.client.get(event_url).data['device']
+        # Register a device
+        self.register_device()
         
         # Create another agent to migrate devices to it
         user = User.objects.create_user('agent2', 'agent2@localhost', 'agent2')
