@@ -4,7 +4,6 @@ from grd.functional_tests.common import BaseTestCase
 
 
 class AgentTest(BaseTestCase):
-    """https://www.wrike.com/open.htm?id=47818239"""
     
     def setUp(self):
         # Override base test case because we don't want any default

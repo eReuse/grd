@@ -99,8 +99,7 @@ class AllocateTest(BaseTestCase):
 
 
 class DeallocateTest(BaseTestCase):
-    # TODO(santiago) replace wrike link with wiki article
-    """https://www.wrike.com/open.htm?id=52580298"""
+    """https://wiki.ereuse.org/arch:events#deallocate"""
     
     # TODO fixture with a registered device
     def setUp(self):
@@ -223,7 +222,7 @@ class ReceiveTest(BaseTestCase):
 
 
 class MigrateTest(BaseTestCase):
-    """https://www.wrike.com/open.htm?id=47891868"""
+    """https://wiki.ereuse.org/arch:events#migrate"""
     
     # TODO fixture with a registered device
     def setUp(self):
@@ -270,7 +269,7 @@ class MigrateTest(BaseTestCase):
 
 
 class AddTest(BaseTestCase):
-    """https://www.wrike.com/open.htm?id=47865363"""
+    """https://wiki.ereuse.org/arch:events#add"""
     
     fixtures = ['devices.json']
     
@@ -331,7 +330,7 @@ class AddTest(BaseTestCase):
 
 
 class RegisterTest(BaseTestCase):
-    """https://www.wrike.com/open.htm?id=47864362"""
+    """https://wiki.ereuse.org/arch:events#register"""
     def assertDeviceHasComponents(self, device_url, components):
         response = self.client.get(device_url)
         self.assertNotEqual(404, response.status_code, response.content)
@@ -508,7 +507,7 @@ class RegisterTest(BaseTestCase):
 
 
 class RecycleTest(BaseTestCase):
-    """https://www.wrike.com/open.htm?id=48035113"""
+    """https://wiki.ereuse.org/arch:events#recycle"""
     
     def setUp(self):
         super(RecycleTest, self).setUp()
