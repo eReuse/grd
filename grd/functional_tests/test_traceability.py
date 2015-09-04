@@ -18,7 +18,7 @@ class AllocateTest(BaseTestCase):
         # Initialize registered devices
         data = {
             'device': {
-                'id': '//xsr.cat/device/1234',
+                'id': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
@@ -109,7 +109,7 @@ class DeallocateTest(BaseTestCase):
         # Initialize registered devices
         data = {
             'device': {
-                'id': '//xsr.cat/device/1234',
+                'id': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
@@ -172,7 +172,7 @@ class ReceiveTest(BaseTestCase):
         # Initialize registered devices
         data = {
             'device': {
-                'id': '//xsr.cat/device/1234',
+                'id': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
@@ -232,7 +232,7 @@ class MigrateTest(BaseTestCase):
         # Initialize registered devices
         data = {
             'device': {
-                'id': '//xsr.cat/device/1234',
+                'id': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
@@ -363,7 +363,7 @@ class RegisterTest(BaseTestCase):
         # It registers a new device
         data = {
             'device': {
-                'id': '//xsr.cat/device/1234',
+                'id': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
@@ -406,7 +406,7 @@ class RegisterTest(BaseTestCase):
         # PRE: It had registered a device
         data = {
             'device': {
-                'id': '//xsr.cat/device/1234',
+                'id': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
@@ -447,7 +447,7 @@ class RegisterTest(BaseTestCase):
         # PRE: It had registered a device
         data = {
             'device': {
-                'id': '//xsr.cat/device/1234',
+                'id': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
@@ -487,7 +487,7 @@ class RegisterTest(BaseTestCase):
         # PRE: It had registered a device
         data = {
             'device': {
-                'id': '//xsr.cat/device/1234',
+                'id': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
@@ -516,7 +516,7 @@ class RecycleTest(BaseTestCase):
         # Initialize registered devices before recycle tests
         data = {
             'device': {
-                'id': '//xsr.cat/device/1234',
+                'id': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
