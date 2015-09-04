@@ -149,6 +149,7 @@ class AllocateSerializer(EventWritableSerializer):
         agent_user, _ = AgentUser.objects.get_or_create(url=value)
         return agent_user
 
+
 class DeallocateSerializer(AllocateSerializer):
     class Meta(AllocateSerializer.Meta):
         pass
@@ -161,6 +162,20 @@ class DeallocateSerializer(AllocateSerializer):
             )
         
         return AgentUser.objects.get(url=value)
+
+
+class ReceiveSerializer(EventWritableSerializer):
+    class Meta(EventWritableSerializer.Meta):
+        pass
+    
+    def validate_byUser(self, value):
+        device = self.context['device']
+        if value not in device.owners:
+            raise serializers.ValidationError(
+                "'%s' is not allocated to '%s'." % (device, value)
+            )
+        
+        return value
 
 
 class MigrateSerializer(EventWritableSerializer):

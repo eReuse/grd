@@ -99,6 +99,7 @@ class AllocateTest(BaseTestCase):
 
 
 class DeallocateTest(BaseTestCase):
+    # TODO(santiago) replace wrike link with wiki article
     """https://www.wrike.com/open.htm?id=52580298"""
     
     # TODO fixture with a registered device
@@ -160,6 +161,64 @@ class DeallocateTest(BaseTestCase):
             'owner': 'http://example.org/user/999/',
         }
         response = self.client.post(self.device_url + 'deallocate/', data=data)
+        self.assertEqual(400, response.status_code, response.content)
+
+
+class ReceiveTest(BaseTestCase):
+    # TODO fixture with a registered device
+    def setUp(self):
+        super(ReceiveTest, self).setUp()
+        
+        # Initialize registered devices
+        data = {
+            'device': {
+                'id': '//xsr.cat/device/1234',
+                'hid': 'XPS13-1111-2222',
+                'type': 'Computer',
+            },
+            'date': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'foo',
+            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
+        }
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        event_url = response['Location']
+        self.device_url = self.client.get(event_url).data['device']
+    
+    def test_receive_device(self):
+        # Bob allocates the device to Alice.
+        data = {
+            'date': '2015-09-02T10:00:00.000000Z',
+            'byUser': 'Bob',
+            'owner': 'http://example.org/user/alice/',
+        }
+        response = self.client.post(self.device_url + 'allocate/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        
+        # Alice receives the device
+        data = {
+            'date': '2015-09-04T10:50:00.000000Z',
+            'byUser': 'http://example.org/user/alice/',
+        }
+        response = self.client.post(self.device_url + 'receive/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        new_event_url = response['Location']
+        
+        # Check the last event
+        self.assertEventType(new_event_url, 'Receive')
+    
+    def test_receive_device_not_allocated(self):
+        data = {
+            'date': '2015-09-04T10:50:00.000000Z',
+            'byUser': 'http://example.org/user/alice/',
+        }
+        
+        # Check that Alice doesn't own the device
+        device = self.client.get(self.device_url).data
+        self.assertNotIn(data['byUser'], device['owners'])
+        
+        # Alice tries to receive a device that hasn't been allocated to her
+        response = self.client.post(self.device_url + 'receive/', data=data)
         self.assertEqual(400, response.status_code, response.content)
 
 
