@@ -1,10 +1,14 @@
 from setuptools import setup, find_packages
 
 
+# Dynamically calculate the version based on controller.VERSION.
+version = __import__('grd').__version__
+
 setup(
     name="ereuse-grd",
-    version="0.1",
+    version=version,
     packages=find_packages(),
+    license = 'AGPLv3 License',
     description = ('The Global Record of Devices (GRD) is a log of '
                    'information and traceability for any device, worldwide.'),
     url = 'https://github.com/eReuse/grd',
