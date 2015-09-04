@@ -165,8 +165,9 @@ class DeallocateSerializer(AllocateSerializer):
 
 
 class ReceiveSerializer(EventWritableSerializer):
-    class Meta(EventWritableSerializer.Meta):
-        pass
+    class Meta:
+        model = Event
+        fields = ('date', 'byUser', 'location')
     
     def validate_byUser(self, value):
         device = self.context['device']
