@@ -37,3 +37,25 @@ class EventTest(TestCase):
         )
         self.assertIsNotNone(e.location)
         self.assertEqual(e.location.lat, 0.0)
+
+
+    def test_event_to(self):
+        e = Event.objects.create(
+            type=Event.REGISTER,
+            date=timezone.now(),
+            byUser='John',
+            agent=Agent.objects.first(),
+            device=Device.objects.first(),
+        )
+        self.assertEqual(None, e.to)
+        
+        migrate_to = str(Agent.objects.last().pk)
+        e = Event.objects.create(
+            type=Event.MIGRATE,
+            data={'to': migrate_to},
+            date=timezone.now(),
+            byUser='John',
+            agent=Agent.objects.first(),
+            device=Device.objects.first(),
+        )
+        self.assertEqual(migrate_to, e.to)
