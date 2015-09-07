@@ -21,7 +21,7 @@ class AgentView(viewsets.ModelViewSet):
 class DeviceView(viewsets.ModelViewSet):
     queryset = Device.objects.all()
     serializer_class = DeviceSerializer
-    # permission_classes = (IsAdminUser,)
+    permission_classes= (IsAuthenticated,)
     
     def get_success_event_creation_response(self, request, event):
         serializer = EventSerializer(event, context={'request': request})
@@ -127,3 +127,4 @@ class DeviceView(viewsets.ModelViewSet):
 class EventView(viewsets.ReadOnlyModelViewSet):
     queryset = Event.objects.all()
     serializer_class = EventSerializer
+    permission_classes= (IsAuthenticated,)
