@@ -27,6 +27,11 @@ class ApiTest(StaticLiveServerTestCase, APILiveServerTestCase):
 class ApiSuperuserTest(BaseTestCase):
     fixtures = ['agents.json', 'devices.json', 'events.json', 'users.json']
     
+    def setUp(self):
+        # authenticate the user
+        token = self.get_user_token('ereuse', 'ereuse')
+        self.client.credentials(HTTP_AUTHORIZATION='Token ' + token)
+    
     def test_retrieve_api_base(self):
         response = self.client.get('/api/')
         self.assertEqual(200, response.status_code)
