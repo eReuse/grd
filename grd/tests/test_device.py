@@ -1,7 +1,10 @@
+from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
 from grd.models import Agent, Device, Event
 
+
+User = get_user_model()
 
 # TODO: encapsulate fixtures for each TestCase to help readability
 
@@ -68,3 +71,35 @@ class ComponentsTest(TestCase):
         )
         event.components.add(self.device_two)
         self.assertIsNone(self.device_two.parent)
+
+
+class HolderTest(TestCase):
+    def setUp(self):
+        super(HolderTest, self).setUp()
+        u = User.objects.create_user("nikolao", "nikolao@example.org", "secret")
+        self.agent = Agent.objects.create(name="Ahoth", user=u)
+        u2 = User.objects.create_user("cayden", "cayden@example.org", "secret")
+        self.agent2 = Agent.objects.create(name="Susumu", user=u2)
+
+    def register_device(self):
+        device = Device.objects.create(hid="1234", type=Device.LAPTOP,
+                                       id="http://example.org/device/1234/")
+        device.events.create(agent=self.agent, type=Event.REGISTER,
+                             date="2015-09-08T12:38:20.604Z", byUser="foo")
+        return device
+    
+    def migrate_device(self, device, to):
+        device.events.create(agent=self.agent, type=Event.MIGRATE,
+                             date="2015-09-08T12:58:20.604Z", byUser="foo",
+                             data={'to': str(self.agent2.pk)})
+    
+    def test_holder(self):
+        device = self.register_device()
+        self.assertEqual(device.holder, self.agent)
+    
+    def test_holder_after_migration(self):
+        device = self.register_device()
+        self.migrate_device(device, self.agent2)
+        self.assertEqual(device.holder, self.agent2)
+    
+    # TODO test_holder_of_component
