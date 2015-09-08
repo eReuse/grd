@@ -50,11 +50,11 @@ class AgentTest(BaseTestCase):
         # list
         response = self.client.get('/api/agents/')
         self.assertEqual(200, response.status_code)
-        self.assertTrue(isinstance(response.data, list))
-        self.assertEqual(response.data[0]['url'], new_agent_url)
+        results = response.data['results']
+        self.assertTrue(isinstance(results, list))
+        self.assertEqual(results[0]['url'], new_agent_url)
         
         # delete
         response = self.client.delete(new_agent_url)
         self.assertEqual(204, response.status_code)
-        response = self.client.get('/api/agents/')
-        self.assertEqual(0, len(response.data))
+        self.assertEqual(0, self.count_listed_objects('/api/agents/'))

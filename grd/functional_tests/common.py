@@ -33,7 +33,12 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
     
     def count_listed_objects(self, url):
         response = self.client.get(url)
-        return len(response.data)
+        try:
+            # Use DRF pagination data
+            return response.data['count']
+        except KeyError:
+            # pagination disabled
+            return len(response.data)
     
     def get_latest_event(self, events):
         assert len(events) > 0
