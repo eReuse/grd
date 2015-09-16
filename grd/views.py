@@ -122,6 +122,16 @@ class DeviceView(viewsets.ModelViewSet):
         event = self.create_event(serializer, type=Event.RECEIVE)
         
         return self.get_success_event_creation_response(request, event)
+    
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated],
+                  url_path='usage-proof')
+    def usage_proof(self, request, pk=None):
+        serializer = EventWritableSerializer(data=request.data,
+                                             context={'request': request})
+        
+        event = self.create_event(serializer, type=Event.USAGEPROOF)
+        
+        return self.get_success_event_creation_response(request, event)
 
 
 class EventView(viewsets.ReadOnlyModelViewSet):

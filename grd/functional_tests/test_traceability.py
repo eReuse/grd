@@ -633,3 +633,23 @@ class RemoveTest(BaseTestCase):
         response = self.client.post(device_one_url + 'remove/',
                                     data=remove_data)
         self.assertEqual(400, response.status_code, response.content)
+
+
+class UsageProofTest(BaseTestCase):
+    
+    def setUp(self):
+        super(UsageProofTest, self).setUp()
+        self.register_device()
+    
+    def test_report_device_usage(self):
+        # Alice sends an usageproof event of the device
+        data = {
+            'date': '2015-09-16T12:43:00.000000Z',
+            'byUser': 'http://example.org/user/alice/',
+        }
+        response = self.client.post(self.device_url + 'usage-proof/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        new_event_url = response['Location']
+        
+        # Check the last event
+        self.assertEventType(new_event_url, 'UsageProof')
