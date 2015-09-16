@@ -1,3 +1,4 @@
+from datetime import timedelta
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
@@ -103,3 +104,38 @@ class HolderTest(TestCase):
         self.assertEqual(device.holder, self.agent2)
     
     # TODO test_holder_of_component
+
+
+class RunningTimeTest(TestCase):
+    def setUp(self):
+        super(RunningTimeTest, self).setUp()
+        u = User.objects.create_user("nikolao", "nikolao@example.org", "secret")
+        self.agent = Agent.objects.create(name="Ahoth", user=u)
+        device = Device.objects.create(hid="1234", type=Device.LAPTOP,
+                                       id="http://example.org/device/1234/")
+        device.events.create(agent=self.agent, type=Event.REGISTER,
+                             date="2015-09-08T12:38:20.604Z", byUser="foo")
+        self.device = device
+    
+    def test_no_use_reported(self):
+        device = self.device
+        self.assertEqual(0, device.running_time)
+    
+    def test_single_use_reported(self):
+        device = self.device
+        device.events.create(agent=self.agent, type=Event.USAGEPROOF,
+                             date="2015-09-08T12:38:20.604Z", byUser="foo")
+        device.events.create(agent=self.agent, type=Event.RECYCLE,
+                             date="2015-09-08T12:38:45.604Z", byUser="foo")
+        self.assertEqual(25, device.running_time)
+    
+    def test_currently_on_use(self):  # There isn't final event
+        device = self.device
+        time_on_use = timedelta(hours=12)
+        usage_date = timezone.now() - time_on_use
+        device.events.create(agent=self.agent, type=Event.USAGEPROOF,
+                             date=usage_date, byUser="foo")
+        # NOTE we cast timedelta to int to allow some difference
+        # keep in mind that computation keeps some time
+        # FIXME there is a more graceful way?
+        self.assertEqual(time_on_use.total_seconds(), int(device.running_time))

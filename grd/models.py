@@ -4,6 +4,7 @@ from django.contrib.postgres.fields import HStoreField
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models import Q
+from django.utils import timezone
 
 
 class Device(models.Model):
@@ -108,6 +109,20 @@ class Device(models.Model):
             return None
         
         return event.device
+    
+    @property
+    def running_time(self):  # XXX allow settung a period interval?
+        # TODO(santiago) consider reallocations of the device what means
+        # that it not being used
+        try:
+            beg = self.events.filter(type=Event.USAGEPROOF).earliest()
+        except Event.DoesNotExist:
+            return 0
+        try:
+            end_date = self.events.get(type=Event.RECYCLE).date
+        except Event.DoesNotExist:
+            end_date = timezone.now()
+        return (end_date - beg.date).total_seconds()
 
 
 class EventManager(models.Manager):
