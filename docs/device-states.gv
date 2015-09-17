@@ -1,0 +1,39 @@
+/* ****************************************************************
+    Run the following command to export dot file to PNG image
+    (you need to have Graphviz installed in your system)
+    $ dot -Tpng device-states.gv -o device-states.png
+ ***************************************************************** */
+
+digraph device_states {
+    _start [ shape=point ];
+    _start -> registered;
+
+
+    registered -> available [label="prepare"];
+    registered -> recycled [label="recycle"]
+
+    available -> allocated [label="allocate"];
+    available -> recycled [label="recycle"]
+
+    allocated -> available [label="deallocate"];
+    allocated -> available [label="receive"];
+
+    available -> onuse [label="usageproof"]
+
+    onuse -> onuse [label="usageproof"]
+    onuse -> allocated [label="allocate"]
+    onuse -> recycled [label="recycle"]
+
+
+//    subgraph {
+//        rank=min;
+//        _start;
+//        registered;
+//    }
+//
+//    subgraph {
+//        rank=same;
+//        available;
+//        allocated;
+//    }
+}
