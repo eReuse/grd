@@ -52,15 +52,6 @@ class DeviceView(viewsets.ModelViewSet):
         
         return self.get_success_event_creation_response(request, event)
     
-    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
-    def add(self, request, pk=None):
-        return self.post_event(request, Event.ADD, AddSerializer)
-    
-    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
-    def remove(self, request, pk=None):
-        return self.post_event(request, Event.REMOVE, RemoveSerializer,
-                               extra_context={'device': self.get_object()})
-    
     @detail_route(methods=['get'])
     def events(self, request, pk=None):
         device = self.get_object()
@@ -78,6 +69,15 @@ class DeviceView(viewsets.ModelViewSet):
         event = serializer.save(agent=request.user.agent)
         
         return self.get_success_event_creation_response(request, event)
+    
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def add(self, request, pk=None):
+        return self.post_event(request, Event.ADD, AddSerializer)
+    
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def remove(self, request, pk=None):
+        return self.post_event(request, Event.REMOVE, RemoveSerializer,
+                               extra_context={'device': self.get_object()})
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def recycle(self, request, pk=None):
