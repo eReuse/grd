@@ -39,22 +39,27 @@ class DeviceView(viewsets.ModelViewSet):
             type=type
         )
     
-    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
-    def add(self, request, pk=None):
-        serializer = AddSerializer(data=request.data,
-                                   context={'request': request})
-        event = self.create_event(serializer, type=Event.ADD)
+    def post_event(self, request, type, serializer_class=None,
+                   extra_context=None):
+        serializer_class = serializer_class or EventWritableSerializer
+        extra_context = extra_context or {}
+        
+        context = {'request': request}
+        context.update(extra_context)
+        
+        serializer = serializer_class(data=request.data, context=context)
+        event = self.create_event(serializer, type=type)
         
         return self.get_success_event_creation_response(request, event)
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
+    def add(self, request, pk=None):
+        return self.post_event(request, Event.ADD, AddSerializer)
+    
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def remove(self, request, pk=None):
-        serializer = RemoveSerializer(data=request.data,
-                                      context={'request': request,
-                                               'device': self.get_object()})
-        event = self.create_event(serializer, type=Event.REMOVE)
-        
-        return self.get_success_event_creation_response(request, event)
+        return self.post_event(request, Event.REMOVE, RemoveSerializer,
+                               extra_context={'device': self.get_object()})
     
     @detail_route(methods=['get'])
     def events(self, request, pk=None):
@@ -76,62 +81,31 @@ class DeviceView(viewsets.ModelViewSet):
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def recycle(self, request, pk=None):
-        serializer = EventWritableSerializer(data=request.data,
-                                             context={'request': request})
-        
-        event = self.create_event(serializer, type=Event.RECYCLE)
-        
-        return self.get_success_event_creation_response(request, event)
+        return self.post_event(request, Event.RECYCLE)
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def migrate(self, request, pk=None):
-        serializer = MigrateSerializer(data=request.data,
-                                       context={'request': request})
-        
-        event = self.create_event(serializer, type=Event.MIGRATE)
-        
-        return self.get_success_event_creation_response(request, event)
+        return self.post_event(request, Event.MIGRATE, MigrateSerializer)
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def allocate(self, request, pk=None):
-        serializer = AllocateSerializer(
-            data=request.data,
-            context={'request': request, 'device': self.get_object()}
-        )
-        
-        event = self.create_event(serializer, type=Event.ALLOCATE)
-        
-        return self.get_success_event_creation_response(request, event)
+        return self.post_event(request, Event.ALLOCATE, AllocateSerializer,
+                               extra_context={'device': self.get_object()})
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def deallocate(self, request, pk=None):
-        serializer = DeallocateSerializer(
-            data=request.data,
-            context={'request': request, 'device': self.get_object()}
-        )
-        event = self.create_event(serializer, type=Event.DEALLOCATE)
-        
-        return self.get_success_event_creation_response(request, event)
+        return self.post_event(request, Event.DEALLOCATE, DeallocateSerializer,
+                               extra_context={'device': self.get_object()})
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated])
     def receive(self, request, pk=None):
-        serializer = ReceiveSerializer(
-            data=request.data,
-            context={'request': request, 'device': self.get_object()}
-        )
-        event = self.create_event(serializer, type=Event.RECEIVE)
-        
-        return self.get_success_event_creation_response(request, event)
+        return self.post_event(request, Event.RECEIVE, ReceiveSerializer,
+                               extra_context={'device': self.get_object()})
     
     @detail_route(methods=['post'], permission_classes=[IsAuthenticated],
                   url_path='usage-proof')
     def usage_proof(self, request, pk=None):
-        serializer = EventWritableSerializer(data=request.data,
-                                             context={'request': request})
-        
-        event = self.create_event(serializer, type=Event.USAGEPROOF)
-        
-        return self.get_success_event_creation_response(request, event)
+        return self.post_event(request, Event.USAGEPROOF)
 
 
 class EventView(viewsets.ReadOnlyModelViewSet):
