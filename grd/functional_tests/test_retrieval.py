@@ -1,6 +1,7 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from rest_framework.test import APILiveServerTestCase
 
+from grd.models import Device
 from .common import BaseTestCase
 
 
@@ -49,3 +50,11 @@ class ApiSuperuserTest(BaseTestCase):
         self.assertEqual(200, response.status_code)
         event = response.data
         self.assertIn('url', event)
+    
+    def test_retrieve_device_metrics(self):
+        # TODO include other metrics when are implemented
+        device = Device.objects.first()
+        response = self.client.get('/api/devices/%s/metrics/' % device.pk)
+        self.assertEqual(200, response.status_code)
+        metrics = response.data
+        self.assertIn('running_time', metrics)

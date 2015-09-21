@@ -4,11 +4,11 @@ from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
 
 from .models import Agent, Device, Event
-from .serializers import (  # FIXME alphabetic order
-    AddSerializer, AgentSerializer, DeviceSerializer, EventSerializer,
-    EventWritableSerializer, MigrateSerializer, RegisterSerializer,
-    RemoveSerializer, AllocateSerializer, DeallocateSerializer,
-    ReceiveSerializer
+from .serializers import (
+    AddSerializer, AgentSerializer, AllocateSerializer, DeallocateSerializer,
+    DeviceSerializer, DeviceMetricsSerializer, EventSerializer,
+    EventWritableSerializer, MigrateSerializer, ReceiveSerializer,
+    RegisterSerializer, RemoveSerializer
 )
 
 
@@ -58,6 +58,13 @@ class DeviceView(viewsets.ModelViewSet):
         queryset = Event.objects.related_to_device(device)
         serializer = EventSerializer(queryset, many=True,
                                      context={'request': request})
+        return Response(serializer.data)
+    
+    @detail_route(methods=['get'])
+    def metrics(self, request, pk=None):
+        device = self.get_object()
+        serializer = DeviceMetricsSerializer(device,
+                                             context={'request': request})
         return Response(serializer.data)
     
     @list_route(methods=['post'], permission_classes=[IsAuthenticated])

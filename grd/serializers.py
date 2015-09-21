@@ -55,6 +55,13 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
         read_only_fields = ('url', 'components', 'owners')
 
 
+class DeviceMetricsSerializer(serializers.HyperlinkedModelSerializer):
+    class Meta:
+        model = Device
+        fields = ('url', 'running_time')
+        read_only_fields = ('url', 'running_time')
+
+
 class LocationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Location
