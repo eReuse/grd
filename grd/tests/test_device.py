@@ -135,10 +135,10 @@ class RunningTimeTest(TestCase):
         usage_date = timezone.now() - time_on_use
         device.events.create(agent=self.agent, type=Event.USAGEPROOF,
                              date=usage_date, byUser="foo")
-        # NOTE we cast timedelta to int to allow some difference
-        # keep in mind that computation keeps some time
-        # FIXME there is a more graceful way? --> use round(value, -1)
-        self.assertEqual(time_on_use.total_seconds(), int(device.running_time))
+        # NOTE round timedelta to allow some difference because of
+        # time spent on computation.
+        self.assertEqual(time_on_use.total_seconds(),
+                         round(device.running_time, -1))
     
     def test_several_uses_reported(self):
         device = self.device
