@@ -653,3 +653,32 @@ class UsageProofTest(BaseTestCase):
         
         # Check the last event
         self.assertEventType(new_event_url, 'UsageProof')
+
+
+class StopUsageTest(BaseTestCase):
+    
+    def setUp(self):
+        super(StopUsageTest, self).setUp()
+        self.register_device()
+    
+    def test_report_device_usage(self):
+        # Alice sends an usageproof notification
+        data = {
+            'date': '2015-09-16T12:43:00.000000Z',
+            'byUser': 'http://example.org/user/alice/',
+        }
+        response = self.client.post(self.device_url + 'usage-proof/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        new_event_url = response['Location']
+        
+        # Alice notifies that is not using anymore the device
+        data = {
+            'date': '2015-09-23T12:15:00.000000Z',
+            'byUser': 'http://example.org/user/alice/',
+        }
+        response = self.client.post(self.device_url + 'stop-usage/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        new_event_url = response['Location']
+        
+        # Check the last event
+        self.assertEventType(new_event_url, 'StopUsage')

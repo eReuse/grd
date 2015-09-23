@@ -113,6 +113,11 @@ class DeviceView(viewsets.ModelViewSet):
                   url_path='usage-proof')
     def usage_proof(self, request, pk=None):
         return self.post_event(request, Event.USAGEPROOF)
+    
+    @detail_route(methods=['post'], permission_classes=[IsAuthenticated],
+                  url_path='stop-usage')
+    def stop_usage(self, request, pk=None):
+        return self.post_event(request, Event.STOPUSAGE)
 
 
 class EventView(viewsets.ReadOnlyModelViewSet):

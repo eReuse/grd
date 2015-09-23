@@ -142,6 +142,7 @@ class Event(models.Model):
     DEALLOCATE = 'Deallocate'
     RECEIVE = 'Receive'
     USAGEPROOF = 'UsageProof'
+    STOPUSAGE = 'StopUsage'
     
     # Device interrelationships
     ADD = 'Add'
@@ -157,6 +158,7 @@ class Event(models.Model):
         (RECEIVE, 'RECEIVE'),
         (RECYCLE, 'RECYCLE'),
         (REMOVE, 'REMOVE'),
+        (STOPUSAGE, 'STOPUSAGE'),
         (USAGEPROOF, 'USAGEPROOF'),
     )
     
