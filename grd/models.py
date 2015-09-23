@@ -112,17 +112,34 @@ class Device(models.Model):
     
     @property
     def running_time(self):  # XXX allow settung a period interval?
-        # TODO(santiago) consider reallocations of the device what means
-        # that it not being used
-        try:
-            beg = self.events.filter(type=Event.USAGEPROOF).earliest()
-        except Event.DoesNotExist:
+        USAGE_EVENTS = [Event.USAGEPROOF, Event.STOPUSAGE, Event.RECYCLE]
+        qs = self.events.filter(type__in=USAGE_EVENTS)
+        
+        # the device has not been used
+        if not qs.filter(type=Event.USAGEPROOF).exists():
             return 0
-        try:
-            end_date = self.events.get(type=Event.RECYCLE).date
-        except Event.DoesNotExist:
-            end_date = timezone.now()
-        return (end_date - beg.date).total_seconds()
+        
+        beg_date = None
+        end_date = None
+        seconds = 0
+        for e in qs:
+            if e.type == Event.USAGEPROOF:
+                beg_date = e.date
+            
+            elif e.type == Event.STOPUSAGE:
+                seconds += (e.date - beg_date).total_seconds()
+                beg_date = None
+            
+            elif e.type == Event.RECYCLE and beg_date is not None:
+                end_date = e.date
+                # this should be the last event of the device
+
+        if beg_date is not None:
+            if end_date is None:
+                end_date = timezone.now()
+            seconds += (end_date - beg_date).total_seconds()
+        
+        return seconds
 
 
 class EventManager(models.Manager):
