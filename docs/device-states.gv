@@ -5,35 +5,29 @@
  ***************************************************************** */
 
 digraph device_states {
-    _start [ shape=point ];
-    _start -> registered;
+    _start [shape=point];
+    _start -> Registered;
 
 
-    registered -> available [label="prepare"];
-    registered -> recycled [label="recycle"]
+    Registered -> OnUse [label="UsageProof"];
+    Registered -> Collected [label="Receive \n + \n green point"];
 
-    available -> allocated [label="allocate"];
-    available -> recycled [label="recycle"]
+    OnUse -> Registered [label="StopUsage"];
+    OnUse -> Collected [label="Receive \n + \n green point"];
 
-    allocated -> available [label="deallocate"];
-    allocated -> available [label="receive"];
+    Collected -> Registered [label="Receive \n + \n preparation point"];
+    Collected -> Recycled [label="Recycle"];
 
-    available -> onuse [label="usageproof"]
-
-    onuse -> onuse [label="usageproof"]
-    onuse -> allocated [label="allocate"]
-    onuse -> recycled [label="recycle"]
+    Recycled [shape=doublecircle];
 
 
-//    subgraph {
-//        rank=min;
-//        _start;
-//        registered;
-//    }
-//
-//    subgraph {
-//        rank=same;
-//        available;
-//        allocated;
-//    }
+    // events which could happen at any moment but doesn't modify current state
+    any [shape=circle, label="*"];
+    any -> any [label="Allocate/Deallocate\nMigrate\nAdd/Remove"]
+
+    subgraph {
+        rank=same;
+        Registered;
+        any;
+    }
 }
