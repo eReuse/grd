@@ -17,7 +17,7 @@
     "pk": 2,
     "fields": {
         "byUser": "foo",
-        "device": "DDR3",
+        "device": "LED24",
         "data": {},
         "components": [],
         "grdTimestamp": "2015-05-29T12:11:53.127Z",

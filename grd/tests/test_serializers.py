@@ -7,7 +7,7 @@ class DeviceSerializerTest(TestCase):
     
     def test_deserializing_valid_data(self):
         data = {
-            'id': 'http://example.org/device/1234/',
+            'sameAs': 'http://example.org/device/1234/',
             'hid': 'XPS13-1111-2222',
             'type': 'Computer',
         }
@@ -18,9 +18,9 @@ class DeviceSerializerTest(TestCase):
         obj = serializer.save()
         obj.full_clean()
     
-    def test_deserializing_invalid_id(self):
+    def test_deserializing_invalid_sameAs(self):
         data = {
-            'id': None,
+            'sameAs': None,
             'hid': 'XPS13-1111-2222',
             'type': 'Computer',
         }
@@ -29,7 +29,7 @@ class DeviceSerializerTest(TestCase):
     
     def test_deserializing_invalid_hid(self):
         data = {
-            'id': 'http://example.org/device/1234/',
+            'sameAs': 'http://example.org/device/1234/',
             'hid': None,
             'type': 'Computer',
         }
@@ -38,7 +38,7 @@ class DeviceSerializerTest(TestCase):
     
     def test_deserializing_invalid_type(self):
         data = {
-            'id': 'http://example.org/device/1234/',
+            'sameAs': 'http://example.org/device/1234/',
             'hid': 'XPS13-1111-2222',
             'type': 'foo',
         }
@@ -50,7 +50,7 @@ class DeviceRegisterSerializerTest(TestCase):
     
     def test_unregistered_device(self):
         data = {
-            'id': 'http://example.org/device/1234/',
+            'sameAs': 'http://example.org/device/1234/',
             'hid': 'XPS13-1111-2222',
             'type': 'Computer',
         }
@@ -63,7 +63,7 @@ class DeviceRegisterSerializerTest(TestCase):
     
     def test_registered_device(self):
         data = {
-            'id': 'http://example.org/device/1234/',
+            'sameAs': 'http://example.org/device/1234/',
             'hid': 'XPS13-1111-2222',
             'type': 'Computer',
         }

@@ -21,7 +21,7 @@ class DeviceTest(TestCase):
     def setUp(self):
         super(DeviceTest, self).setUp()
         self.device_one = Device.objects.get(hid="XPS13-1111-2222")
-        self.device_two = Device.objects.get(hid="DDR3")
+        self.device_two = Device.objects.get(hid="LED24")
     
     def test_get_components_device_with_register_event(self):
         device = Device.objects.get(hid="XPS13-1111-2222")
@@ -51,11 +51,11 @@ class ComponentsTest(TestCase):
     def setUp(self):
         super(ComponentsTest, self).setUp()
         self.device_one = Device.objects.get(hid="XPS13-1111-2222")
-        self.device_two = Device.objects.get(hid="DDR3")
+        self.device_two = Device.objects.get(hid="LED24")
     
     def test_get_components_device_without_register_event(self):
         # Device has registered as component so inherits register
-        device = Device.objects.get(hid="DDR3")
+        device = Device.objects.get(hid="LED24")
         self.assertEqual([], list(device.components))
     
     def test_get_parent(self):
@@ -84,7 +84,7 @@ class HolderTest(TestCase):
 
     def register_device(self):
         device = Device.objects.create(hid="1234", type=Device.LAPTOP,
-                                       id="http://example.org/device/1234/")
+                                       sameAs="http://example.org/device/1234/")
         device.events.create(agent=self.agent, type=Event.REGISTER,
                              date="2015-09-08T12:38:20.604Z", byUser="foo")
         return device
@@ -112,7 +112,7 @@ class RunningTimeTest(TestCase):
         u = User.objects.create_user("nikolao", "nikolao@example.org", "secret")
         self.agent = Agent.objects.create(name="Ahoth", user=u)
         device = Device.objects.create(hid="1234", type=Device.LAPTOP,
-                                       id="http://example.org/device/1234/")
+                                       sameAs="http://example.org/device/1234/")
         device.events.create(agent=self.agent, type=Event.REGISTER,
                              date="2015-09-08T12:38:20.604Z", byUser="foo")
         self.device = device

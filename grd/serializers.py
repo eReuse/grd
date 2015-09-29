@@ -32,7 +32,7 @@ class DeviceRegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Device
-        fields = ('hid', 'id', 'type')
+        fields = ('hid', 'sameAs', 'type')
     
     def create(self, validated_data):
         obj, _ = Device.objects.get_or_create(
@@ -51,7 +51,7 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Device
-        fields = ('url', 'hid', 'id', 'type', 'components', 'owners')
+        fields = ('url', 'hid', 'sameAs', 'type', 'components', 'owners')
         read_only_fields = ('url', 'components', 'owners')
 
 

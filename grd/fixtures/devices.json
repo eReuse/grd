@@ -2,15 +2,15 @@
 {
     "pk": "XPS13-1111-2222",
     "fields": {
-        "id": "http://example.org/device/1234/",
+        "sameAs": "http://example.org/device/1234/",
         "type": "Computer"
     },
     "model": "grd.device"
 },
 {
-    "pk": "DDR3",
+    "pk": "LED24",
     "fields": {
-        "id": "1",
+        "sameAs": "http://example.org/device/44/",
         "type": "Monitor"
     },
     "model": "grd.device"

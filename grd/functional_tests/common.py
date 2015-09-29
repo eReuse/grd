@@ -63,13 +63,16 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
     def register_device(self):
         data = {
             'device': {
-                'id': 'http://example.org/device/1234/',
+                'sameAs': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
             'byUser': 'foo',
-            'components': [{'id': '1', 'hid': 'DDR3', 'type': 'Monitor'}],
+            'components': [
+                {'sameAs': 'http://example.org/device/44/',
+                 'hid': 'LED24', 'type': 'Monitor'}
+            ],
         }
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)

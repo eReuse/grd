@@ -6,7 +6,7 @@
         "device": "XPS13-1111-2222",
         "data": {},
         "components": [
-            "DDR3"
+            "LED24"
         ],
         "grdTimestamp": "2015-05-29T12:11:53.127Z",
         "agent": 1,
