@@ -125,7 +125,7 @@ class RunningTimeTest(TestCase):
         device = self.device
         device.events.create(agent=self.agent, type=Event.USAGEPROOF,
                              date="2015-09-08T12:38:20.604Z", byUser="foo")
-        device.events.create(agent=self.agent, type=Event.RECYCLE,
+        device.events.create(agent=self.agent, type=Event.STOPUSAGE,
                              date="2015-09-08T12:38:45.604Z", byUser="foo")
         self.assertEqual(25, device.running_time)
     
@@ -154,3 +154,11 @@ class RunningTimeTest(TestCase):
                              date="2015-09-10T14:00:00.604Z", byUser="foo")
         
         self.assertEqual(4*3600, device.running_time)
+    
+    def test_device_recycled_but_stop_usage_unreported(self):
+        device = self.device
+        device.events.create(agent=self.agent, type=Event.USAGEPROOF,
+                             date="2015-09-08T12:38:20.604Z", byUser="foo")
+        device.events.create(agent=self.agent, type=Event.RECYCLE,
+                             date="2015-09-08T12:38:45.604Z", byUser="foo")
+        self.assertEqual(25, device.running_time)

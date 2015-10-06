@@ -110,8 +110,8 @@ class Device(models.Model):
         return event.device
     
     @property
-    def running_time(self):  # XXX allow settung a period interval?
-        USAGE_EVENTS = [Event.USAGEPROOF, Event.STOPUSAGE, Event.RECYCLE]
+    def running_time(self):
+        USAGE_EVENTS = [Event.USAGEPROOF, Event.STOPUSAGE]
         qs = self.events.filter(type__in=USAGE_EVENTS)
         
         # the device has not been used
@@ -119,7 +119,6 @@ class Device(models.Model):
             return 0
         
         beg_date = None
-        end_date = None
         seconds = 0
         for e in qs:
             if e.type == Event.USAGEPROOF:
@@ -128,13 +127,14 @@ class Device(models.Model):
             elif e.type == Event.STOPUSAGE:
                 seconds += (e.date - beg_date).total_seconds()
                 beg_date = None
-            
-            elif e.type == Event.RECYCLE and beg_date is not None:
-                end_date = e.date
-                # this should be the last event of the device
 
         if beg_date is not None:
-            if end_date is None:
+            # There is no StopUsage event: is the device currently on use?
+            # TODO(santiago) which kind of events means that the device
+            # is not being used anymore?
+            try:
+                end_date = self.events.get(type=Event.RECYCLE).date
+            except Event.DoesNotExist:
                 end_date = timezone.now()
             seconds += (end_date - beg_date).total_seconds()
         
