@@ -28,7 +28,7 @@ class Device(models.Model):
     hid = models.CharField('Hardware identifier.', primary_key=True,
                            max_length=128)  # FIXME how long can be hid?
     type = models.CharField(max_length=16, choices=TYPES)
-    productionDate = models.DateField(null=True)
+    productionDate = models.DateField(blank=True, null=True)
     
     def __str__(self):
         return "%s %s" % (self.type, self.pk)
@@ -109,6 +109,7 @@ class Device(models.Model):
         
         return event.device
     
+    # TODO create metrics module and move to it
     @property
     def running_time(self):
         USAGE_EVENTS = [Event.USAGEPROOF, Event.STOPUSAGE]
@@ -139,6 +140,24 @@ class Device(models.Model):
             seconds += (end_date - beg_date).total_seconds()
         
         return seconds
+    
+    # TODO create metrics module and move to it
+    @property
+    def durability(self):
+        # Tiempo entre el año de fabricación (Device.productionDate) y su reciclaje.
+        try:
+            recycled_on = self.events.get(type=Event.RECYCLE).date.year
+        except Event.DoesNotExist:
+            raise ValueError("Cannot obtain durability of a device that has "
+                             "not been recycled yet.")
+        
+        if self.productionDate is None:
+            qs_register = self.events.filter(type=Event.REGISTER)
+            produced_on = qs_register.earliest().date.year
+        else:
+            produced_on = self.productionDate.year
+        
+        return recycled_on - produced_on
 
 
 class EventManager(models.Manager):

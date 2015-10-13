@@ -14,6 +14,6 @@ class Migration(migrations.Migration):
         migrations.AddField(
             model_name='device',
             name='productionDate',
-            field=models.DateField(null=True),
+            field=models.DateField(blank=True, null=True),
         ),
     ]

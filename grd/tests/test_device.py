@@ -1,4 +1,4 @@
-from datetime import timedelta
+from datetime import date, timedelta
 from django.contrib.auth import get_user_model
 from django.test import TestCase
 from django.utils import timezone
@@ -162,3 +162,47 @@ class RunningTimeTest(TestCase):
         device.events.create(agent=self.agent, type=Event.RECYCLE,
                              date="2015-09-08T12:38:45.604Z", byUser="foo")
         self.assertEqual(25, device.running_time)
+
+
+class DurabilityTest(TestCase):
+    def setUp(self):
+        super(DurabilityTest, self).setUp()
+        u = User.objects.create_user("nikolao", "nikolao@example.org", "secret")
+        self.agent = Agent.objects.create(name="Ahoth", user=u)
+        device = Device.objects.create(hid="1234", type=Device.LAPTOP,
+                                       sameAs="http://example.org/device/1234/")
+        device.events.create(agent=self.agent, type=Event.REGISTER,
+                             date="2014-01-01T00:00:00.000Z", byUser="foo")
+        self.device = device
+    
+    def test_device_with_production_date(self):
+        device = self.device
+        device.productionDate = date(2009, 1, 1)
+        device.save()
+        
+        recycled_on = "2015-01-01T00:00:00.000Z"
+        device.events.create(agent=self.agent, type=Event.RECYCLE,
+                             date=recycled_on, byUser="foo")
+        
+        self.assertEqual(device.durability, 6)
+    
+    def test_device_without_production_date(self):
+        device = self.device
+        recycled_on = "2015-01-01T00:00:00.000Z"
+        device.events.create(agent=self.agent, type=Event.RECYCLE,
+                             date=recycled_on, byUser="foo")
+        
+        self.assertEqual(device.durability, 1)
+    
+    def test_device_without_production_date_several_register_events(self):
+        device = self.device
+        device.events.create(agent=self.agent, type=Event.REGISTER,
+                             date="2014-01-01T00:00:00.000Z", byUser="foo")
+        recycled_on = "2015-01-01T00:00:00.000Z"
+        device.events.create(agent=self.agent, type=Event.RECYCLE,
+                             date=recycled_on, byUser="foo")
+        self.assertEqual(device.durability, 1)
+    
+    def test_device_not_recycled(self):
+        with self.assertRaises(ValueError):
+            self.device.durability
