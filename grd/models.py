@@ -28,7 +28,7 @@ class Device(models.Model):
     hid = models.CharField('Hardware identifier.', primary_key=True,
                            max_length=128)  # FIXME how long can be hid?
     type = models.CharField(max_length=16, choices=TYPES)
-    # XXX is_id_secured & ituuid
+    productionDate = models.DateField(null=True)
     
     def __str__(self):
         return "%s %s" % (self.type, self.pk)
