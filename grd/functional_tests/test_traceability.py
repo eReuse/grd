@@ -285,7 +285,7 @@ class RegisterTest(BaseTestCase):
             dev = self.client.get(dev_url).data
             device_components.append({
                 'hid': dev['hid'],
-                'sameAs': dev['sameAs'],
+                'url': dev['sameAs'],
                 'type': dev['type'],
             })
         
@@ -304,14 +304,14 @@ class RegisterTest(BaseTestCase):
         # It registers a new device
         data = {
             'device': {
-                'sameAs': 'http://example.org/device/1234/',
+                'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
             'byUser': 'foo',
             'components': [
-                {'sameAs': 'http://example.org/device/44/',
+                {'url': 'http://example.org/device/44/',
                  'hid': 'LED24', 'type': 'Monitor'}
             ],
         }
@@ -329,7 +329,7 @@ class RegisterTest(BaseTestCase):
         
         # It verifies that the device has the proper id
         device = self.client.get(new_device_url).data
-        self.assertEqual(device['sameAs'], data['device']['sameAs'])
+        self.assertEqual(device['sameAs'], data['device']['url'])
         self.assertEqual(device['hid'], data['device']['hid'])
         
         # It checks that device includes related components
@@ -350,7 +350,7 @@ class RegisterTest(BaseTestCase):
         # PRE: It had registered a device
         data = {
             'device': {
-                'sameAs': 'http://example.org/device/1234/',
+                'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
@@ -391,14 +391,14 @@ class RegisterTest(BaseTestCase):
         # PRE: It had registered a device
         data = {
             'device': {
-                'sameAs': 'http://example.org/device/1234/',
+                'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
             'byUser': 'foo',
             'components': [
-                {'sameAs': 'http://example.org/device/44/',
+                {'url': 'http://example.org/device/44/',
                  'hid': 'LED24', 'type': 'Monitor'}
             ],
         }
@@ -417,7 +417,7 @@ class RegisterTest(BaseTestCase):
         
         # It verifies that the device has the proper id
         device = self.client.get(new_device_url).data
-        self.assertEqual(device['sameAs'], data['device']['sameAs'])
+        self.assertEqual(device['sameAs'], data['device']['url'])
         self.assertEqual(device['hid'], data['device']['hid'])
         
         # It checks that device includes same components
@@ -434,21 +434,21 @@ class RegisterTest(BaseTestCase):
         # PRE: It had registered a device
         data = {
             'device': {
-                'sameAs': 'http://example.org/device/1234/',
+                'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
             'byUser': 'foo',
             'components': [
-                {'sameAs': 'http://example.org/device/44/',
+                {'url': 'http://example.org/device/44/',
                  'hid': 'LED24', 'type': 'Monitor'}
             ],
         }
         self.client.post('/api/devices/register/', data=data)
         
         # It takes a snapshot of the device with different components
-        data['components'] = [{'sameAs': 'http://example.org/device/22/',
+        data['components'] = [{'url': 'http://example.org/device/22/',
                                'hid': 'R5', 'type': 'Monitor'}]
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -467,14 +467,14 @@ class RecycleTest(BaseTestCase):
         # Initialize registered devices before recycle tests
         data = {
             'device': {
-                'sameAs': 'http://example.org/device/1234/',
+                'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
             'byUser': 'foo',
             'components': [
-                {'sameAs': 'http://example.org/device/44/',
+                {'url': 'http://example.org/device/44/',
                  'hid': 'LED24', 'type': 'Monitor'}
             ],
         }

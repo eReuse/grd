@@ -63,14 +63,14 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
     def register_device(self):
         data = {
             'device': {
-                'sameAs': 'http://example.org/device/1234/',
+                'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
                 'type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
             'byUser': 'foo',
             'components': [
-                {'sameAs': 'http://example.org/device/44/',
+                {'url': 'http://example.org/device/44/',
                  'hid': 'LED24', 'type': 'Monitor'}
             ],
         }

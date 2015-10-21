@@ -29,10 +29,11 @@ class AgentSerializer(serializers.HyperlinkedModelSerializer):
 
 class DeviceRegisterSerializer(serializers.ModelSerializer):
     hid = serializers.CharField(label='Hardware identifier.', max_length=128)
+    url = serializers.URLField(source='sameAs')
     
     class Meta:
         model = Device
-        fields = ('hid', 'sameAs', 'type')
+        fields = ('hid', 'url', 'type')
     
     def create(self, validated_data):
         obj, _ = Device.objects.get_or_create(
