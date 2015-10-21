@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 
 
-# Dynamically calculate the version based on controller.VERSION.
+# Dynamically calculate the version
 version = __import__('grd').__version__
 
 setup(
