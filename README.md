@@ -13,23 +13,28 @@ For more details see [requirements] file.
 
 ## Installation
 - Prepare Python 3 environment
+
     sudo apt-get install python3 python3-pip
 
 - Install PostgreSQL database
+
     sudo apt-get install postgresql postgresql-client python3-psycopg2
 
 - Create and configure database
+
     sudo su - postgres
     psql -c "CREATE USER ereuse PASSWORD 'ereuse';"
     psql -c "CREATE DATABASE ereuse OWNER ereuse;"
 
 - Get latest source and install pip requirements.
+
     virtualenv -p python3 grdenv
     . grdenv/bin/activate
     pip install -r https://github.com/eReuse/grd/raw/master/grd/requirements.txt
     pip install git+https://github.com/ereuse/grd.git#egg=grd
 
 - Create a new Django project.
+
     django-admin startproject ereuse_grd
 
 - Update database configuration.
