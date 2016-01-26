@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Grd : The Global Record of Devices (GRD) is a log of information and traceability for any device, worldwide.">
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Grd</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/eReuse/grd">View on GitHub</a>
+
+          <h1 id="project_title">Grd</h1>
+          <h2 id="project_tagline">The Global Record of Devices (GRD) is a log of information and traceability for any device, worldwide.</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/eReuse/grd/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/eReuse/grd/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <h1>
+<a id="grd" class="anchor" href="#grd" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>GRD</h1>
+
+<p>The Global Record of Devices (GRD) is a log of information and traceability for any electronic device, worldwide.</p>
+
+<p>It collects from each device, at least, the geographical locations where it has been donated/recycled and aggregated metadata. The system provides a REST-API to allow IT Asset Management Systems, as DeviceHub, report device lifecycle, environmental responsabilities for organizations, etc.</p>
+
+<p><img src="docs/screenshot_device_list.png" alt="Screenshot GRD device list"></p>
+
+<h2>
+<a id="requirements" class="anchor" href="#requirements" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Requirements</h2>
+
+<ul>
+<li>Python (3.4)</li>
+<li>Django (1.8)</li>
+<li>Postgres
+For more details see <a href="grd/requirements.txt">requirements</a> file.</li>
+</ul>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<ul>
+<li><p>Prepare Python 3 environment
+<code>sudo apt-get install python3 python3-pip</code></p></li>
+<li><p>Install PostgreSQL database
+<code>sudo apt-get install postgresql postgresql-client python3-psycopg2</code></p></li>
+<li>
+<p>Create and configure database</p>
+
+<pre><code>sudo su - postgres
+psql -c "CREATE USER ereuse PASSWORD 'ereuse';"
+psql -c "CREATE DATABASE ereuse OWNER ereuse;"
+</code></pre>
+</li>
+<li>
+<p>Get latest source and install pip requirements.</p>
+
+<pre><code>virtualenv -p python3 grdenv
+. grdenv/bin/activate
+pip install -r https://github.com/eReuse/grd/raw/master/grd/requirements.txt
+pip install git+https://github.com/ereuse/grd.git#egg=grd
+</code></pre>
+</li>
+<li><p>Create a new Django project.
+<code>django-admin startproject ereuse_grd</code></p></li>
+<li><p>Update database configuration.</p></li>
+</ul>
+
+
+
+<h2>
+<a id="upgrading" class="anchor" href="#upgrading" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Upgrading</h2>
+
+
+
+<p>If you want to automatize the process get some inspiration of this <a href="https://github.com/eReuse/grd-sandbox/blob/master/deploy_tools/fabfile.py">fabfile</a>.
+    <code>fab deploy:host=user@example.org</code></p>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Grd maintained by <a href="https://github.com/eReuse">eReuse</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+    
+
+  </body>
+</html>
