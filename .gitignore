@@ -7,3 +7,5 @@
 *.swp
 dist/
 build/
+.Rproj.user
+grd.Rproj
