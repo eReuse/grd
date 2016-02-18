@@ -1,15 +1,17 @@
 [
 {
-    "pk": "XPS13-1111-2222",
+    "pk": 1,
     "fields": {
+        "hid": "XPS13-1111-2222",
         "sameAs": "http://example.org/device/1234/",
         "type": "Computer"
     },
     "model": "grd.device"
 },
 {
-    "pk": "LED24",
+    "pk": 2,
     "fields": {
+        "hid": "LED24-Acme-44",
         "sameAs": "http://example.org/device/44/",
         "type": "Monitor"
     },
