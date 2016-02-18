@@ -370,6 +370,25 @@ class RegisterTest(BaseTestCase):
         self.assertIsNotNone(event['location'])
         self.assertEqual(event['location'], data['location'])
     
+    def test_register_without_hid(self):
+        # https://www.wrike.com/open.htm?id=79609811
+        data = {
+            'device': {
+                'url': 'http://example.org/device/1234/',
+                #'hid': 'XPS13-1111-2222',
+                'type': 'Computer',
+            },
+            'date': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'foo',
+            'components': [
+                {'url': 'http://example.org/device/44/',
+                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
+            ],
+        }
+        response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
+        self.assertEventType(response['Location'], 'Register')
+    
     def test_register_no_data(self):
         response = self.client.post('/api/devices/register/', data=None)
         self.assertEqual(400, response.status_code, response.content)

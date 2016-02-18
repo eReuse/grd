@@ -28,7 +28,7 @@ class AgentSerializer(serializers.HyperlinkedModelSerializer):
 
 
 class DeviceRegisterSerializer(serializers.ModelSerializer):
-    hid = serializers.CharField(label='Hardware identifier.', max_length=128)
+    hid = serializers.CharField(label='Hardware identifier.', max_length=128, default=None)
     url = serializers.URLField(source='sameAs')
     
     class Meta:

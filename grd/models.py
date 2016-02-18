@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.gis.db import models as gis_models
 from django.contrib.postgres.fields import HStoreField
 from django.core.urlresolvers import reverse
+from django.core.validators import RegexValidator
 from django.db import models
 from django.db.models import Q
 from django.utils import timezone
@@ -22,11 +23,12 @@ class Device(models.Model):
         (PERIPHERAL, 'peripheral'),
     )
     
-    sameAs = models.URLField('URI provided by the agent.')
+    sameAs = models.URLField('URI provided by the agent.', unique=True)
     # hardware identifier can be obtained by anyone
     # TODO define some kind of validation to HID (shold be slugizable)
-    hid = models.CharField('Hardware identifier.', primary_key=True,
-                           max_length=128)  # FIXME how long can be hid?
+    hid = models.CharField('Hardware identifier.', max_length=128,
+                           unique=True, null=True,
+                           validators=[RegexValidator(regex=r'\w+-\w+-\w+')])
     type = models.CharField(max_length=16, choices=TYPES)
     productionDate = models.DateField(blank=True, null=True)
     
