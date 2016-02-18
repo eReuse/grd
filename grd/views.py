@@ -40,13 +40,18 @@ class DeviceView(viewsets.ModelViewSet):
         queryset = self.filter_queryset(queryset)
         lookup_value = self.kwargs[self.lookup_field]
         
+        # lookup by pk
         try:
-            unquoted_value = parse.unquote_plus(lookup_value).replace('!', '/')
-            URLValidator(schemes=['http', 'https'])(unquoted_value)
-        except ValidationError:
-            filter = {self.lookup_field: lookup_value}
-        else:
-            filter = {'sameAs': unquoted_value}
+            pk = int(lookup_value)
+            filter = {self.lookup_field: pk}
+        except ValueError:
+            try:
+                unquoted_value = parse.unquote_plus(lookup_value).replace('!', '/')
+                URLValidator(schemes=['http', 'https'])(unquoted_value)
+                filter = {'sameAs': unquoted_value}
+            except ValidationError:
+                # TODO validate hid regex?
+                filter = {'hid': lookup_value}
         
         return get_object_or_404(queryset, **filter)
     
