@@ -1,7 +1,11 @@
+from django.core.exceptions import ValidationError
+from django.core.validators import URLValidator
+from django.shortcuts import get_object_or_404
 from rest_framework import status, viewsets
 from rest_framework.decorators import detail_route, list_route
 from rest_framework.permissions import IsAdminUser, IsAuthenticated
 from rest_framework.response import Response
+from urllib import parse
 
 from .models import Agent, Device, Event
 from .serializers import (
@@ -22,6 +26,34 @@ class DeviceView(viewsets.ModelViewSet):
     queryset = Device.objects.all()
     serializer_class = DeviceSerializer
     permission_classes= (IsAuthenticated,)
+    lookup_value_regex = (
+        r'[^/.]+|'  # TODO pk regex?
+        r'https?:!![^/]+|'  # sameAs
+        r'\w+-\w+-\w+'  # hid
+    )
+    # TODO regex doesn't accept '%2F' == '/'!!!
+    # FIXME current work around replace by '!'
+    # URL regex http://stackoverflow.com/a/7995979/1538221
+    
+    def get_object(self):
+        queryset = self.get_queryset()
+        queryset = self.filter_queryset(queryset)
+        lookup_value = self.kwargs[self.lookup_field]
+        
+        # lookup by pk
+        try:
+            pk = int(lookup_value)
+            filter = {self.lookup_field: pk}
+        except ValueError:
+            try:
+                unquoted_value = parse.unquote_plus(lookup_value).replace('!', '/')
+                URLValidator(schemes=['http', 'https'])(unquoted_value)
+                filter = {'sameAs': unquoted_value}
+            except ValidationError:
+                # TODO validate hid regex?
+                filter = {'hid': lookup_value}
+        
+        return get_object_or_404(queryset, **filter)
     
     def get_success_event_creation_response(self, request, event):
         serializer = EventSerializer(event, context={'request': request})

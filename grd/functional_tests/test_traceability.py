@@ -218,7 +218,7 @@ class AddTest(BaseTestCase):
     def setUp(self):
         super(AddTest, self).setUp()
         self.device_one = Device.objects.get(hid="XPS13-1111-2222")
-        self.device_two = Device.objects.get(hid="LED24")
+        self.device_two = Device.objects.get(hid="LED24-Acme-44")
     
     def test_add_component(self):
         # PRE: 2 devices registered without relationship
@@ -312,7 +312,7 @@ class RegisterTest(BaseTestCase):
             'byUser': 'foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
             ],
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -399,7 +399,7 @@ class RegisterTest(BaseTestCase):
             'byUser': 'foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
             ],
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -442,7 +442,7 @@ class RegisterTest(BaseTestCase):
             'byUser': 'foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
             ],
         }
         self.client.post('/api/devices/register/', data=data)
@@ -475,7 +475,7 @@ class RecycleTest(BaseTestCase):
             'byUser': 'foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
             ],
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -523,7 +523,7 @@ class RecycleTest(BaseTestCase):
         recycle_data = {
             'date': '2014-04-10T22:38:20.604391Z',
             'byUser': 'some authorized recycler',
-            'components': ['LED24'],
+            'components': ['LED24-Acme-44'],
         }
         response = self.client.post(self.device_url + 'recycle/',
                                     data=recycle_data)
@@ -575,7 +575,7 @@ class RecycleTest(BaseTestCase):
         # He tries to recycle the device
         recycle_data = {
             'date': '2014-04-10T22:38:20.604391Z',
-            'components': ['LED24'],
+            'components': ['LED24-Acme-44'],
         }
         response = self.client.post(self.device_url + 'recycle/',
                                     data=recycle_data)
@@ -588,7 +588,7 @@ class RemoveTest(BaseTestCase):
     def setUp(self):
         super(RemoveTest, self).setUp()
         self.device_one = Device.objects.get(hid="XPS13-1111-2222")
-        self.device_two = Device.objects.get(hid="LED24")
+        self.device_two = Device.objects.get(hid="LED24-Acme-44")
     
     def test_remove_component(self):
         # PRE: 2 registered devices that are related

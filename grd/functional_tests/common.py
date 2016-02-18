@@ -71,7 +71,7 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
             'byUser': 'foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
             ],
         }
         response = self.client.post('/api/devices/register/', data=data)

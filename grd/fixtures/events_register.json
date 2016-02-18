@@ -3,7 +3,7 @@
     "pk": 1,
     "fields": {
         "byUser": "foo",
-        "device": "XPS13-1111-2222",
+        "device": 1,
         "data": {},
         "components": [],
         "grdTimestamp": "2015-05-29T12:11:53.127Z",
@@ -17,7 +17,7 @@
     "pk": 2,
     "fields": {
         "byUser": "foo",
-        "device": "LED24",
+        "device": 2,
         "data": {},
         "components": [],
         "grdTimestamp": "2015-05-29T12:11:53.127Z",

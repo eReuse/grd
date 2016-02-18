@@ -3,10 +3,10 @@
     "pk": 1,
     "fields": {
         "byUser": "foo",
-        "device": "XPS13-1111-2222",
+        "device": 1,
         "data": {},
         "components": [
-            "LED24"
+            2
         ],
         "grdTimestamp": "2015-05-29T12:11:53.127Z",
         "agent": 1,
@@ -19,7 +19,7 @@
     "pk": 2,
     "fields": {
         "byUser": "some authorized recycler",
-        "device": "XPS13-1111-2222",
+        "device": 1,
         "data": {},
         "components": [],
         "grdTimestamp": "2015-05-29T12:11:53.152Z",

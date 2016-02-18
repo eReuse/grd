@@ -1,5 +1,6 @@
 from django.contrib.staticfiles.testing import StaticLiveServerTestCase
 from rest_framework.test import APILiveServerTestCase
+from urllib import parse
 
 from grd.models import Device
 from .common import BaseTestCase
@@ -41,6 +42,26 @@ class ApiSuperuserTest(BaseTestCase):
         response = self.client.get('/api/devices/')
         self.assertEqual(200, response.status_code)
     
+    def test_retrieve_device_detail_by_hid(self):
+        dev = Device.objects.first()
+        response = self.client.get('/api/devices/%s/' % dev.hid)
+        self.assertEqual(200, response.status_code)
+        
+        response = self.client.get('/api/devices/%s/' % 'Does-Not-Exist')
+        self.assertEqual(404, response.status_code)
+    
+    def test_retrieve_device_detail_by_sameAs(self):
+        # sameAs = 'http://example.org/1234/'
+        # sameAs = 'https://example.org/1234/'
+        dev = Device.objects.first()
+        urlized_sameAs = parse.quote_plus(dev.sameAs.replace('/', '!'))
+        response = self.client.get('/api/devices/%s/' % urlized_sameAs)
+        self.assertEqual(200, response.status_code)
+        
+        urlized_sameAs = parse.quote_plus('http://example.org/doesnotexist'.replace('/', '!'))
+        response = self.client.get('/api/devices/%s/' % urlized_sameAs)
+        self.assertEqual(404, response.status_code)
+    
     def test_retrieve_event_list(self):
         response = self.client.get('/api/events/')
         self.assertEqual(200, response.status_code)
@@ -53,6 +74,7 @@ class ApiSuperuserTest(BaseTestCase):
     
     def test_retrieve_device_metrics(self):
         # TODO include other metrics when are implemented
+        # urlized_sameAs = 'https%3A%3B%3Bwww.labdoo.org%3Blaptop%3B000004646'
         device = Device.objects.first()
         response = self.client.get('/api/devices/%s/metrics/' % device.pk)
         self.assertEqual(200, response.status_code)

@@ -21,7 +21,7 @@ class DeviceTest(TestCase):
     def setUp(self):
         super(DeviceTest, self).setUp()
         self.device_one = Device.objects.get(hid="XPS13-1111-2222")
-        self.device_two = Device.objects.get(hid="LED24")
+        self.device_two = Device.objects.get(hid="LED24-Acme-44")
     
     def test_get_components_device_with_register_event(self):
         device = Device.objects.get(hid="XPS13-1111-2222")
@@ -51,11 +51,11 @@ class ComponentsTest(TestCase):
     def setUp(self):
         super(ComponentsTest, self).setUp()
         self.device_one = Device.objects.get(hid="XPS13-1111-2222")
-        self.device_two = Device.objects.get(hid="LED24")
+        self.device_two = Device.objects.get(hid="LED24-Acme-44")
     
     def test_get_components_device_without_register_event(self):
         # Device has registered as component so inherits register
-        device = Device.objects.get(hid="LED24")
+        device = Device.objects.get(hid="LED24-Acme-44")
         self.assertEqual([], list(device.components))
     
     def test_get_parent(self):
