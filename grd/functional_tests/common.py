@@ -44,7 +44,7 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
         assert len(events) > 0
         last_event = events[0]
         for event in events:
-            if event['grdTimestamp'] > last_event['grdTimestamp']:
+            if event['grdDate'] > last_event['grdDate']:
                 last_event = event
         return last_event
     
@@ -68,7 +68,8 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
                 'type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
-            'byUser': 'foo',
+            'dhDate': '2012-04-11T22:38:20.604391Z',
+            'byUser': 'http://example.org/users/foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
                  'hid': 'LED24-Acme-44', 'type': 'Monitor'}

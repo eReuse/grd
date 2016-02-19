@@ -83,7 +83,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Event
-        fields = ('url', 'grdDate', 'type', 'device', 'agent',
+        fields = ('url', 'dhDate', 'grdDate', 'type', 'device', 'agent',
                   'components', 'to', 'location', 'owner')
 
 
@@ -94,7 +94,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Event
-        fields = ('device', 'date', 'byUser', 'components', 'location')
+        fields = ('device', 'date', 'dhDate', 'byUser', 'components', 'location')
     
     def save(self, agent=None, **kwargs):
         # create devices and events
@@ -103,6 +103,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         dev = DeviceRegisterSerializer().create(data.pop('device'))
         event = dev.events.create(type=Event.REGISTER, agent=agent,
                                   date=data.get('date', None),
+                                  dhDate=data['dhDate'],
                                   byUser=data['byUser'])
         
         for device_data in data['components']:
@@ -130,7 +131,7 @@ class EventWritableSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Event
-        fields = ('date', 'byUser', 'components', 'location')
+        fields = ('date', 'dhDate', 'byUser', 'components', 'location')
     
     def create(self, validated_data):
         location_data = validated_data.pop('location', None)
@@ -146,7 +147,7 @@ class AllocateSerializer(EventWritableSerializer):
     
     class Meta:
         model = Event
-        fields = ('date', 'byUser', 'owner', 'location')
+        fields = ('date', 'dhDate', 'byUser', 'owner', 'location')
     
     def validate_owner(self, value):
         device = self.context['device']
@@ -175,7 +176,7 @@ class DeallocateSerializer(AllocateSerializer):
 class ReceiveSerializer(EventWritableSerializer):
     class Meta:
         model = Event
-        fields = ('date', 'byUser', 'location')
+        fields = ('date', 'dhDate', 'byUser', 'location')
     
     def validate_byUser(self, value):
         device = self.context['device']
@@ -195,7 +196,7 @@ class MigrateSerializer(EventWritableSerializer):
     
     class Meta:
         model = Event
-        fields = ('date', 'byUser', 'components', 'to', 'location')
+        fields = ('date', 'dhDate', 'byUser', 'components', 'to', 'location')
     
     def save(self, **kwargs):
         to = self.validated_data.pop('to')
