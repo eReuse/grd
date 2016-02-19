@@ -33,7 +33,8 @@ class DeviceTest(TestCase):
             device=self.device_one,
             type=Event.ADD,
             date=timezone.now(),
-            byUser='XSR',
+            dhDate=timezone.now(),
+            byUser='http://example.org/users/XSR',
         )
         event.components.add(self.device_two)
         self.assertEqual(self.device_two.parent, self.device_one)
@@ -68,7 +69,8 @@ class ComponentsTest(TestCase):
             device=self.device_one,
             type=Event.REMOVE,
             date=timezone.now(),
-            byUser='XSR',
+            dhDate=timezone.now(),
+            byUser='http://example.org/users/XSR',
         )
         event.components.add(self.device_two)
         self.assertIsNone(self.device_two.parent)
@@ -85,14 +87,24 @@ class HolderTest(TestCase):
     def register_device(self):
         device = Device.objects.create(hid="1234", type=Device.LAPTOP,
                                        sameAs="http://example.org/device/1234/")
-        device.events.create(agent=self.agent, type=Event.REGISTER,
-                             date="2015-09-08T12:38:20.604Z", byUser="foo")
+        device.events.create(
+            agent=self.agent,
+            type=Event.REGISTER,
+            date="2015-09-08T12:38:20.604Z",
+            dhDate="2015-09-18T12:38:20.604Z",
+            byUser="http://example.org/users/foo"
+        )
         return device
     
     def migrate_device(self, device, to):
-        device.events.create(agent=self.agent, type=Event.MIGRATE,
-                             date="2015-09-08T12:58:20.604Z", byUser="foo",
-                             data={'to': str(self.agent2.pk)})
+        device.events.create(
+            agent=self.agent,
+            type=Event.MIGRATE,
+            date="2015-09-08T12:58:20.604Z",
+            dhDate="2015-09-08T12:58:20.604Z",
+            byUser="http://example.org/users/foo",
+            data={'to': str(self.agent2.pk)}
+        )
     
     def test_holder(self):
         device = self.register_device()
@@ -113,8 +125,13 @@ class RunningTimeTest(TestCase):
         self.agent = Agent.objects.create(name="Ahoth", user=u)
         device = Device.objects.create(hid="1234", type=Device.LAPTOP,
                                        sameAs="http://example.org/device/1234/")
-        device.events.create(agent=self.agent, type=Event.REGISTER,
-                             date="2015-09-08T12:38:20.604Z", byUser="foo")
+        device.events.create(
+            agent=self.agent,
+            type=Event.REGISTER,
+            date="2015-09-08T12:38:20.604Z",
+            dhDate="2015-09-09T12:38:20.604Z",
+            byUser="http://example.org/users/foo"
+        )
         self.device = device
     
     def test_no_use_reported(self):
@@ -123,18 +140,33 @@ class RunningTimeTest(TestCase):
     
     def test_single_use_reported(self):
         device = self.device
-        device.events.create(agent=self.agent, type=Event.USAGEPROOF,
-                             date="2015-09-08T12:38:20.604Z", byUser="foo")
-        device.events.create(agent=self.agent, type=Event.STOPUSAGE,
-                             date="2015-09-08T12:38:45.604Z", byUser="foo")
+        device.events.create(
+            agent=self.agent,
+            type=Event.USAGEPROOF,
+            date="2015-09-08T12:38:20.604Z",
+            dhDate="2015-09-09T12:38:20.604Z",
+            byUser="http://example.org/users/foo"
+        )
+        device.events.create(
+            agent=self.agent,
+            type=Event.STOPUSAGE,
+            date="2015-09-08T12:38:45.604Z",
+            dhDate="2015-09-09T12:38:45.604Z",
+            byUser="http://example.org/users/foo"
+        )
         self.assertEqual(25, device.running_time)
     
     def test_currently_on_use(self):  # There isn't final event
         device = self.device
         time_on_use = timedelta(hours=12)
         usage_date = timezone.now() - time_on_use
-        device.events.create(agent=self.agent, type=Event.USAGEPROOF,
-                             date=usage_date, byUser="foo")
+        device.events.create(
+            agent=self.agent,
+            type=Event.USAGEPROOF,
+            date=usage_date,
+            dhDate=usage_date,
+            byUser="http://example.org/users/foo"
+        )
         # NOTE round timedelta to allow some difference because of
         # time spent on computation.
         self.assertEqual(time_on_use.total_seconds(),
@@ -143,24 +175,54 @@ class RunningTimeTest(TestCase):
     def test_several_uses_reported(self):
         device = self.device
         # device was used for a couple of hours
-        device.events.create(agent=self.agent, type=Event.USAGEPROOF,
-                             date="2015-09-08T12:00:00.604Z", byUser="foo")
-        device.events.create(agent=self.agent, type=Event.STOPUSAGE,
-                             date="2015-09-08T14:00:00.604Z", byUser="foo")
+        device.events.create(
+            agent=self.agent,
+            type=Event.USAGEPROOF,
+            date="2015-09-08T12:00:00.604Z",
+            dhDate="2015-09-09T12:00:00.604Z",
+            byUser="http://example.org/users/foo"
+        )
+        device.events.create(
+            agent=self.agent,
+            type=Event.STOPUSAGE,
+            date="2015-09-08T14:00:00.604Z",
+            dhDate="2015-09-08T16:00:00.604Z",
+            byUser="http://example.org/users/foo"
+        )
         # device was used for a couple of hours more
-        device.events.create(agent=self.agent, type=Event.USAGEPROOF,
-                             date="2015-09-10T12:00:00.604Z", byUser="foo")
-        device.events.create(agent=self.agent, type=Event.STOPUSAGE,
-                             date="2015-09-10T14:00:00.604Z", byUser="foo")
+        device.events.create(
+            agent=self.agent,
+            type=Event.USAGEPROOF,
+            date="2015-09-10T12:00:00.604Z",
+            dhDate="2015-09-10T12:00:00.604Z",
+            byUser="http://example.org/users/foo"
+        )
+        device.events.create(
+            agent=self.agent,
+            type=Event.STOPUSAGE,
+            date="2015-09-10T14:00:00.604Z",
+            dhDate="2015-09-10T14:00:00.604Z",
+            byUser="http://example.org/users/foo"
+        )
         
-        self.assertEqual(4*3600, device.running_time)
+        self.assertEqual(4 * 3600, device.running_time)
     
     def test_device_recycled_but_stop_usage_unreported(self):
         device = self.device
-        device.events.create(agent=self.agent, type=Event.USAGEPROOF,
-                             date="2015-09-08T12:38:20.604Z", byUser="foo")
-        device.events.create(agent=self.agent, type=Event.RECYCLE,
-                             date="2015-09-08T12:38:45.604Z", byUser="foo")
+        device.events.create(
+            agent=self.agent,
+            type=Event.USAGEPROOF,
+            date="2015-09-08T12:38:20.604Z",
+            dhDate="2015-09-08T12:38:20.604Z",            
+            byUser="http://example.org/users/foo"
+        )
+        device.events.create(
+            agent=self.agent,
+            type=Event.RECYCLE,
+            date="2015-09-08T12:38:45.604Z",
+            dhDate="2015-09-08T12:38:45.604Z",
+            byUser="http://example.org/users/foo"
+        )
         self.assertEqual(25, device.running_time)
 
 
@@ -171,8 +233,13 @@ class DurabilityTest(TestCase):
         self.agent = Agent.objects.create(name="Ahoth", user=u)
         device = Device.objects.create(hid="1234", type=Device.LAPTOP,
                                        sameAs="http://example.org/device/1234/")
-        device.events.create(agent=self.agent, type=Event.REGISTER,
-                             date="2014-01-01T00:00:00.000Z", byUser="foo")
+        device.events.create(
+            agent=self.agent,
+            type=Event.REGISTER,
+            date="2014-01-01T00:00:00.000Z",
+            dhDate="2014-01-20T00:00:00.000Z",
+            byUser="http://example.org/users/foo"
+        )
         self.device = device
     
     def test_device_with_production_date(self):
@@ -181,26 +248,46 @@ class DurabilityTest(TestCase):
         device.save()
         
         recycled_on = "2015-01-01T00:00:00.000Z"
-        device.events.create(agent=self.agent, type=Event.RECYCLE,
-                             date=recycled_on, byUser="foo")
+        device.events.create(
+            agent=self.agent,
+            type=Event.RECYCLE,
+            date=recycled_on,
+            dhDate="2015-01-21T00:00:00.000Z",
+            byUser="http://example.org/users/foo"
+        )
         
         self.assertEqual(device.durability, 6)
     
     def test_device_without_production_date(self):
         device = self.device
         recycled_on = "2015-01-01T00:00:00.000Z"
-        device.events.create(agent=self.agent, type=Event.RECYCLE,
-                             date=recycled_on, byUser="foo")
+        device.events.create(
+            agent=self.agent,
+            type=Event.RECYCLE,
+            date=recycled_on,
+            dhDate="2015-01-21T00:00:00.000Z",
+            byUser="http://example.org/users/foo"
+        )
         
         self.assertEqual(device.durability, 1)
     
     def test_device_without_production_date_several_register_events(self):
         device = self.device
-        device.events.create(agent=self.agent, type=Event.REGISTER,
-                             date="2014-01-01T00:00:00.000Z", byUser="foo")
+        device.events.create(
+            agent=self.agent,
+            type=Event.REGISTER,
+            date="2014-01-01T00:00:00.000Z",
+            dhDate="2014-02-01T00:00:00.000Z",
+            byUser="http://example.org/users/foo"
+        )
         recycled_on = "2015-01-01T00:00:00.000Z"
-        device.events.create(agent=self.agent, type=Event.RECYCLE,
-                             date=recycled_on, byUser="foo")
+        device.events.create(
+            agent=self.agent,
+            type=Event.RECYCLE,
+            date=recycled_on,
+            dhDate = "2015-01-01T02:00:00.000Z",
+            byUser="http://example.org/users/foo"
+        )
         self.assertEqual(device.durability, 1)
     
     def test_device_not_recycled(self):
