@@ -41,6 +41,15 @@ class DeviceRegisterSerializer(serializers.ModelSerializer):
             defaults=validated_data
         )
         return obj
+    
+    def to_internal_value(self, data):
+        """
+        Dict of native values <- Dict of primitive datatypes.
+        """
+        # translate '@type' --> 'type'
+        data['type'] = data.pop('@type', None)
+        ret = super(DeviceRegisterSerializer, self).to_internal_value(data)
+        return ret
 
 
 class DeviceSerializer(serializers.HyperlinkedModelSerializer):
@@ -54,6 +63,12 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
         model = Device
         fields = ('url', 'hid', 'sameAs', 'type', 'components', 'owners')
         read_only_fields = ('url', 'components', 'owners')
+    
+    def to_representation(self, instance):
+        # translate 'type' --> '@type'
+        data = super(DeviceSerializer, self).to_representation(instance)
+        data['@type'] = data.pop('type')
+        return data
 
 
 class DeviceMetricsSerializer(serializers.HyperlinkedModelSerializer):

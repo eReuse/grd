@@ -65,14 +65,14 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
             'device': {
                 'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
+                '@type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
             'dhDate': '2012-04-11T22:38:20.604391Z',
             'byUser': 'http://example.org/users/foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', '@type': 'Monitor'}
             ],
         }
         response = self.client.post('/api/devices/register/', data=data)

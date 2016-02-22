@@ -301,7 +301,7 @@ class RegisterTest(BaseTestCase):
             device_components.append({
                 'hid': dev['hid'],
                 'url': dev['sameAs'],
-                'type': dev['type'],
+                '@type': dev['@type'],
             })
         
         device_components = sorted(device_components, key=lambda k: k['hid'])
@@ -321,14 +321,14 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
+                '@type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
             'dhDate': '2012-04-10T22:38:20.604391Z',
             'byUser': 'http://example.org/users/foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', '@type': 'Monitor'}
             ],
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -368,7 +368,7 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
+                '@type': 'Computer',
             },
             'components': [],
             'date': '2012-04-10T22:38:20.604391Z',
@@ -393,14 +393,14 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'url': 'http://example.org/device/1234/',
                 #'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
+                '@type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
             'dhDate': '2012-04-10T22:38:20.604391Z',
             'byUser': 'http://example.org/users/foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', '@type': 'Monitor'}
             ],
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -414,7 +414,7 @@ class RegisterTest(BaseTestCase):
     def test_register_invalid_data(self):
         data = {
             'device': {
-                'type': 'Computer',
+                '@type': 'Computer',
             }
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -430,17 +430,18 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
+                '@type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
             'dhDate': '2012-04-10T22:38:20.604391Z',
             'byUser': 'http://example.org/users/foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', '@type': 'Monitor'}
             ],
         }
         response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
         self.assertEqual(2, self.count_listed_objects('/api/devices/'))
         
         # It registers a already traced device
@@ -474,21 +475,21 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
+                '@type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
             'dhDate': '2012-04-10T22:38:20.604391Z',
             'byUser': 'http://example.org/users/foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', '@type': 'Monitor'}
             ],
         }
         self.client.post('/api/devices/register/', data=data)
         
         # It takes a snapshot of the device with different components
         data['components'] = [{'url': 'http://example.org/device/22/',
-                               'hid': 'R5', 'type': 'Monitor'}]
+                               'hid': 'R5', '@type': 'Monitor'}]
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
         
@@ -502,26 +503,7 @@ class RecycleTest(BaseTestCase):
     
     def setUp(self):
         super(RecycleTest, self).setUp()
-        
-        # Initialize registered devices before recycle tests
-        data = {
-            'device': {
-                'url': 'http://example.org/device/1234/',
-                'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
-            },
-            'date': '2012-04-10T22:38:20.604391Z',
-            'dhDate': '2012-04-10T22:38:20.604391Z',
-            'byUser': 'http://example.org/users/foo',
-            'components': [
-                {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
-            ],
-        }
-        response = self.client.post('/api/devices/register/', data=data)
-        self.assertEqual(201, response.status_code, response.content)
-        event_url = response['Location']
-        self.device_url = self.client.get(event_url).data['device']
+        self.register_device()
     
     def test_recycle_device(self):
         # Bob wants to recycle a device that he has previously
