@@ -53,7 +53,7 @@ class BaseTestCase(StaticLiveServerTestCase, APILiveServerTestCase):
         self.assertEqual(200, response.status_code, response.content)
         
         event = response.data
-        self.assertEqual(type, event['type'])
+        self.assertEqual(type, event['@type'])
         
         response = self.client.get(event['agent'])
         self.assertEqual(200, response.status_code, response.content)

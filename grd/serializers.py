@@ -100,6 +100,12 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
         model = Event
         fields = ('url', 'dhDate', 'grdDate', 'type', 'device', 'agent',
                   'components', 'to', 'location', 'owner')
+    
+    def to_representation(self, instance):
+        # translate 'type' --> '@type'
+        data = super(EventSerializer, self).to_representation(instance)
+        data['@type'] = data.pop('type')
+        return data
 
 
 class RegisterSerializer(serializers.ModelSerializer):

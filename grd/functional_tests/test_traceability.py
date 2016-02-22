@@ -536,7 +536,7 @@ class RecycleTest(BaseTestCase):
             self.assertEqual(len(comp_events), 1)
             
             last_event = self.get_latest_event(comp_events)
-            self.assertNotEqual('Recycle', last_event['type'])
+            self.assertNotEqual('Recycle', last_event['@type'])
     
     def test_recycle_device_with_components(self):
         # Bob wants to recycle a device that he has previously
@@ -571,7 +571,7 @@ class RecycleTest(BaseTestCase):
             self.assertEqual(len(comp_events), 2)
             
             last_event = self.get_latest_event(comp_events)
-            self.assertEqual('Recycle', last_event['type'])
+            self.assertEqual('Recycle', last_event['@type'])
     
     def test_recycle_device_with_location(self):
         data = {
