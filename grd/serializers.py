@@ -83,7 +83,7 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Event
-        fields = ('url', 'grdTimestamp', 'type', 'device', 'agent',
+        fields = ('url', 'grdDate', 'type', 'device', 'agent',
                   'components', 'to', 'location', 'owner')
 
 

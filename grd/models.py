@@ -199,11 +199,17 @@ class Event(models.Model):
         (USAGEPROOF, 'USAGEPROOF'),
     )
     
+    # internal implementation (may be replaced by subclasses)
     type = models.CharField(max_length=16, choices=TYPES)
+    
     date = models.DateTimeField('Time when the event has happened.')
-    grdTimestamp = models.DateTimeField(auto_now_add=True)
-    # TODO replace with AgentUser
-    byUser = models.CharField('User who performs the event.', max_length=128)
+    dhDate = models.DateTimeField('Time when the event has happened.')
+    grdDate = models.DateTimeField(auto_now_add=True)
+    errors = models.TextField(null=True)  # XXX serialize array as coma separated?
+    secured = models.BooleanField(default=True)
+    incidence = models.BooleanField(default=False)
+    geo = gis_models.PointField(null=True)
+    byUser = models.URLField('User who performs the event.')
     
     agent = models.ForeignKey('Agent', related_name='+')
     device = models.ForeignKey('Device', related_name='events')
@@ -217,14 +223,14 @@ class Event(models.Model):
     objects = EventManager()
     
     class Meta:
-        get_latest_by = 'grdTimestamp'
+        get_latest_by = 'grdDate'
         # WARNING: the order of the events affects the computation of
         # the device's state, so be sure that you know what are you
         # doing before changing this field.
-        ordering = ['grdTimestamp']
+        ordering = ['grdDate']
     
     def __str__(self):
-        event_date = self.grdTimestamp.strftime("%Y-%m-%d")
+        event_date = self.grdDate.strftime("%Y-%m-%d")
         return "%s %s %s" % (self.agent, self.type, event_date)
     
     @property
