@@ -1,0 +1,72 @@
+{
+  "@type": "Register",
+  "components": [
+    {
+      "@type": "Processor",
+      "url": "https://devicehub.ereuse.org/dht1/devices/2"
+    },
+    {
+      "@type": "RamModule",
+      "url": "https://devicehub.ereuse.org/dht1/devices/3"
+    },
+    {
+      "@type": "HardDrive",
+      "url": "https://devicehub.ereuse.org/dht1/devices/4"
+    },
+    {
+      "@type": "HardDrive",
+      "url": "https://devicehub.ereuse.org/dht1/devices/5",
+      "hid": "linux-23fasf-39fas923-ads2-3f3f3-23odjs820-wdc_wd20earx-00p"
+    },
+    {
+      "@type": "HardDrive",
+      "url": "https://devicehub.ereuse.org/dht1/devices/6",
+      "hid": "linux-23fasd-f322-fff-2saf-65kgss-wdc_wd10ezex-00k"
+    },
+    {
+      "@type": "HardDrive",
+      "url": "https://devicehub.ereuse.org/dht1/devices/7",
+      "hid": "linux-3gas-6eg229a-saf2-554-12asdnm-wdc_wd20earx-00p"
+    },
+    {
+      "@type": "GraphicCard",
+      "url": "https://devicehub.ereuse.org/dht1/devices/8"
+    },
+    {
+      "@type": "Motherboard",
+      "url": "https://devicehub.ereuse.org/dht1/devices/9",
+      "hid": "asustek_computer_inc-f32asxxx-p8h67-m_le"
+    },
+    {
+      "@type": "NetworkAdapter",
+      "url": "https://devicehub.ereuse.org/dht1/devices/10",
+      "hid": "intel_corporation-12_12_12_13_1f_1d-82572ei_gigabit_ethernet_controller_copper"
+    },
+    {
+      "@type": "NetworkAdapter",
+      "url": "https://devicehub.ereuse.org/dht1/devices/11",
+      "hid": "realtek_semiconductor_co_ltd-1d_6d_3d_4f_7c_11-rtl8111_8168_8411_pci_express_gigabit_ethernet_controller"
+    },
+    {
+      "@type": "NetworkAdapter",
+      "url": "https://devicehub.ereuse.org/dht1/devices/12"
+    },
+    {
+      "@type": "NetworkAdapter",
+      "url": "https://devicehub.ereuse.org/dht1/devices/13"
+    },
+    {
+      "@type": "SoundCard",
+      "url": "https://devicehub.ereuse.org/dht1/devices/14"
+    }
+  ],
+  "incidence": false,
+  "url": "https://devicehub.ereuse.org/dht1/events/56cc67d57a993d2e28b71bf6",
+  "device": {
+    "@type": "Computer",
+    "url": "https://devicehub.ereuse.org/dht1/devices/1"
+  },
+  "dhDate": "2016-02-23T14:08:21",
+  "byUser": "https://devicehub.ereuse.org/accounts/56cc67d47a993d2e28b71bf5",
+  "secured": false
+}

@@ -1,0 +1,55 @@
+{
+  "url": "https://devicehub.ereuse.org/db1/events/56c8ded37a993d1e84b396de",
+  "@type": "Register",
+  "components": [
+    {
+      "url": "https://devicehub.ereuse.org/db1/devices/2",
+      "@type": "GraphicCard"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/db1/devices/3",
+      "@type": "HardDrive",
+      "hid": "toshiba-42t9cpegt-toshiba_mk3259gs"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/db1/devices/4",
+      "@type": "RamModule"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/db1/devices/5",
+      "@type": "Motherboard",
+      "hid": "acer-216020fhmbqc09917-je01_ct"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/db1/devices/6",
+      "@type": "NetworkAdapter",
+      "hid": "realtek_semiconductor_co_ltd-04_7d_7b_9a_51_47-rtl8101_2_6e_pci_express_fast_gigabit_ethernet_controller"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/db1/devices/7",
+      "@type": "NetworkAdapter",
+      "hid": "qualcomm_atheros-08_ed_b9_78_01_a6-ar9485_wireless_network_adapter"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/db1/devices/8",
+      "@type": "Processor"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/db1/devices/9",
+      "@type": "Processor"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/db1/devices/10",
+      "@type": "SoundCard"
+    }
+  ],
+  "dhDate": "2016-02-20T21:46:58",
+  "incidence": false,
+  "device": {
+    "url": "https://devicehub.ereuse.org/db1/devices/1",
+    "@type": "Computer",
+    "hid": "acer-lusga0d0242201212c7614-aod270"
+  },
+  "byUser": "https://devicehub.ereuse.org/accounts/56b8b26f3b04adb5e5c78494",
+  "secured": false
+}
