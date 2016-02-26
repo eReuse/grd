@@ -63,3 +63,15 @@ class EventTest(TestCase):
             device=Device.objects.first(),
         )
         self.assertEqual(migrate_to, e.to)
+
+
+class EventManagerTest(TestCase):
+    fixtures = ['event_manager_data.json', 'users.json']
+    
+    def test_related_to_device_bug_duplicated(self):
+        # Test that there is no duplicated events on query result
+        # There is only 4 events: register, allocate, receive and recycle
+        device = Device.objects.get(pk=1)
+        qs = Event.objects.related_to_device(device)
+        result = qs.values_list('id', flat=True)
+        self.assertEqual(len(result), len(set(result)))

@@ -164,7 +164,7 @@ class Device(models.Model):
 
 class EventManager(models.Manager):
     def related_to_device(self, device):
-        return self.filter(Q(device=device) | Q(components__in=[device]))
+        return self.filter(Q(device=device) | Q(components__in=[device])).distinct()
 
 
 class Event(models.Model):
