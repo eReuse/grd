@@ -102,7 +102,7 @@ class RegisterSerializer(serializers.ModelSerializer):
         
         dev = DeviceRegisterSerializer().create(data.pop('device'))
         event = dev.events.create(type=Event.REGISTER, agent=agent,
-                                  date=data['date'],
+                                  date=data.get('date', None),
                                   byUser=data['byUser'])
         
         for device_data in data['components']:

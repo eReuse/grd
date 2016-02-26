@@ -199,10 +199,11 @@ class Event(models.Model):
         (USAGEPROOF, 'USAGEPROOF'),
     )
     
-    # internal implementation (may be replaced by subclasses)
+    # @type (may be replaced by subclasses)
     type = models.CharField(max_length=16, choices=TYPES)
     
-    date = models.DateTimeField('Time when the event has happened.')
+    date = models.DateTimeField('Time when the event has happened.',
+                                blank=True, null=True)
     dhDate = models.DateTimeField('Time when the event has happened.')
     grdDate = models.DateTimeField(auto_now_add=True)
     errors = models.TextField(null=True)  # XXX serialize array as coma separated?
