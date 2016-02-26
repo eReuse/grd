@@ -41,3 +41,31 @@ class RegisterTest(BaseTestCase):
         
         self.assertEqual(201, response.status_code, response.content)
         self.assertEventType(response['Location'], 'Register')
+
+
+class AllocateTest(BaseTestCase):
+    def register_and_allocate(self, number):
+        # register
+        data = utils.load_json('data/register_%s.json' % number)
+        response = self.client.post('/api/devices/register/', data=data)
+        hid = data["device"]["hid"]
+        
+        # allocate
+        data = utils.load_json('data/allocate_%s.json' % number)
+        response = self.client.post('/api/devices/%s/allocate/' % hid, data=data)
+        return response
+    
+    def test_1(self):
+        response = self.register_and_allocate(1)
+        self.assertEqual(201, response.status_code, response.content)
+        self.assertEventType(response['Location'], 'Allocate')
+    
+    def test_2(self):
+        response = self.register_and_allocate(2)
+        self.assertEqual(201, response.status_code, response.content)
+        self.assertEventType(response['Location'], 'Allocate')
+    
+    def test_3(self):
+        response = self.register_and_allocate(3)
+        self.assertEqual(201, response.status_code, response.content)
+        self.assertEventType(response['Location'], 'Allocate')
