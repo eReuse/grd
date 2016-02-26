@@ -11,21 +11,35 @@ from django.utils import timezone
 class Device(models.Model):
     # Device types
     COMPUTER = 'Computer'
-    LAPTOP = 'Laptop'
     MOBILE = 'Mobile'
     MONITOR = 'Monitor'
     PERIPHERAL = 'Peripheral'
+    GRAPHIC_CARD = 'GraphicCard'
+    HARD_DRIVE = 'HardDrive'
+    MOTHERBOARD = 'Motherboard'
+    NETWORK_ADAPTER = 'NetworkAdapter'
+    OPTICAL_DRIVE = 'OpticalDrive'
+    PROCESSOR = 'Processor'
+    RAM_MODULE = 'RamModule'
+    SOUND_CARD = 'SoundCard'
+    
     TYPES = (
         (COMPUTER, 'computer'),
-        (LAPTOP, 'laptop'),
         (MOBILE, 'mobile'),
         (MONITOR, 'monitor'),
         (PERIPHERAL, 'peripheral'),
+        (GRAPHIC_CARD, 'GraphicCard'),
+        (HARD_DRIVE, 'HardDrive'),
+        (MOTHERBOARD, 'Motherboard'),
+        (NETWORK_ADAPTER, 'NetworkAdapter'),
+        (OPTICAL_DRIVE, 'OpticalDrive'),
+        (PROCESSOR, 'Processor'),
+        (RAM_MODULE, 'RamModule'),
+        (SOUND_CARD, 'SoundCard'),
     )
     
     sameAs = models.URLField('URI provided by the agent.', unique=True)
     # hardware identifier can be obtained by anyone
-    # TODO define some kind of validation to HID (shold be slugizable)
     hid = models.CharField('Hardware identifier.', max_length=128,
                            unique=True, null=True,
                            validators=[RegexValidator(regex=r'\w+-\w+-\w+')])

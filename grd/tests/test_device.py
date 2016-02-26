@@ -85,7 +85,7 @@ class HolderTest(TestCase):
         self.agent2 = Agent.objects.create(name="Susumu", user=u2)
 
     def register_device(self):
-        device = Device.objects.create(hid="1234", type=Device.LAPTOP,
+        device = Device.objects.create(hid="1234", type=Device.COMPUTER,
                                        sameAs="http://example.org/device/1234/")
         device.events.create(
             agent=self.agent,
@@ -123,7 +123,7 @@ class RunningTimeTest(TestCase):
         super(RunningTimeTest, self).setUp()
         u = User.objects.create_user("nikolao", "nikolao@example.org", "secret")
         self.agent = Agent.objects.create(name="Ahoth", user=u)
-        device = Device.objects.create(hid="1234", type=Device.LAPTOP,
+        device = Device.objects.create(hid="1234", type=Device.COMPUTER,
                                        sameAs="http://example.org/device/1234/")
         device.events.create(
             agent=self.agent,
@@ -231,7 +231,7 @@ class DurabilityTest(TestCase):
         super(DurabilityTest, self).setUp()
         u = User.objects.create_user("nikolao", "nikolao@example.org", "secret")
         self.agent = Agent.objects.create(name="Ahoth", user=u)
-        device = Device.objects.create(hid="1234", type=Device.LAPTOP,
+        device = Device.objects.create(hid="1234", type=Device.COMPUTER,
                                        sameAs="http://example.org/device/1234/")
         device.events.create(
             agent=self.agent,
