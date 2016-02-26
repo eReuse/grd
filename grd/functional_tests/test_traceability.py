@@ -23,7 +23,7 @@ class AllocateTest(BaseTestCase):
             'date': '2015-09-02T10:00:00.000000Z',
             'dhDate': '2015-09-02T10:00:00.000000Z',
             'byUser': 'http://example.org/users/Bob',
-            'owner': 'http://example.org/user/1',
+            'to': 'http://example.org/user/1',
         }
         response = self.client.post(self.device_url + 'allocate/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -40,7 +40,7 @@ class AllocateTest(BaseTestCase):
         
         # validate Event's data
         event = self.client.get(new_event_url).data
-        self.assertEqual(event['owner'], data['owner'])
+        self.assertEqual(event['owner'], data['to'])
         
         # validate Device's owner
         device = self.client.get(self.device_url).data
@@ -52,7 +52,7 @@ class AllocateTest(BaseTestCase):
             'date': '2015-09-02T10:00:00.000000Z',
             'dhDate': '2015-09-02T10:00:00.000000Z',
             'byUser': 'http://example.org/users/Bob',
-            'owner': 'http://example.org/user/alice/',
+            'to': 'http://example.org/user/alice/',
         }
         response = self.client.post(self.device_url + 'allocate/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -62,15 +62,15 @@ class AllocateTest(BaseTestCase):
             'date': '2015-09-02T10:10:00.000000Z',
             'dhDate': '2015-09-02T10:10:00.000000Z',
             'byUser': 'http://example.org/users/Bob',
-            'owner': 'http://example.org/user/brian/',
+            'to': 'http://example.org/user/brian/',
         }
         response = self.client.post(self.device_url + 'allocate/', data=data2)
         self.assertEqual(201, response.status_code, response.content)
         
         # Both are Device's owners
         device = self.client.get(self.device_url).data
-        self.assertIn(data['owner'], device['owners'])
-        self.assertIn(data2['owner'], device['owners'])
+        self.assertIn(data['to'], device['owners'])
+        self.assertIn(data2['to'], device['owners'])
     
     def test_allocate_twice_same_user_to_device(self):
         # Bob wants to allocate a device to Alice.
@@ -78,7 +78,7 @@ class AllocateTest(BaseTestCase):
             'date': '2015-09-02T10:00:00.000000Z',
             'dhDate': '2015-09-02T10:00:00.000000Z',
             'byUser': 'http://example.org/users/Bob',
-            'owner': 'http://example.org/user/alice/',
+            'to': 'http://example.org/user/alice/',
         }
         response = self.client.post(self.device_url + 'allocate/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -102,7 +102,7 @@ class DeallocateTest(BaseTestCase):
             'date': '2015-09-02T10:00:00.000000Z',
             'dhDate': '2015-09-02T10:00:00.000000Z',
             'byUser': 'http://example.org/users/Bob',
-            'owner': 'http://example.org/user/1',
+            'to': 'http://example.org/user/1',
         }
         response = self.client.post(self.device_url + 'allocate/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -113,7 +113,7 @@ class DeallocateTest(BaseTestCase):
             'date': '2015-09-02T10:00:00.000000Z',
             'dhDate': '2015-09-02T10:00:00.000000Z',
             'byUser': 'http://example.org/users/Bob',
-            'owner': 'http://example.org/user/1',
+            'from': 'http://example.org/user/1',
         }
         response = self.client.post(self.device_url + 'deallocate/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -124,7 +124,7 @@ class DeallocateTest(BaseTestCase):
         
         # validate Event's data
         event = self.client.get(new_event_url).data
-        self.assertEqual(event['owner'], data['owner'])
+        self.assertEqual(event['owner'], data['from'])
         
         # validate Device's owner
         device = self.client.get(self.device_url).data
@@ -136,7 +136,7 @@ class DeallocateTest(BaseTestCase):
             'date': '2015-09-02T10:00:00.000000Z',
             'dhDate': '2015-09-02T10:00:00.000000Z',
             'byUser': 'http://example.org/users/Bob',
-            'owner': 'http://example.org/user/999/',
+            'from': 'http://example.org/user/999/',
         }
         response = self.client.post(self.device_url + 'deallocate/', data=data)
         self.assertEqual(400, response.status_code, response.content)
@@ -154,7 +154,7 @@ class ReceiveTest(BaseTestCase):
             'date': '2015-09-02T10:00:00.000000Z',
             'dhDate': '2015-09-02T10:00:00.000000Z',
             'byUser': 'http://example.org/users/Bob',
-            'owner': 'http://example.org/user/alice/',
+            'to': 'http://example.org/user/alice/',
         }
         response = self.client.post(self.device_url + 'allocate/', data=data)
         self.assertEqual(201, response.status_code, response.content)

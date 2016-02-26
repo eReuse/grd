@@ -178,6 +178,11 @@ class AllocateSerializer(EventWritableSerializer):
             )
         agent_user, _ = AgentUser.objects.get_or_create(url=value)
         return agent_user
+    
+    def to_internal_value(self, data):
+        # translate 'to' --> 'owner'
+        data['owner'] = data.pop('to', None)
+        return super(AllocateSerializer, self).to_internal_value(data)
 
 
 class DeallocateSerializer(AllocateSerializer):
@@ -192,6 +197,14 @@ class DeallocateSerializer(AllocateSerializer):
             )
         
         return AgentUser.objects.get(url=value)
+    
+    def to_internal_value(self, data):
+        # translate 'from' --> 'owner'
+        data['owner'] = data.pop('from', None)
+        # Use super(AllocateSerializer) because we don't want to
+        # override internal value of 'owner'
+        ret = super(AllocateSerializer, self).to_internal_value(data)
+        return ret
 
 
 class ReceiveSerializer(EventWritableSerializer):
