@@ -1,0 +1,70 @@
+{
+  "components": [
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/12",
+      "@type": "GraphicCard"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/13",
+      "hid": "western_digital-ah-asdga2222-wdc_wd5000bekt-7",
+      "@type": "HardDrive"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/14",
+      "@type": "RamModule"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/15",
+      "@type": "RamModule"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/16",
+      "hid": "dell_inc-54jjsd_34r3wfwfs4h-07jc8t",
+      "@type": "Motherboard"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/17",
+      "@type": "NetworkAdapter"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/18",
+      "hid": "realtek_semiconductor_co_ltd-3b_3b_3b_3b_3b_3b-rtl8111_8168_8411_pci_express_gigabit_ethernet_controller",
+      "@type": "NetworkAdapter"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/19",
+      "@type": "NetworkAdapter"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/20",
+      "@type": "NetworkAdapter"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/21",
+      "@type": "OpticalDrive"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/22",
+      "@type": "Processor"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/23",
+      "@type": "SoundCard"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/24",
+      "@type": "SoundCard"
+    }
+  ],
+  "secured": false,
+  "device": {
+    "url": "https://devicehub.ereuse.org/dht1/devices/11",
+    "hid": "dell_inc-2smaqf-vostro_3300",
+    "@type": "Computer"
+  },
+  "@type": "Register",
+  "byUser": "https://devicehub.ereuse.org/accounts/56cc60647a993d2ccc1e733e",
+  "url": "https://devicehub.ereuse.org/dht1/events/56cc60677a993d2ccc1e7343",
+  "dhDate": "2016-02-23T13:36:39",
+  "incidence": false
+}

@@ -233,6 +233,19 @@ class Event(models.Model):
     # Allocate/Deallocate Event attributes
     owner = models.ForeignKey('AgentUser', null=True)
     
+    # Receive event attributes
+    FINAL_USER = 'FinalUser'
+    COLLECTION_POINT = 'CollectionPoint'
+    RECYCLING_POINT = 'RecyclingPoint'
+    RECEIVER_TYPES = (
+        (FINAL_USER, 'Final User'),
+        (COLLECTION_POINT, 'Collection Point'),
+        (RECYCLING_POINT, 'Recycling Point'),
+    )
+    receiver = models.URLField('User who receives the device.', null=True)
+    receiverType = models.CharField(max_length=16, choices=RECEIVER_TYPES, null=True)
+    place = models.URLField(null=True)  # Also used by Locate
+    
     data = HStoreField(default={})  # A field for storing mappings of strings to strings.
     
     objects = EventManager()

@@ -1,0 +1,11 @@
+{
+  "receiver": "https://devicehub.ereuse.org/accounts/56cc60647a993d2ccc1e733e",
+  "byUser": "https://devicehub.ereuse.org/accounts/56cc67247a993d2e0244cdd8",
+  "url": "https://devicehub.ereuse.org/dht1/events/56cc67287a993d2e0244cde2",
+  "place": "https://devicehub.ereuse.org/dht1/places/56cc67257a993d2e0244cdd9",
+  "@type": "Receive",
+  "secured": false,
+  "incidence": false,
+  "dhDate": "2016-02-23T14:05:28",
+  "device": "dell_inc-e3xcas-xps13_942"
+}

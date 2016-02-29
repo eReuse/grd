@@ -208,11 +208,15 @@ class DeallocateSerializer(AllocateSerializer):
 
 
 class ReceiveSerializer(EventWritableSerializer):
+    receiver = serializers.URLField()
+    receiverType = serializers.ChoiceField(choices=Event.RECEIVER_TYPES)
+    
     class Meta:
         model = Event
-        fields = ('date', 'dhDate', 'byUser', 'location')
+        fields = ('date', 'dhDate', 'byUser', 'location', 'receiver',
+                  'receiverType', 'place')
     
-    def validate_byUser(self, value):
+    def validate_receiver(self, value):
         device = self.context['device']
         if value not in device.owners:
             raise serializers.ValidationError(
