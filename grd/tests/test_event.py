@@ -15,7 +15,8 @@ class EventTest(TestCase):
             type=Event.REGISTER,
             data={'to': '1', 'extra_info': 'blibli'},
             date=timezone.now(),
-            byUser='John',
+            dhDate=timezone.now(),
+            byUser='http://example.org/users/John',
             agent=Agent.objects.first(),
             device=Device.objects.first(),
         )
@@ -26,7 +27,8 @@ class EventTest(TestCase):
         e = Event.objects.create(
             type=Event.RECYCLE,
             date=timezone.now(),
-            byUser='user1',
+            dhDate=timezone.now(),
+            byUser='http://example.org/users/user1',
             agent=Agent.objects.first(),
             device=Device.objects.first(),
         )
@@ -43,7 +45,8 @@ class EventTest(TestCase):
         e = Event.objects.create(
             type=Event.REGISTER,
             date=timezone.now(),
-            byUser='John',
+            dhDate=timezone.now(),
+            byUser='http://example.org/users/John',
             agent=Agent.objects.first(),
             device=Device.objects.first(),
         )
@@ -54,8 +57,21 @@ class EventTest(TestCase):
             type=Event.MIGRATE,
             data={'to': migrate_to},
             date=timezone.now(),
-            byUser='John',
+            dhDate=timezone.now(),
+            byUser='http://example.org/users/John',
             agent=Agent.objects.first(),
             device=Device.objects.first(),
         )
         self.assertEqual(migrate_to, e.to)
+
+
+class EventManagerTest(TestCase):
+    fixtures = ['event_manager_data.json', 'users.json']
+    
+    def test_related_to_device_bug_duplicated(self):
+        # Test that there is no duplicated events on query result
+        # There is only 4 events: register, allocate, receive and recycle
+        device = Device.objects.get(pk=1)
+        qs = Event.objects.related_to_device(device)
+        result = qs.values_list('id', flat=True)
+        self.assertEqual(len(result), len(set(result)))

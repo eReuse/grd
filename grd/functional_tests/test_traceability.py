@@ -21,8 +21,9 @@ class AllocateTest(BaseTestCase):
         # Bob wants to allocate a device to Alice.
         data = {
             'date': '2015-09-02T10:00:00.000000Z',
-            'byUser': 'Bob',
-            'owner': 'http://example.org/user/1',
+            'dhDate': '2015-09-02T10:00:00.000000Z',
+            'byUser': 'http://example.org/users/Bob',
+            'to': 'http://example.org/user/1',
         }
         response = self.client.post(self.device_url + 'allocate/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -39,7 +40,7 @@ class AllocateTest(BaseTestCase):
         
         # validate Event's data
         event = self.client.get(new_event_url).data
-        self.assertEqual(event['owner'], data['owner'])
+        self.assertEqual(event['owner'], data['to'])
         
         # validate Device's owner
         device = self.client.get(self.device_url).data
@@ -49,8 +50,9 @@ class AllocateTest(BaseTestCase):
         # Bob wants to allocate the device to Alice.
         data = {
             'date': '2015-09-02T10:00:00.000000Z',
-            'byUser': 'Bob',
-            'owner': 'http://example.org/user/alice/',
+            'dhDate': '2015-09-02T10:00:00.000000Z',
+            'byUser': 'http://example.org/users/Bob',
+            'to': 'http://example.org/user/alice/',
         }
         response = self.client.post(self.device_url + 'allocate/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -58,23 +60,25 @@ class AllocateTest(BaseTestCase):
         # Bob also wants to allocate the device to Brian.
         data2 = {
             'date': '2015-09-02T10:10:00.000000Z',
-            'byUser': 'Bob',
-            'owner': 'http://example.org/user/brian/',
+            'dhDate': '2015-09-02T10:10:00.000000Z',
+            'byUser': 'http://example.org/users/Bob',
+            'to': 'http://example.org/user/brian/',
         }
         response = self.client.post(self.device_url + 'allocate/', data=data2)
         self.assertEqual(201, response.status_code, response.content)
         
         # Both are Device's owners
         device = self.client.get(self.device_url).data
-        self.assertIn(data['owner'], device['owners'])
-        self.assertIn(data2['owner'], device['owners'])
+        self.assertIn(data['to'], device['owners'])
+        self.assertIn(data2['to'], device['owners'])
     
     def test_allocate_twice_same_user_to_device(self):
         # Bob wants to allocate a device to Alice.
         data = {
             'date': '2015-09-02T10:00:00.000000Z',
-            'byUser': 'Bob',
-            'owner': 'http://example.org/user/alice/',
+            'dhDate': '2015-09-02T10:00:00.000000Z',
+            'byUser': 'http://example.org/users/Bob',
+            'to': 'http://example.org/user/alice/',
         }
         response = self.client.post(self.device_url + 'allocate/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -96,8 +100,9 @@ class DeallocateTest(BaseTestCase):
         # Allocate the device
         data = {
             'date': '2015-09-02T10:00:00.000000Z',
-            'byUser': 'Bob',
-            'owner': 'http://example.org/user/1',
+            'dhDate': '2015-09-02T10:00:00.000000Z',
+            'byUser': 'http://example.org/users/Bob',
+            'to': 'http://example.org/user/1',
         }
         response = self.client.post(self.device_url + 'allocate/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -106,8 +111,9 @@ class DeallocateTest(BaseTestCase):
         # Bob wants to deallocate the device from Alice.
         data = {
             'date': '2015-09-02T10:00:00.000000Z',
-            'byUser': 'Bob',
-            'owner': 'http://example.org/user/1',
+            'dhDate': '2015-09-02T10:00:00.000000Z',
+            'byUser': 'http://example.org/users/Bob',
+            'from': 'http://example.org/user/1',
         }
         response = self.client.post(self.device_url + 'deallocate/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -118,7 +124,7 @@ class DeallocateTest(BaseTestCase):
         
         # validate Event's data
         event = self.client.get(new_event_url).data
-        self.assertEqual(event['owner'], data['owner'])
+        self.assertEqual(event['owner'], data['from'])
         
         # validate Device's owner
         device = self.client.get(self.device_url).data
@@ -128,8 +134,9 @@ class DeallocateTest(BaseTestCase):
         # Bob wants to deallocate the device from an unallocated user.
         data = {
             'date': '2015-09-02T10:00:00.000000Z',
-            'byUser': 'Bob',
-            'owner': 'http://example.org/user/999/',
+            'dhDate': '2015-09-02T10:00:00.000000Z',
+            'byUser': 'http://example.org/users/Bob',
+            'from': 'http://example.org/user/999/',
         }
         response = self.client.post(self.device_url + 'deallocate/', data=data)
         self.assertEqual(400, response.status_code, response.content)
@@ -145,8 +152,9 @@ class ReceiveTest(BaseTestCase):
         # Bob allocates the device to Alice.
         data = {
             'date': '2015-09-02T10:00:00.000000Z',
-            'byUser': 'Bob',
-            'owner': 'http://example.org/user/alice/',
+            'dhDate': '2015-09-02T10:00:00.000000Z',
+            'byUser': 'http://example.org/users/Bob',
+            'to': 'http://example.org/user/alice/',
         }
         response = self.client.post(self.device_url + 'allocate/', data=data)
         self.assertEqual(201, response.status_code, response.content)
@@ -154,6 +162,7 @@ class ReceiveTest(BaseTestCase):
         # Alice receives the device
         data = {
             'date': '2015-09-04T10:50:00.000000Z',
+            'dhDate': '2015-09-04T10:50:00.000000Z',
             'byUser': 'http://example.org/user/alice/',
         }
         response = self.client.post(self.device_url + 'receive/', data=data)
@@ -166,6 +175,7 @@ class ReceiveTest(BaseTestCase):
     def test_receive_device_not_allocated(self):
         data = {
             'date': '2015-09-04T10:50:00.000000Z',
+            'dhDate': '2015-09-04T10:50:00.000000Z',
             'byUser': 'http://example.org/user/alice/',
         }
         
@@ -194,7 +204,8 @@ class MigrateTest(BaseTestCase):
         agent2 = self.client.get(self.agent2.get_absolute_url()).data
         event_data = {
             'date': '2015-04-10T22:38:20.604391Z',
-            'byUser': 'foo',
+            'dhDate': '2015-04-10T22:38:20.604391Z',
+            'byUser': 'http://example.org/users/foo',
             'to': agent2['url'],
         }
         
@@ -236,7 +247,8 @@ class AddTest(BaseTestCase):
         # Add device 2 to device 1
         add_data = {
             'date': '2014-05-10T22:38:20.604391Z',
-            'byUser': 'XSR',
+            'dhDate': '2014-05-11T22:38:20.604391Z',
+            'byUser': 'http://example.org/users/XSR',
             'components': [device_two['hid']],
         }
         response = self.client.post(device_one_url + 'add/', data=add_data)
@@ -254,8 +266,10 @@ class AddTest(BaseTestCase):
         # PRE: - 2 devices registered.
         #      - One of them is a component of the other
         event = self.device_one.events.create(
-            type=Event.REGISTER, agent=self.agent, byUser='XSR',
-            date='2014-03-10T22:38:20.604391Z'
+            type=Event.REGISTER, agent=self.agent,
+            byUser='http://example.org/users/XSR',
+            date='2014-03-10T22:38:20.604391Z',
+            dhDate='2014-03-10T22:39:20.604391Z',
         )
         event.components.add(self.device_two)
         
@@ -264,7 +278,8 @@ class AddTest(BaseTestCase):
         # Add device 2 to device 1
         add_data = {
             'date': '2014-05-10T22:38:20.604391Z',
-            'byUser': 'XSR',
+            'dhDte': '2014-05-10T22:38:20.604391Z',
+            'byUser': 'http://example.org/users/XSR',
             'components': [self.device_two.hid],
         }
         response = self.client.post(device_one_url + 'add/', data=add_data)
@@ -286,7 +301,7 @@ class RegisterTest(BaseTestCase):
             device_components.append({
                 'hid': dev['hid'],
                 'url': dev['sameAs'],
-                'type': dev['type'],
+                '@type': dev['@type'],
             })
         
         device_components = sorted(device_components, key=lambda k: k['hid'])
@@ -306,13 +321,14 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
+                '@type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
-            'byUser': 'foo',
+            'dhDate': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'http://example.org/users/foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', '@type': 'Monitor'}
             ],
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -352,11 +368,12 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
+                '@type': 'Computer',
             },
             'components': [],
             'date': '2012-04-10T22:38:20.604391Z',
-            'byUser': 'foo',
+            'dhDate': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'http://example.org/users/foo',
             'location': {
                 'lat': 27.9878943,
                 'lon': 86.9247837,
@@ -376,13 +393,14 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'url': 'http://example.org/device/1234/',
                 #'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
+                '@type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
-            'byUser': 'foo',
+            'dhDate': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'http://example.org/users/foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', '@type': 'Monitor'}
             ],
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -396,7 +414,7 @@ class RegisterTest(BaseTestCase):
     def test_register_invalid_data(self):
         data = {
             'device': {
-                'type': 'Computer',
+                '@type': 'Computer',
             }
         }
         response = self.client.post('/api/devices/register/', data=data)
@@ -412,16 +430,18 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
+                '@type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
-            'byUser': 'foo',
+            'dhDate': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'http://example.org/users/foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', '@type': 'Monitor'}
             ],
         }
         response = self.client.post('/api/devices/register/', data=data)
+        self.assertEqual(201, response.status_code, response.content)
         self.assertEqual(2, self.count_listed_objects('/api/devices/'))
         
         # It registers a already traced device
@@ -455,20 +475,21 @@ class RegisterTest(BaseTestCase):
             'device': {
                 'url': 'http://example.org/device/1234/',
                 'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
+                '@type': 'Computer',
             },
             'date': '2012-04-10T22:38:20.604391Z',
-            'byUser': 'foo',
+            'dhDate': '2012-04-10T22:38:20.604391Z',
+            'byUser': 'http://example.org/users/foo',
             'components': [
                 {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
+                 'hid': 'LED24-Acme-44', '@type': 'Monitor'}
             ],
         }
         self.client.post('/api/devices/register/', data=data)
         
         # It takes a snapshot of the device with different components
         data['components'] = [{'url': 'http://example.org/device/22/',
-                               'hid': 'R5', 'type': 'Monitor'}]
+                               'hid': 'R5', '@type': 'Monitor'}]
         response = self.client.post('/api/devices/register/', data=data)
         self.assertEqual(201, response.status_code, response.content)
         
@@ -482,25 +503,7 @@ class RecycleTest(BaseTestCase):
     
     def setUp(self):
         super(RecycleTest, self).setUp()
-        
-        # Initialize registered devices before recycle tests
-        data = {
-            'device': {
-                'url': 'http://example.org/device/1234/',
-                'hid': 'XPS13-1111-2222',
-                'type': 'Computer',
-            },
-            'date': '2012-04-10T22:38:20.604391Z',
-            'byUser': 'foo',
-            'components': [
-                {'url': 'http://example.org/device/44/',
-                 'hid': 'LED24-Acme-44', 'type': 'Monitor'}
-            ],
-        }
-        response = self.client.post('/api/devices/register/', data=data)
-        self.assertEqual(201, response.status_code, response.content)
-        event_url = response['Location']
-        self.device_url = self.client.get(event_url).data['device']
+        self.register_device()
     
     def test_recycle_device(self):
         # Bob wants to recycle a device that he has previously
@@ -509,7 +512,8 @@ class RecycleTest(BaseTestCase):
         # He recycles the device
         recycle_data = {
             'date': '2014-04-10T22:38:20.604391Z',
-            'byUser': 'some authorized recycler',
+            'dhDate': '2014-04-10T22:38:20.604391Z',
+            'byUser': 'http://example.org/users/authorized_recycler',
         }
         response = self.client.post(self.device_url + 'recycle/',
                                     data=recycle_data)
@@ -532,7 +536,7 @@ class RecycleTest(BaseTestCase):
             self.assertEqual(len(comp_events), 1)
             
             last_event = self.get_latest_event(comp_events)
-            self.assertNotEqual('Recycle', last_event['type'])
+            self.assertNotEqual('Recycle', last_event['@type'])
     
     def test_recycle_device_with_components(self):
         # Bob wants to recycle a device that he has previously
@@ -541,7 +545,8 @@ class RecycleTest(BaseTestCase):
         # He recycles the device specifying its components
         recycle_data = {
             'date': '2014-04-10T22:38:20.604391Z',
-            'byUser': 'some authorized recycler',
+            'dhDate': '2014-04-10T22:38:20.604391Z',
+            'byUser': 'http://example.org/users/authorized_recycler',
             'components': ['LED24-Acme-44'],
         }
         response = self.client.post(self.device_url + 'recycle/',
@@ -566,12 +571,13 @@ class RecycleTest(BaseTestCase):
             self.assertEqual(len(comp_events), 2)
             
             last_event = self.get_latest_event(comp_events)
-            self.assertEqual('Recycle', last_event['type'])
+            self.assertEqual('Recycle', last_event['@type'])
     
     def test_recycle_device_with_location(self):
         data = {
             'date': '2014-04-10T22:38:20.604391Z',
-            'byUser': 'some authorized recycler',
+            'dhDate': '2014-04-10T22:38:20.604391Z',
+            'byUser': 'http://example.org/users/authorized_recycler',
             'location': {
                 'lat': 27.9878943,
                 'lon': 86.9247837,
@@ -594,6 +600,7 @@ class RecycleTest(BaseTestCase):
         # He tries to recycle the device
         recycle_data = {
             'date': '2014-04-10T22:38:20.604391Z',
+            'dhDate': '2014-04-10T22:38:20.604391Z',
             'components': ['LED24-Acme-44'],
         }
         response = self.client.post(self.device_url + 'recycle/',
@@ -616,7 +623,8 @@ class RemoveTest(BaseTestCase):
         
         add_data = {
             'date': '2014-05-10T22:38:20.604391Z',
-            'byUser': 'XSR',
+            'dhDate': '2014-05-10T22:38:20.604391Z',
+            'byUser': 'http://example.org/users/XSR',
             'components': [self.device_two.hid],
         }
         response = self.client.post(device_one_url + 'add/', data=add_data)
@@ -630,7 +638,8 @@ class RemoveTest(BaseTestCase):
         # Remove device 2 of device 1
         remove_data = {
             'date': '2014-12-12T12:38:20.604391Z',
-            'byUser': 'XSR',
+            'dhDate': '2014-12-12T12:38:20.604391Z',
+            'byUser': 'http://example.org/users/XSR',
             'components': [self.device_two.hid],
         }
         response = self.client.post(device_one_url + 'remove/',
@@ -659,7 +668,8 @@ class RemoveTest(BaseTestCase):
         # Remove device 2 of device 1
         remove_data = {
             'date': '2014-12-12T12:38:20.604391Z',
-            'byUser': 'XSR',
+            'dhDate': '2014-12-12T12:38:20.604391Z',
+            'byUser': 'http://example.org/users/XSR',
             'components': [self.device_two.hid],
         }
         response = self.client.post(device_one_url + 'remove/',
@@ -677,6 +687,7 @@ class UsageProofTest(BaseTestCase):
         # Alice sends an usageproof event of the device
         data = {
             'date': '2015-09-16T12:43:00.000000Z',
+            'dhDate': '2015-09-16T12:43:00.000000Z',
             'byUser': 'http://example.org/user/alice/',
         }
         response = self.client.post(self.device_url + 'usage-proof/', data=data)
@@ -697,6 +708,7 @@ class StopUsageTest(BaseTestCase):
         # Alice sends an usageproof notification
         data = {
             'date': '2015-09-16T12:43:00.000000Z',
+            'dhDate': '2015-09-16T12:43:00.000000Z',
             'byUser': 'http://example.org/user/alice/',
         }
         response = self.client.post(self.device_url + 'usage-proof/', data=data)
@@ -706,6 +718,7 @@ class StopUsageTest(BaseTestCase):
         # Alice notifies that is not using anymore the device
         data = {
             'date': '2015-09-23T12:15:00.000000Z',
+            'dhDate': '2015-09-23T12:15:00.000000Z',
             'byUser': 'http://example.org/user/alice/',
         }
         response = self.client.post(self.device_url + 'stop-usage/', data=data)

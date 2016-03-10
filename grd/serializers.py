@@ -41,6 +41,15 @@ class DeviceRegisterSerializer(serializers.ModelSerializer):
             defaults=validated_data
         )
         return obj
+    
+    def to_internal_value(self, data):
+        """
+        Dict of native values <- Dict of primitive datatypes.
+        """
+        # translate '@type' --> 'type'
+        data['type'] = data.pop('@type', None)
+        ret = super(DeviceRegisterSerializer, self).to_internal_value(data)
+        return ret
 
 
 class DeviceSerializer(serializers.HyperlinkedModelSerializer):
@@ -54,6 +63,12 @@ class DeviceSerializer(serializers.HyperlinkedModelSerializer):
         model = Device
         fields = ('url', 'hid', 'sameAs', 'type', 'components', 'owners')
         read_only_fields = ('url', 'components', 'owners')
+    
+    def to_representation(self, instance):
+        # translate 'type' --> '@type'
+        data = super(DeviceSerializer, self).to_representation(instance)
+        data['@type'] = data.pop('type')
+        return data
 
 
 class DeviceMetricsSerializer(serializers.HyperlinkedModelSerializer):
@@ -83,8 +98,14 @@ class EventSerializer(serializers.HyperlinkedModelSerializer):
     
     class Meta:
         model = Event
-        fields = ('url', 'grdTimestamp', 'type', 'device', 'agent',
+        fields = ('url', 'dhDate', 'grdDate', 'type', 'device', 'agent',
                   'components', 'to', 'location', 'owner')
+    
+    def to_representation(self, instance):
+        # translate 'type' --> '@type'
+        data = super(EventSerializer, self).to_representation(instance)
+        data['@type'] = data.pop('type')
+        return data
 
 
 class RegisterSerializer(serializers.ModelSerializer):
@@ -94,7 +115,7 @@ class RegisterSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Event
-        fields = ('device', 'date', 'byUser', 'components', 'location')
+        fields = ('device', 'date', 'dhDate', 'byUser', 'components', 'location')
     
     def save(self, agent=None, **kwargs):
         # create devices and events
@@ -102,7 +123,8 @@ class RegisterSerializer(serializers.ModelSerializer):
         
         dev = DeviceRegisterSerializer().create(data.pop('device'))
         event = dev.events.create(type=Event.REGISTER, agent=agent,
-                                  date=data['date'],
+                                  date=data.get('date', None),
+                                  dhDate=data['dhDate'],
                                   byUser=data['byUser'])
         
         for device_data in data['components']:
@@ -130,7 +152,7 @@ class EventWritableSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Event
-        fields = ('date', 'byUser', 'components', 'location')
+        fields = ('date', 'dhDate', 'byUser', 'components', 'location')
     
     def create(self, validated_data):
         location_data = validated_data.pop('location', None)
@@ -146,7 +168,7 @@ class AllocateSerializer(EventWritableSerializer):
     
     class Meta:
         model = Event
-        fields = ('date', 'byUser', 'owner', 'location')
+        fields = ('date', 'dhDate', 'byUser', 'owner', 'location')
     
     def validate_owner(self, value):
         device = self.context['device']
@@ -156,6 +178,11 @@ class AllocateSerializer(EventWritableSerializer):
             )
         agent_user, _ = AgentUser.objects.get_or_create(url=value)
         return agent_user
+    
+    def to_internal_value(self, data):
+        # translate 'to' --> 'owner'
+        data['owner'] = data.pop('to', None)
+        return super(AllocateSerializer, self).to_internal_value(data)
 
 
 class DeallocateSerializer(AllocateSerializer):
@@ -170,14 +197,26 @@ class DeallocateSerializer(AllocateSerializer):
             )
         
         return AgentUser.objects.get(url=value)
+    
+    def to_internal_value(self, data):
+        # translate 'from' --> 'owner'
+        data['owner'] = data.pop('from', None)
+        # Use super(AllocateSerializer) because we don't want to
+        # override internal value of 'owner'
+        ret = super(AllocateSerializer, self).to_internal_value(data)
+        return ret
 
 
 class ReceiveSerializer(EventWritableSerializer):
+    receiver = serializers.URLField()
+    receiverType = serializers.ChoiceField(choices=Event.RECEIVER_TYPES)
+    
     class Meta:
         model = Event
-        fields = ('date', 'byUser', 'location')
+        fields = ('date', 'dhDate', 'byUser', 'location', 'receiver',
+                  'receiverType', 'place')
     
-    def validate_byUser(self, value):
+    def validate_receiver(self, value):
         device = self.context['device']
         if value not in device.owners:
             raise serializers.ValidationError(
@@ -195,7 +234,7 @@ class MigrateSerializer(EventWritableSerializer):
     
     class Meta:
         model = Event
-        fields = ('date', 'byUser', 'components', 'to', 'location')
+        fields = ('date', 'dhDate', 'byUser', 'components', 'to', 'location')
     
     def save(self, **kwargs):
         to = self.validated_data.pop('to')

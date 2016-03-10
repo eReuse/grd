@@ -1,0 +1,164 @@
+[
+{
+    "model": "grd.device",
+    "pk": 1,
+    "fields": {
+        "productionDate": null,
+        "type": "Computer",
+        "sameAs": "https://devicehub.ereuse.org/db1/devices/1",
+        "hid": "acer-lusga0d0242201212c7614-aod270"
+    }
+},
+{
+    "model": "grd.device",
+    "pk": 2,
+    "fields": {
+        "productionDate": null,
+        "type": "GraphicCard",
+        "sameAs": "https://devicehub.ereuse.org/db1/devices/2",
+        "hid": null
+    }
+},
+{
+    "model": "grd.device",
+    "pk": 3,
+    "fields": {
+        "productionDate": null,
+        "type": "HardDrive",
+        "sameAs": "https://devicehub.ereuse.org/db1/devices/3",
+        "hid": "toshiba-42t9cpegt-toshiba_mk3259gs"
+    }
+},
+{
+    "model": "grd.device",
+    "pk": 4,
+    "fields": {
+        "productionDate": null,
+        "type": "Motherboard",
+        "sameAs": "https://devicehub.ereuse.org/db1/devices/5",
+        "hid": "acer-216020fhmbqc09917-je01_ct"
+    }
+},
+{
+    "model": "grd.device",
+    "pk": 5,
+    "fields": {
+        "productionDate": null,
+        "type": "NetworkAdapter",
+        "sameAs": "https://devicehub.ereuse.org/db1/devices/6",
+        "hid": "realtek_semiconductor_co_ltd-04_7d_7b_9a_51_47-rtl8101_2_6e_pci_express_fast_gigabit_ethernet_controller"
+    }
+},
+{
+    "model": "grd.device",
+    "pk": 6,
+    "fields": {
+        "productionDate": null,
+        "type": "NetworkAdapter",
+        "sameAs": "https://devicehub.ereuse.org/db1/devices/7",
+        "hid": "qualcomm_atheros-08_ed_b9_78_01_a6-ar9485_wireless_network_adapter"
+    }
+},
+{
+    "model": "grd.event",
+    "pk": 1,
+    "fields": {
+        "components": [
+            2,
+            3,
+            4,
+            5,
+            6
+        ],
+        "incidence": false,
+        "device": 1,
+        "type": "Register",
+        "byUser": "https://devicehub.ereuse.org/accounts/56b8b26f3b04adb5e5c78494",
+        "agent": 1,
+        "geo": null,
+        "data": "{}",
+        "owner": null,
+        "errors": null,
+        "grdDate": "2016-02-23T19:04:47.380Z",
+        "date": null,
+        "secured": true,
+        "dhDate": "2016-02-20T21:46:58Z"
+    }
+},
+{
+    "model": "grd.event",
+    "pk": 3,
+    "fields": {
+        "components": [],
+        "incidence": false,
+        "device": 1,
+        "type": "Allocate",
+        "byUser": "http://example.org/users/Bob",
+        "agent": 1,
+        "geo": null,
+        "data": "{}",
+        "owner": 1,
+        "errors": null,
+        "grdDate": "2016-02-23T23:51:23.762Z",
+        "date": "2016-02-21T10:00:00Z",
+        "secured": true,
+        "dhDate": "2016-02-21T10:01:00Z"
+    }
+},
+{
+    "model": "grd.event",
+    "pk": 4,
+    "fields": {
+        "components": [],
+        "incidence": false,
+        "device": 1,
+        "type": "Receive",
+        "byUser": "http://example.org/user/Alice",
+        "agent": 1,
+        "geo": null,
+        "data": "{}",
+        "owner": null,
+        "errors": null,
+        "grdDate": "2016-02-23T23:57:13.215Z",
+        "date": "2016-02-22T10:00:00Z",
+        "secured": true,
+        "dhDate": "2016-02-22T10:01:00Z"
+    }
+},
+{
+    "model": "grd.event",
+    "pk": 5,
+    "fields": {
+        "components": [],
+        "incidence": false,
+        "device": 1,
+        "type": "Recycle",
+        "byUser": "http://example.org/users/authorized_recycler",
+        "agent": 1,
+        "geo": null,
+        "data": "{}",
+        "owner": null,
+        "errors": null,
+        "grdDate": "2016-02-24T00:00:07.349Z",
+        "date": "2016-02-24T12:00:20.604Z",
+        "secured": true,
+        "dhDate": "2016-02-24T12:00:20.604Z"
+    }
+},
+{
+    "model": "grd.agent",
+    "pk": 1,
+    "fields": {
+        "description": "",
+        "user": 1,
+        "name": "XSR"
+    }
+},
+{
+    "model": "grd.agentuser",
+    "pk": 1,
+    "fields": {
+        "url": "http://example.org/user/Alice"
+    }
+}
+]

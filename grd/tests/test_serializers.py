@@ -1,5 +1,6 @@
 from django.test import TestCase
 
+from grd.models import Device
 from grd.serializers import DeviceRegisterSerializer
 
 
@@ -9,7 +10,7 @@ class DeviceRegisterSerializerTest(TestCase):
         data = {
             'url': 'http://example.org/device/1234/',
             'hid': 'XPS13-1111-2222',
-            'type': 'Computer',
+            '@type': 'Computer',
         }
         serializer = DeviceRegisterSerializer(data=data)
         self.assertTrue(serializer.is_valid())
@@ -22,7 +23,7 @@ class DeviceRegisterSerializerTest(TestCase):
         data = {
             'url': None,
             'hid': 'XPS13-1111-2222',
-            'type': 'Computer',
+            '@type': 'Computer',
         }
         serializer = DeviceRegisterSerializer(data=data)
         self.assertFalse(serializer.is_valid())
@@ -31,7 +32,7 @@ class DeviceRegisterSerializerTest(TestCase):
         data = {
             'url': 'http://example.org/device/1234/',
             'hid': None,
-            'type': 'Computer',
+            '@type': 'Computer',
         }
         serializer = DeviceRegisterSerializer(data=data)
         self.assertFalse(serializer.is_valid())
@@ -40,7 +41,7 @@ class DeviceRegisterSerializerTest(TestCase):
         data = {
             'url': 'http://example.org/device/1234/',
             'hid': 'XPS13-1111-2222',
-            'type': 'foo',
+            '@type': 'foo',
         }
         serializer = DeviceRegisterSerializer(data=data)
         self.assertFalse(serializer.is_valid())
@@ -49,7 +50,7 @@ class DeviceRegisterSerializerTest(TestCase):
         data = {
             'url': 'http://example.org/device/1234/',
             'hid': 'XPS13-1111-2222',
-            'type': 'Computer',
+            '@type': 'Computer',
         }
         serializer = DeviceRegisterSerializer(data=data)
         self.assertTrue(serializer.is_valid())
@@ -65,11 +66,11 @@ class DeviceRegisterSerializerTest(TestCase):
             'type': 'Computer',
         }
         # PRE - already exists a Device with this HID
-        from grd.models import Device
         Device.objects.create(**data)
         self.assertTrue(Device.objects.filter(hid=data['hid']).exists())
         
         # external URL (e.g. DeviceHub URL) is stored as sameAs on GRD
+        data['@type'] = data.pop('type')
         data['url'] = data.pop('sameAs')
         serializer = DeviceRegisterSerializer(data=data)
         self.assertTrue(serializer.is_valid(), serializer.errors)

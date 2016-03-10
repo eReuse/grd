@@ -1,0 +1,54 @@
+{
+  "components": [
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/2",
+      "@type": "Processor"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/3",
+      "@type": "RamModule"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/4",
+      "@type": "HardDrive"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/5",
+      "hid": "toshiba-43asdf22-toshiba_thnsns12",
+      "@type": "HardDrive"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/6",
+      "@type": "GraphicCard"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/7",
+      "@type": "Motherboard"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/8",
+      "hid": "intel_corporation-c8_f7_f3_1f_8f_1f-centrino_advanced-n_6235",
+      "@type": "NetworkAdapter"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/9",
+      "hid": "realtek_semiconductor_co_ltd-3d_08_73_52_2f_a9-rtl8111_8168_8411_pci_express_gigabit_ethernet_controller",
+      "@type": "NetworkAdapter"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/10",
+      "@type": "SoundCard"
+    }
+  ],
+  "secured": false,
+  "device": {
+    "url": "https://devicehub.ereuse.org/dht1/devices/1",
+    "hid": "sony_corporation-86sxq-0000029-svd1123c5f",
+    "@type": "Computer"
+  },
+  "@type": "Register",
+  "byUser": "https://devicehub.ereuse.org/accounts/56cc60647a993d2ccc1e733e",
+  "url": "https://devicehub.ereuse.org/dht1/events/56cc60657a993d2ccc1e7340",
+  "dhDate": "2016-02-23T13:36:37",
+  "incidence": false
+}

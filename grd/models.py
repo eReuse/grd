@@ -11,21 +11,35 @@ from django.utils import timezone
 class Device(models.Model):
     # Device types
     COMPUTER = 'Computer'
-    LAPTOP = 'Laptop'
     MOBILE = 'Mobile'
     MONITOR = 'Monitor'
     PERIPHERAL = 'Peripheral'
+    GRAPHIC_CARD = 'GraphicCard'
+    HARD_DRIVE = 'HardDrive'
+    MOTHERBOARD = 'Motherboard'
+    NETWORK_ADAPTER = 'NetworkAdapter'
+    OPTICAL_DRIVE = 'OpticalDrive'
+    PROCESSOR = 'Processor'
+    RAM_MODULE = 'RamModule'
+    SOUND_CARD = 'SoundCard'
+    
     TYPES = (
         (COMPUTER, 'computer'),
-        (LAPTOP, 'laptop'),
         (MOBILE, 'mobile'),
         (MONITOR, 'monitor'),
         (PERIPHERAL, 'peripheral'),
+        (GRAPHIC_CARD, 'GraphicCard'),
+        (HARD_DRIVE, 'HardDrive'),
+        (MOTHERBOARD, 'Motherboard'),
+        (NETWORK_ADAPTER, 'NetworkAdapter'),
+        (OPTICAL_DRIVE, 'OpticalDrive'),
+        (PROCESSOR, 'Processor'),
+        (RAM_MODULE, 'RamModule'),
+        (SOUND_CARD, 'SoundCard'),
     )
     
     sameAs = models.URLField('URI provided by the agent.', unique=True)
     # hardware identifier can be obtained by anyone
-    # TODO define some kind of validation to HID (shold be slugizable)
     hid = models.CharField('Hardware identifier.', max_length=128,
                            unique=True, null=True,
                            validators=[RegexValidator(regex=r'\w+-\w+-\w+')])
@@ -164,7 +178,7 @@ class Device(models.Model):
 
 class EventManager(models.Manager):
     def related_to_device(self, device):
-        return self.filter(Q(device=device) | Q(components__in=[device]))
+        return self.filter(Q(device=device) | Q(components__in=[device])).distinct()
 
 
 class Event(models.Model):
@@ -199,11 +213,18 @@ class Event(models.Model):
         (USAGEPROOF, 'USAGEPROOF'),
     )
     
+    # @type (may be replaced by subclasses)
     type = models.CharField(max_length=16, choices=TYPES)
-    date = models.DateTimeField('Time when the event has happened.')
-    grdTimestamp = models.DateTimeField(auto_now_add=True)
-    # TODO replace with AgentUser
-    byUser = models.CharField('User who performs the event.', max_length=128)
+    
+    date = models.DateTimeField('Time when the event has happened.',
+                                blank=True, null=True)
+    dhDate = models.DateTimeField('Time when the event has happened.')
+    grdDate = models.DateTimeField(auto_now_add=True)
+    errors = models.TextField(null=True)  # XXX serialize array as coma separated?
+    secured = models.BooleanField(default=True)
+    incidence = models.BooleanField(default=False)
+    geo = gis_models.PointField(null=True)
+    byUser = models.URLField('User who performs the event.')
     
     agent = models.ForeignKey('Agent', related_name='+')
     device = models.ForeignKey('Device', related_name='events')
@@ -212,19 +233,32 @@ class Event(models.Model):
     # Allocate/Deallocate Event attributes
     owner = models.ForeignKey('AgentUser', null=True)
     
+    # Receive event attributes
+    FINAL_USER = 'FinalUser'
+    COLLECTION_POINT = 'CollectionPoint'
+    RECYCLING_POINT = 'RecyclingPoint'
+    RECEIVER_TYPES = (
+        (FINAL_USER, 'Final User'),
+        (COLLECTION_POINT, 'Collection Point'),
+        (RECYCLING_POINT, 'Recycling Point'),
+    )
+    receiver = models.URLField('User who receives the device.', null=True)
+    receiverType = models.CharField(max_length=16, choices=RECEIVER_TYPES, null=True)
+    place = models.URLField(null=True)  # Also used by Locate
+    
     data = HStoreField(default={})  # A field for storing mappings of strings to strings.
     
     objects = EventManager()
     
     class Meta:
-        get_latest_by = 'grdTimestamp'
+        get_latest_by = 'grdDate'
         # WARNING: the order of the events affects the computation of
         # the device's state, so be sure that you know what are you
         # doing before changing this field.
-        ordering = ['grdTimestamp']
+        ordering = ['grdDate']
     
     def __str__(self):
-        event_date = self.grdTimestamp.strftime("%Y-%m-%d")
+        event_date = self.grdDate.strftime("%Y-%m-%d")
         return "%s %s %s" % (self.agent, self.type, event_date)
     
     @property

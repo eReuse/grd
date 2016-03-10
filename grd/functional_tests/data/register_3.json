@@ -1,0 +1,53 @@
+{
+  "components": [
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/26",
+      "hid": "intel_corp-to_be_filled_by_o_e_m-intel_r_core_tm_i7-4500u_cpu_1_80ghz",
+      "@type": "Processor"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/27",
+      "@type": "RamModule"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/28",
+      "@type": "HardDrive"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/29",
+      "@type": "GraphicCard"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/30",
+      "@type": "Motherboard"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/31",
+      "hid": "intel_corporation-7c_7b_92_2b_6f_a2-wireless_7260",
+      "@type": "NetworkAdapter"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/32",
+      "@type": "NetworkAdapter"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/33",
+      "@type": "SoundCard"
+    },
+    {
+      "url": "https://devicehub.ereuse.org/dht1/devices/34",
+      "@type": "SoundCard"
+    }
+  ],
+  "secured": false,
+  "device": {
+    "url": "https://devicehub.ereuse.org/dht1/devices/25",
+    "hid": "dell_inc-e3xcas-xps13_942",
+    "@type": "Computer"
+  },
+  "@type": "Register",
+  "byUser": "https://devicehub.ereuse.org/accounts/56cc60647a993d2ccc1e733e",
+  "url": "https://devicehub.ereuse.org/dht1/events/56cc60677a993d2ccc1e7346",
+  "dhDate": "2016-02-23T13:36:39",
+  "incidence": false
+}

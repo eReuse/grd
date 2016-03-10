@@ -1,0 +1,10 @@
+{
+  "secured": false,
+  "dhDate": "2016-02-23T13:36:39",
+  "device": "sony_corporation-86sxq-0000029-svd1123c5f",
+  "@type": "Allocate",
+  "byUser": "https://devicehub.ereuse.org/accounts/56cc60647a993d2ccc1e733e",
+  "url": "https://devicehub.ereuse.org/dht1/events/56cc60677a993d2ccc1e7348",
+  "to": "https://devicehub.ereuse.org/accounts/56cc60647a993d2ccc1e733e",
+  "incidence": false
+}
