@@ -16,7 +16,7 @@ For more details see [requirements] file.
     ```sudo apt-get install python3 python3-pip```
 
 - Install PostgreSQL database
-    ```sudo apt-get install postgresql postgresql-client python3-psycopg2```
+    ```sudo apt-get install postgresql postgresql-client postgresql-contrib postgis python3-psycopg2```
 
 - Create and configure database
     ```
