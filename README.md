@@ -24,6 +24,15 @@ For more details see [requirements] file.
     psql -c "CREATE USER ereuse PASSWORD 'ereuse';"
     psql -c "CREATE DATABASE ereuse OWNER ereuse;"
     ```
+  For this to work, you may need to edit your ``pg_hba.conf`` and replace
+    ```
+    local  all  all  peer
+    ```
+  with
+    ```
+    local  all  all  md5
+    ```
+  and then restart PostgreSQL.
 
 - Get latest source and install pip requirements.
     ```
